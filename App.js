@@ -1,57 +1,90 @@
-import { StatusBar } from 'expo-status-bar';
-import React from 'react';
-import { StyleSheet, Text, View, Button, Alert } from 'react-native';
+import React, {useState} from 'react';
+import { Image } from "react-native";
+import { AppLoading } from "expo";
+import { useFonts } from '@use-expo/font';
+import { Asset } from "expo-asset";
+import { Block, GalioProvider } from "galio-framework";
+import { NavigationContainer } from "@react-navigation/native";
 
 import Amplify, { Auth } from 'aws-amplify';
 import awsconfig from './aws-exports';
 import { withAuthenticator } from 'aws-amplify-react-native'
+import { Title } from 'native-base';
+
+// Before rendering any navigation stack
+import { enableScreens } from "react-native-screens";
+enableScreens();
+
+import Screens from "./navigation/Screens";
+import { Images, articles, argonTheme } from "./constants";
 
 Amplify.configure(awsconfig);
 
-async function signOut() {
-  console.log("entro");
-  try {
-      const t = await Auth.signOut({ global: true });
-      console.log(t);
-  } catch (error) {
-      console.log('error signing out: ', error);
+// cache app images
+const assetImages = [
+  Images.Onboarding,
+  Images.LogoOnboarding,
+  Images.Logo,
+  Images.Pro,
+  Images.ArgonLogo,
+  Images.iOSLogo,
+  Images.androidLogo
+];
+
+// cache product images
+articles.map(article => assetImages.push(article.image));
+
+function cacheImages(images) {
+  return images.map(image => {
+    if (typeof image === "string") {
+      return Image.prefetch(image);
+    } else {
+      return Asset.fromModule(image).downloadAsync();
+    }
+  });
+}
+
+const App = props => {
+  const [isLoadingComplete, setLoading] = useState(false);
+  let [fontsLoaded] = useFonts({
+    'ArgonExtra': require('./assets/font/argon.ttf'),
+  });
+
+  function _loadResourcesAsync() {
+    return Promise.all([...cacheImages(assetImages)]);
+  }
+
+  function _handleLoadingError(error) {
+    // In this case, you might want to report the error to your error
+    // reporting service, for example Sentry
+    console.warn(error);
+  };
+
+ function _handleFinishLoading() {
+    setLoading(true);
+  };
+
+  if(!fontsLoaded && !isLoadingComplete) {
+    return (
+      <AppLoading
+        startAsync={_loadResourcesAsync}
+        onError={_handleLoadingError}
+        onFinish={_handleFinishLoading}
+      />
+    );
+  } else if(fontsLoaded) {
+    return (
+      <NavigationContainer>
+        <GalioProvider theme={argonTheme}>
+          <Block flex>
+            <Screens />
+          </Block>
+        </GalioProvider>
+      </NavigationContainer>
+    );
+  } else {
+    return null
   }
 }
 
-function App() {
-
-  const createTwoButtonAlert = () =>
-    Alert.alert(
-      "Alert Title",
-      "My Alert Msg",
-      [
-        {
-          text: "Cancel",
-          onPress: () => console.log("Cancel Pressed"),
-          style: "cancel"
-        },
-        { text: "OK", onPress: () => console.log("OK Pressed") }
-      ],
-      { cancelable: false }
-    );
-
-  return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      
-      <Button onPress={signOut} title="salir"></Button>
-      <StatusBar style="auto" />
-    </View>
-  );
-}
-
 export default withAuthenticator(App)
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});

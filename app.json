@@ -1,9 +1,9 @@
 {
-  "name": "app",
-  "displayName": "app",
+  "name": "littystyles",
+  "displayName": "LittyStyles",
   "expo": {
-    "name": "app",
-    "slug": "app",
+    "name": "LittyStyles",
+    "slug": "LittyStyles",
     "version": "1.0.0",
     "assetBundlePatterns": [
       "**/*"
