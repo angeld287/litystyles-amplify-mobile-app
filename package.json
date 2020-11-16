@@ -8,6 +8,7 @@
     "test": "jest"
   },
   "dependencies": {
+    "@react-native-community/google-signin": "^5.0.0",
     "@react-native-community/masked-view": "0.1.10",
     "@react-native-community/netinfo": "^5.9.7",
     "@react-navigation/bottom-tabs": "^5.0.6",
@@ -32,6 +33,7 @@
     "react-dom": "16.13.1",
     "react-native": "~0.63.3",
     "react-native-gesture-handler": "~1.7.0",
+    "react-native-inappbrowser-reborn": "^3.5.1",
     "react-native-reanimated": "~1.13.0",
     "react-native-safe-area-context": "^3.1.9",
     "react-native-screens": "~2.10.1",
