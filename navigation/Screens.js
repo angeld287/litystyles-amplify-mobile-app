@@ -41,9 +41,9 @@ function ElementsStack(props) {
           cardStyle: { backgroundColor: "#F8F9FE" }
         }}
       />
-            <Stack.Screen
-        name="Pro"
-        component={Pro}
+      <Stack.Screen
+        name="Profile"
+        component={Profile}
         options={{
           header: ({ navigation, scene }) => (
             <Header
@@ -75,50 +75,9 @@ function ArticlesStack(props) {
           cardStyle: { backgroundColor: "#F8F9FE" }
         }}
       />
-            <Stack.Screen
-        name="Pro"
-        component={Pro}
-        options={{
-          header: ({ navigation, scene }) => (
-            <Header
-              title=""
-              back
-              white
-              transparent
-              navigation={navigation}
-              scene={scene}
-            />
-          ),
-          headerTransparent: true
-        }}
-      />
-    </Stack.Navigator>
-  );
-}
-
-function ProfileStack(props) {
-  return (
-    <Stack.Navigator initialRouteName="Profile" mode="card" headerMode="screen">
       <Stack.Screen
         name="Profile"
         component={Profile}
-        options={{
-          header: ({ navigation, scene }) => (
-            <Header
-              transparent
-              white
-              title="Profile"
-              navigation={navigation}
-              scene={scene}
-            />
-          ),
-          cardStyle: { backgroundColor: "#FFFFFF" },
-          headerTransparent: true
-        }}
-      />
-            <Stack.Screen
-        name="Pro"
-        component={Pro}
         options={{
           header: ({ navigation, scene }) => (
             <Header
@@ -143,6 +102,7 @@ function HomeStack(props) {
       <Stack.Screen
         name="Home"
         component={Home}
+        initialParams={props.route.params}
         options={{
           header: ({ navigation, scene }) => (
             <Header
@@ -157,8 +117,9 @@ function HomeStack(props) {
         }}
       />
       <Stack.Screen
-        name="Pro"
-        component={Pro}
+        name="Profile"
+        component={Profile}
+        initialParams={props.route.params}
         options={{
           header: ({ navigation, scene }) => (
             <Header
@@ -187,12 +148,12 @@ export default function OnboardingStack(props) {
           headerTransparent: true
         }}
       /> */}
-      <Stack.Screen name="App" component={AppStack} />
+      <Stack.Screen name="App" component={AppStack } initialParams={props} />
     </Stack.Navigator>
   );
 }
 
-function AppStack(props) {
+const AppStack = (props) => {
   return (
     <Drawer.Navigator
       style={{ flex: 1 }}
@@ -223,8 +184,7 @@ function AppStack(props) {
       }}
       initialRouteName="Home"
     >
-      <Drawer.Screen name="Home" component={HomeStack} />
-      <Drawer.Screen name="Profile" component={ProfileStack} />
+      <Drawer.Screen name="Home" component={HomeStack} initialParams={props.route.params}/>
       <Drawer.Screen name="Account" component={Register} />
       <Drawer.Screen name="Elements" component={ElementsStack} />
       <Drawer.Screen name="Articles" component={ArticlesStack} />

@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import { Image, Text, View, StyleSheet, Button, Linking } from "react-native";
+import { Image, Linking } from "react-native";
 import { AppLoading } from "expo";
 import { useFonts } from '@use-expo/font';
 import { Asset } from "expo-asset";
@@ -105,7 +105,7 @@ const Home = props => {
       <NavigationContainer>
         <GalioProvider theme={argonTheme}>
           <Block flex>
-            <Screens />
+            <Screens {...props}/>
           </Block>
         </GalioProvider>
       </NavigationContainer>
@@ -117,6 +117,13 @@ const Home = props => {
 
 const AuthScreens = (props) => {
   console.log('props', props.authState);
+  props.authData.roles = props.authData.signInUserSession.accessToken.payload['cognito:groups'];
+  if(props.authData.attributes === undefined){
+    Auth.currentAuthenticatedUser().then(r => {
+      props.authData.attributes = r.attributes;
+    });
+  }
+
   switch (props.authState) {
     case 'signIn':
       return <MySignIn {...props} />;
@@ -129,7 +136,7 @@ const AuthScreens = (props) => {
     case 'changePassword':
       return <MySignIn {...props} />;
     case 'signedIn':
-      return <Home />;
+      return <Home {...props}/>;
     default:
       return <></>;
   }
