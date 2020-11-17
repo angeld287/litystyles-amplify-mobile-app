@@ -6,12 +6,14 @@ import { Card } from '../components';
 import articles from '../constants/articles';
 const { width } = Dimensions.get('screen');
 
-const Home = (props) => {
+const Companies = (props) => {
 
-  const isCustomer = (props.route.params?.authData.roles.indexOf('customer') !== -1);
+useEffect(() => {
+    console.log("ss")
+});
 
- return (
-   <Block flex center style={styles.home}>
+return (
+   <Block flex center style={styles.companies}>
       <ScrollView
        showsVerticalScrollIndicator={false}
        contentContainerStyle={styles.articles}>
@@ -30,7 +32,7 @@ const Home = (props) => {
 }
 
 const styles = StyleSheet.create({
-  home: {
+  companies: {
     width: width,    
   },
   articles: {
@@ -39,4 +41,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Home;
+export default Companies;
