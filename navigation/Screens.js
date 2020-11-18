@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Easing, Animated, Dimensions } from "react-native";
 
 import { createStackNavigator } from "@react-navigation/stack";
@@ -97,18 +97,34 @@ function ArticlesStack(props) {
 }
 
 function HomeStack(props) {
+
+  const [isBarber, setIsBarber] = useState(true);
+
+  const action = () => {
+    //console.log(isBarber);
+  }
+
+  const params = {
+    ...props.route.params,
+    isBarber
+  }
+
   return (
     <Stack.Navigator mode="card" headerMode="screen">
       <Stack.Screen
         name="Home"
         component={Home}
-        initialParams={props.route.params}
+        initialParams={params}
         options={{
           header: ({ navigation, scene }) => (
             <Header
               title="Home"
               search
               options
+              optionRight="Salones"
+              optionLeft="Barberias"
+              actionLeft={e => {setIsBarber(true); action();}}
+              actionRigth={e => {setIsBarber(false); action();}}
               navigation={navigation}
               scene={scene}
             />
