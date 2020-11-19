@@ -1,15 +1,52 @@
-import React from 'react';
+import React, {useEffect , useCallback, useState} from 'react';
 import { withNavigation } from '@react-navigation/compat';
 import PropTypes from 'prop-types';
+import { API, graphqlOperation, Storage } from 'aws-amplify';
 import { StyleSheet, Dimensions, Image, TouchableWithoutFeedback } from 'react-native';
 import { Block, Text, theme } from 'galio-framework';
+import defaultImage from  '../images/default-image.png';
 
 import { argonTheme } from '../constants';
 
 
-class Card extends React.Component {
-  render() {
-    const { navigation, item, horizontal, full, style, ctaColor, imageStyle } = this.props;
+const Card = (props) => {
+  
+    const { navigation, item, horizontal, full, style, ctaColor, imageStyle } = props;
+
+    const [ _image , setImage ] = useState('')
+    const [ loading , setLoading ] = useState(true)
+
+    const getImageFromStorage = useCallback(
+      async (image) => {
+        try {
+          if(image !== null) {
+              var i = await Storage.get(image, { level: 'public' });
+              return i
+          }else{
+              return defaultImage;
+          }
+        } catch (e) {
+            console.log(e); 
+            return defaultImage;
+        }
+      },
+      [],
+    );
+
+    useEffect(() => {
+      async function fetchData() {
+          try {
+            setLoading(true)
+            const img = await getImageFromStorage(props.item.image);
+            setImage(img);
+            setLoading(false);
+          } catch (e) {
+            console.log(e);
+            setLoading(false);
+          }
+      }
+      fetchData();
+    }, [getImageFromStorage]);
     
     const imageStyles = [
       full ? styles.fullImage : styles.horizontalImage,
@@ -25,7 +62,7 @@ class Card extends React.Component {
       <Block row={horizontal} card flex style={cardContainer}>
         <TouchableWithoutFeedback onPress={() => navigation.navigate('Pro')}>
           <Block flex style={imgContainer}>
-            <Image source={{uri: item.image}} style={imageStyles} />
+            <Image source={{uri: _image}} style={imageStyles} />
           </Block>
         </TouchableWithoutFeedback>
         <TouchableWithoutFeedback onPress={() => navigation.navigate('Pro')}>
@@ -36,7 +73,7 @@ class Card extends React.Component {
         </TouchableWithoutFeedback>
       </Block>
     );
-  }
+  
 }
 
 Card.propTypes = {

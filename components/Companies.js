@@ -1,33 +1,58 @@
-import React, { useEffect } from 'react';
-import { StyleSheet, Dimensions, ScrollView } from 'react-native';
+import React from 'react';
+import { StyleSheet, Dimensions, View, ActivityIndicator } from 'react-native';
+import { withNavigation } from '@react-navigation/compat';
 import { Block, theme } from 'galio-framework';
 
-import { Card } from '../components';
-import articles from '../constants/articles';
+import { Card } from '.';
 const { width } = Dimensions.get('screen');
 
 const Companies = (props) => {
 
-useEffect(() => {
-    console.log("ss")
-});
+
+const _offices = (!props.loading && props.offices !== null)?([].concat(props.offices)
+		.map((item,i)=>
+			{      
+                var office = {
+                    title: item.name,
+                    image: item.image,
+                    cta: 'Entrar', 
+                    horizontal: true
+                };
+                switch (i) {
+                    case 0:
+                        return (<Card key={i} item={office} horizontal  />)
+                    case 1:
+                        var office_2 = {
+                            title: props.offices[i+1].name,
+                            image: props.offices[i+1].image,
+                            cta: 'Entrar', 
+                            horizontal: true
+                        };
+                        return (<Block flex row><Card key={i} item={office}  style={{ marginRight: theme.SIZES.BASE }}  /><Card key={i+1} item={office_2} /></Block>)
+                    case 2:
+                        break
+                    case 3:
+                        return (<Card key={i} item={office} horizontal  />)
+                    case 4:
+                        return (<Card key={i} item={office} full  />)
+                    default:
+                        return (<Card key={i} item={office} horizontal  />);
+                }
+
+            }
+
+        )):(<Card></Card>)
 
 return (
-   <Block flex center style={styles.companies}>
-      <ScrollView
-       showsVerticalScrollIndicator={false}
-       contentContainerStyle={styles.articles}>
-       <Block flex>
-         <Card item={articles[0]} horizontal  />
-         <Block flex row>
-           <Card item={articles[1]} style={{ marginRight: theme.SIZES.BASE }} />
-           <Card item={articles[2]} />
-         </Block>
-         <Card item={articles[3]} horizontal />
-         <Card item={articles[4]} full />
-       </Block>
-      </ScrollView>
-   </Block>
+    <Block flex>
+      {props.loading &&
+        <View >
+           <ActivityIndicator size="large" color="#0000ff" />
+        </View>
+      }
+      {!props.loading && _offices}
+
+    </Block>
  );
 }
 
@@ -41,4 +66,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Companies;
+export default withNavigation(Companies);
