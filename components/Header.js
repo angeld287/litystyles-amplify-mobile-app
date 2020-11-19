@@ -128,13 +128,13 @@ class Header extends React.Component {
 
     return (
       <Block row style={styles.options}>
-        <Button shadowless style={[styles.tab, styles.divider]} onPress={() => actionLeft()}>
+        <Button shadowless style={[styles.tab, styles.divider]} onPress={() => navigation.navigate('Home', { categoryId: "e6e234a7-e4b8-4fef-bde5-57458a79a3d3" })}>
           <Block row middle>
             <Icon name="man" family="AntDesign" style={{ paddingRight: 8 }} color={argonTheme.COLORS.ICON} />
             <Text size={16} style={styles.tabTitle}>{optionLeft || 'Beauty'}</Text>
           </Block>
         </Button>
-        <Button shadowless style={styles.tab} onPress={() => actionRigth()}>
+        <Button shadowless style={styles.tab} onPress={() => navigation.navigate('Articles', { categoryId: "af30aeb8-5b6b-433e-a6f0-57004bc7c26b" })}>
           <Block row middle>
             <Icon size={16} name="woman" family="AntDesign" style={{ paddingRight: 8 }} color={argonTheme.COLORS.ICON}/>
             <Text size={16} style={styles.tabTitle}>{optionRight || 'Fashion'}</Text>

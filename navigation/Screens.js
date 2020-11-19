@@ -119,12 +119,12 @@ function HomeStack(props) {
           header: ({ navigation, scene }) => (
             <Header
               title="Home"
-              search
-              options
-              optionRight="Salones"
-              optionLeft="Barberias"
-              actionLeft={e => {setIsBarber(true); action();}}
-              actionRigth={e => {setIsBarber(false); action();}}
+              //search
+              //options
+              //optionRight="Salones"
+              //optionLeft="Barberias"
+              //actionLeft={e => {setIsBarber(true); action();}}
+              //actionRigth={e => {setIsBarber(false); action();}}
               navigation={navigation}
               scene={scene}
             />

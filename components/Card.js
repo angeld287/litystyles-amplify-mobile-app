@@ -14,6 +14,7 @@ const Card = (props) => {
     const { navigation, item, horizontal, full, style, ctaColor, imageStyle } = props;
 
     const [ _image , setImage ] = useState('')
+    const [ loading , setLoading ] = useState(true)
 
     const getImageFromStorage = useCallback(
       async (image) => {
@@ -34,8 +35,15 @@ const Card = (props) => {
 
     useEffect(() => {
       async function fetchData() {
-          const img = await getImageFromStorage(props.item.image);
-          setImage(img);
+          try {
+            setLoading(true)
+            const img = await getImageFromStorage(props.item.image);
+            setImage(img);
+            setLoading(false);
+          } catch (e) {
+            console.log(e);
+            setLoading(false);
+          }
       }
       fetchData();
     }, [getImageFromStorage]);
