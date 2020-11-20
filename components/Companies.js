@@ -13,6 +13,7 @@ const _offices = (!props.loading && props.offices !== null)?([].concat(props.off
 		.map((item,i)=>
 			{      
                 var office = {
+                    id: item.id,
                     title: item.name,
                     image: item.image,
                     cta: 'Entrar', 
@@ -20,23 +21,24 @@ const _offices = (!props.loading && props.offices !== null)?([].concat(props.off
                 };
                 switch (i) {
                     case 0:
-                        return (<Card key={i} item={office} horizontal  />)
+                        return (<Card {...props} key={i} item={office} horizontal  />)
                     case 1:
                         var office_2 = {
+                            id: props.offices[i+1].id,
                             title: props.offices[i+1].name,
                             image: props.offices[i+1].image,
                             cta: 'Entrar', 
                             horizontal: true
                         };
-                        return (<Block flex row><Card key={i} item={office}  style={{ marginRight: theme.SIZES.BASE }}  /><Card key={i+1} item={office_2} /></Block>)
+                        return (<Block flex row><Card {...props} key={i} item={office}  style={{ marginRight: theme.SIZES.BASE }}  /><Card {...props} key={i+1} item={office_2} /></Block>)
                     case 2:
                         break
                     case 3:
-                        return (<Card key={i} item={office} horizontal  />)
+                        return (<Card {...props} key={i} item={office} horizontal  />)
                     case 4:
-                        return (<Card key={i} item={office} full  />)
+                        return (<Card {...props} key={i} item={office} full  />)
                     default:
-                        return (<Card key={i} item={office} horizontal  />);
+                        return (<Card {...props} key={i} item={office} horizontal  />);
                 }
 
             }
