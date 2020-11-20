@@ -58,9 +58,16 @@ const SearchButton = ({isWhite, style, navigation}) => (
 );
 
 class Header extends React.Component {
+  goBack = () => {
+    const { navigation } = this.props;
+
+    navigation.goBack();
+    navigation.setParams({id: 'porfin'});
+  }
+
   handleLeftPress = () => {
     const { back, navigation } = this.props;
-    return (back ? navigation.goBack() : navigation.openDrawer());
+    return (back ? this.goBack() : navigation.openDrawer());
   }
   renderRight = () => {
     const { white, title, navigation } = this.props;
@@ -73,6 +80,10 @@ class Header extends React.Component {
 
     switch (title) {
       case 'Home':
+        return ([
+          <ProfileButton key='profile-title' navigation={navigation} isWhite={white} />
+        ]);
+      case 'Office':
         return ([
           <ProfileButton key='profile-title' navigation={navigation} isWhite={white} />
         ]);

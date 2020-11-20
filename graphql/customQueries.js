@@ -162,6 +162,38 @@ query Office($id: String!) {
 
 `;
 
+
+export const getOffice = /* GraphQL */ `
+  query GetOffice($id: ID!) {
+    getOffice(id: $id) {
+      id
+      name
+      administrator
+      employees {
+        items {
+          id
+          name
+          username
+          officeId
+          deleted
+          deletedAt
+          createdAt
+          owner
+        }
+        nextToken
+      }
+      categoryId
+      image
+      location
+      deleted
+      deletedAt
+      createdAt
+      companyId
+      owner
+    }
+  }
+`;
+
 export const listRequests = /* GraphQL */ `
   query ListRequests(
     $filter: ModelRequestFilterInput
@@ -171,27 +203,6 @@ export const listRequests = /* GraphQL */ `
     listRequests(filter: $filter, limit: $limit, nextToken: $nextToken) {
       items {
         id
-        companyId
-        resposible {
-          nextToken
-        }
-        service {
-          items {
-            service {
-              name
-            }
-          }
-        }
-        product {
-          nextToken
-        }
-        resposibleName
-        customerName
-        state
-        paymentType
-        deleted
-        deletedAt
-        createdAt
       }
       nextToken
     }

@@ -15,6 +15,8 @@ import Profile from "../screens/Profile";
 import Register from "../screens/Register";
 import Elements from "../screens/Elements";
 import Articles from "../screens/Articles";
+import Office from "../screens/Office"
+import RequestService from '../screens/RequestService'
 // drawer
 import CustomDrawerContent from "./Menu";
 
@@ -150,6 +152,38 @@ function HomeStack(props) {
           headerTransparent: true
         }}
       />
+      <Stack.Screen
+        name="Office"
+        component={Office}
+        initialParams={props.route.params}
+        options={{
+          header: ({ navigation, scene }) => (
+            <Header
+              title="Oficina"
+              back
+              navigation={navigation}
+              scene={scene}
+            />
+          ),
+          headerTransparent: true
+        }}
+      />
+      <Stack.Screen
+        name="RequestService"
+        component={RequestService}
+        initialParams={props.route.params}
+        options={{
+          header: ({ navigation, scene }) => (
+            <Header
+              title="Solicitud de Servicio"
+              back
+              navigation={navigation}
+              scene={scene}
+            />
+          ),
+          headerTransparent: true
+        }}
+      />
     </Stack.Navigator>
   );
 }
@@ -201,7 +235,7 @@ const AppStack = (props) => {
       initialRouteName="Home"
     >
       <Drawer.Screen name="Home" component={HomeStack} initialParams={props.route.params}/>
-      <Drawer.Screen name="Account" component={Register} />
+      {/* <Drawer.Screen name="Office" component={OfficeStack} initialParams={{...props.route.params, id: null}}/> */}
       <Drawer.Screen name="Elements" component={ElementsStack} />
       <Drawer.Screen name="Articles" component={ArticlesStack} />
     </Drawer.Navigator>
