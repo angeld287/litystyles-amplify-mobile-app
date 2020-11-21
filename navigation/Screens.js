@@ -15,8 +15,10 @@ import Profile from "../screens/Profile";
 import Register from "../screens/Register";
 import Elements from "../screens/Elements";
 import Articles from "../screens/Articles";
-import Office from "../screens/Office"
-import RequestService from '../screens/RequestService'
+import Office from "../screens/CustomerScreens/Office"
+import SelectService from '../screens/CustomerScreens/SelectService'
+import SendRequest from '../screens/CustomerScreens/SendRequest'
+import RequestInfo from '../screens/CustomerScreens/RequestInfo'
 // drawer
 import CustomDrawerContent from "./Menu";
 
@@ -102,10 +104,6 @@ function HomeStack(props) {
 
   const [isBarber, setIsBarber] = useState(true);
 
-  const action = () => {
-    //console.log(isBarber);
-  }
-
   const params = {
     ...props.route.params,
     isBarber
@@ -114,7 +112,7 @@ function HomeStack(props) {
   return (
     <Stack.Navigator mode="card" headerMode="screen">
       <Stack.Screen
-        name="Home"
+        name="Homee"
         component={Home}
         initialParams={params}
         options={{
@@ -127,6 +125,22 @@ function HomeStack(props) {
               //optionLeft="Barberias"
               //actionLeft={e => {setIsBarber(true); action();}}
               //actionRigth={e => {setIsBarber(false); action();}}
+              navigation={navigation}
+              scene={scene}
+            />
+          ),
+          cardStyle: { backgroundColor: "#F8F9FE" }
+        }}
+      />
+      <Stack.Screen
+        name="RequestInfo"
+        component={RequestInfo}
+        initialParams={props.route.params}
+        options={{
+          header: ({ navigation, scene }) => (
+            <Header
+              title="Informacion de Solicitud"
+              back
               navigation={navigation}
               scene={scene}
             />
@@ -159,7 +173,7 @@ function HomeStack(props) {
         options={{
           header: ({ navigation, scene }) => (
             <Header
-              title="Oficina"
+              title="Empresa"
               back
               navigation={navigation}
               scene={scene}
@@ -169,13 +183,29 @@ function HomeStack(props) {
         }}
       />
       <Stack.Screen
-        name="RequestService"
-        component={RequestService}
+        name="SelectService"
+        component={SelectService}
         initialParams={props.route.params}
         options={{
           header: ({ navigation, scene }) => (
             <Header
-              title="Solicitud de Servicio"
+              title="Seleccione un Servicio"
+              back
+              navigation={navigation}
+              scene={scene}
+            />
+          ),
+          headerTransparent: true
+        }}
+      />
+      <Stack.Screen
+        name="SendRequest"
+        component={SendRequest}
+        initialParams={props.route.params}
+        options={{
+          header: ({ navigation, scene }) => (
+            <Header
+              title="Confirmar y Enviar"
               back
               navigation={navigation}
               scene={scene}
@@ -235,7 +265,6 @@ const AppStack = (props) => {
       initialRouteName="Home"
     >
       <Drawer.Screen name="Home" component={HomeStack} initialParams={props.route.params}/>
-      {/* <Drawer.Screen name="Office" component={OfficeStack} initialParams={{...props.route.params, id: null}}/> */}
       <Drawer.Screen name="Elements" component={ElementsStack} />
       <Drawer.Screen name="Articles" component={ArticlesStack} />
     </Drawer.Navigator>

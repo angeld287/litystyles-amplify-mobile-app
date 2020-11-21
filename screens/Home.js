@@ -8,7 +8,8 @@ import Icon from '../components/Icon';
 import argonTheme from '../constants/Theme';
 import { API, graphqlOperation } from 'aws-amplify';
 
-import { listOffices, listCategorys } from '../graphql/queries';
+import { listCategorys } from '../graphql/queries';
+import { listOfficesHome } from '../graphql/customQueries';
 
 const { width } = Dimensions.get('screen');
 
@@ -45,6 +46,7 @@ const exectFilter = (isBarber) => {
 
 
   useEffect(() => {
+    console.log('Home');
 		let didCancel = false;
 
 		const fetch = async () => {
@@ -55,15 +57,16 @@ const exectFilter = (isBarber) => {
         var c = categories;
         var o = offices;
  
-        officesApi = await API.graphql(graphqlOperation(listOffices, {limit: 400, filter: {deleted: { ne: true } } } ) );
+        officesApi = await API.graphql(graphqlOperation(listOfficesHome, {limit: 400, filter: {and: { deleted: {ne: true}, companyId: {ne: null}, image: {ne: null}, categoryId: {ne: null} } } } ) );
         categoriesApi = await API.graphql(graphqlOperation(listCategorys));
 
         c = categoriesApi.data.listCategorys.items;
         o = officesApi.data.listOffices.items;
-        setOffices(o);
+
+        setOffices(o.filter(_ => (_.employees.items.length > 0) && (_.categoryId !== null) && (_.image !== null) && (_.companyId !== null)));
         setCategories(c);
 
-        set_Offices(o.filter(o => o.categoryId === c[c.findIndex(c => c.code === 'BB01' )].id))
+        set_Offices(o.filter(_ => (_.employees.items.length > 0) && (_.categoryId !== null) && (_.image !== null) && (_.companyId !== null)).filter(o => o.categoryId === c[c.findIndex(c => c.code === 'BB01' )].id))
         setLoading(false)
         
       } catch (e) {

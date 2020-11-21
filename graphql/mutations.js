@@ -547,6 +547,7 @@ export const createCategory = /* GraphQL */ `
         }
         nextToken
       }
+      code
       deleted
       deletedAt
       createdAt
@@ -578,6 +579,7 @@ export const updateCategory = /* GraphQL */ `
         }
         nextToken
       }
+      code
       deleted
       deletedAt
       createdAt
@@ -609,6 +611,7 @@ export const deleteCategory = /* GraphQL */ `
         }
         nextToken
       }
+      code
       deleted
       deletedAt
       createdAt
@@ -1097,6 +1100,7 @@ export const createRequestEmployee = /* GraphQL */ `
         }
         resposibleName
         customerName
+        customerUsername
         state
         paymentType
         deleted
@@ -1144,6 +1148,7 @@ export const updateRequestEmployee = /* GraphQL */ `
         }
         resposibleName
         customerName
+        customerUsername
         state
         paymentType
         deleted
@@ -1191,6 +1196,7 @@ export const deleteRequestEmployee = /* GraphQL */ `
         }
         resposibleName
         customerName
+        customerUsername
         state
         paymentType
         deleted
@@ -1222,6 +1228,7 @@ export const createRequestService = /* GraphQL */ `
         }
         resposibleName
         customerName
+        customerUsername
         state
         paymentType
         deleted
@@ -1273,6 +1280,7 @@ export const updateRequestService = /* GraphQL */ `
         }
         resposibleName
         customerName
+        customerUsername
         state
         paymentType
         deleted
@@ -1324,6 +1332,7 @@ export const deleteRequestService = /* GraphQL */ `
         }
         resposibleName
         customerName
+        customerUsername
         state
         paymentType
         deleted
@@ -1375,6 +1384,7 @@ export const createRequestProduct = /* GraphQL */ `
         }
         resposibleName
         customerName
+        customerUsername
         state
         paymentType
         deleted
@@ -1422,6 +1432,7 @@ export const updateRequestProduct = /* GraphQL */ `
         }
         resposibleName
         customerName
+        customerUsername
         state
         paymentType
         deleted
@@ -1469,6 +1480,7 @@ export const deleteRequestProduct = /* GraphQL */ `
         }
         resposibleName
         customerName
+        customerUsername
         state
         paymentType
         deleted
@@ -1529,6 +1541,7 @@ export const createRequest = /* GraphQL */ `
       }
       resposibleName
       customerName
+      customerUsername
       state
       paymentType
       deleted
@@ -1571,6 +1584,7 @@ export const updateRequest = /* GraphQL */ `
       }
       resposibleName
       customerName
+      customerUsername
       state
       paymentType
       deleted
@@ -1613,6 +1627,7 @@ export const deleteRequest = /* GraphQL */ `
       }
       resposibleName
       customerName
+      customerUsername
       state
       paymentType
       deleted

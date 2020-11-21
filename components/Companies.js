@@ -48,7 +48,7 @@ const _offices = (!props.loading && props.offices !== null)?([].concat(props.off
 return (
     <Block flex>
       {props.loading &&
-        <View >
+        <View style={{marginTop: 40}}>
            <ActivityIndicator size="large" color="#0000ff" />
         </View>
       }
