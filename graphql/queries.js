@@ -153,6 +153,7 @@ export const getCategory = /* GraphQL */ `
         }
         nextToken
       }
+      code
       deleted
       deletedAt
       createdAt
@@ -170,10 +171,10 @@ export const listCategorys = /* GraphQL */ `
       items {
         id
         name
-        code
         offices {
           nextToken
         }
+        code
         deleted
         deletedAt
         createdAt
@@ -390,6 +391,7 @@ export const getRequest = /* GraphQL */ `
       }
       resposibleName
       customerName
+      customerUsername
       state
       paymentType
       deleted
@@ -419,6 +421,7 @@ export const listRequests = /* GraphQL */ `
         }
         resposibleName
         customerName
+        customerUsername
         state
         paymentType
         deleted

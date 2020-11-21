@@ -1,18 +1,19 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { StyleSheet, Dimensions, ScrollView, Image, View, ActivityIndicator, ImageBackground } from 'react-native';
-import { Container, Header, Content, List, ListItem, Thumbnail, Left, Body, Right, Button, Card, CardItem, Icon } from 'native-base';
+import { Container, Header, Content, List, ListItem, Thumbnail, Left, Body, Right, Button, Card, CardItem, Icon, Text, Subtitle, Spinner } from 'native-base';
 
-import { Text, Block, NavBar, theme, Accordion } from 'galio-framework';
+import { Block, NavBar, theme, Accordion } from 'galio-framework';
 import { API, graphqlOperation, Storage } from 'aws-amplify';
-import { Images } from "../constants";
+import { Images } from "../../constants";
 
-import { getOffice, listRequests } from '../graphql/customQueries';
+import { getOffice, listRequests, getCompany } from '../../graphql/customQueries';
 
 const { width, height } = Dimensions.get("screen");
 
 const thumbMeasure = (width - 48 - 32) / 3;
 
 const Office = ({ route, navigation }) => {
+  
   const [ office, setOffice ] = useState(null);
   const [ employees, setEmployees ] = useState(null);
   const [ _image , setImage ] = useState('')
@@ -40,7 +41,6 @@ const Office = ({ route, navigation }) => {
     [],
   );
 
-  //quantity={e.quantity} employeeid={e.id} username={e.username}
   const _employeesList = (employees !== null)?([].concat(employees).map((e,i)=> 
         <CardItem>
           <Left>
@@ -51,33 +51,45 @@ const Office = ({ route, navigation }) => {
             <Text note>{e.quantity} cliente(s) en turno</Text>
           </Body>          
           <Right>
-            <Button onPress={() => { navigation.navigate('RequestService', {employeeid: e.id, employeeusername: e.username})}}><Icon name="arrow-forward" /></Button>
+            <Button transparent onPress={() => { navigation.navigate('SelectService', {employee: e})}}><Text>Solicitar Servicio</Text></Button>
           </Right>
         </CardItem>
   )):(<Block></Block>)
 
   useEffect(() => {
+    console.log('Office');
     let didCancel = false;
 		const fetch = async () => {
       setLoading(true);
       try {
         var officeApi = null;
+        var companyApi = null;
+        var companyServices = [];
         var image = '';
         var _employees = [];
- 
-        officeApi = await API.graphql(graphqlOperation(getOffice, { id: id } ) );
-        setOffice(officeApi.data.getOffice);
-        image =  await getImageFromStorage(officeApi.data.getOffice.image);
-        setImage(image);
 
-        officeApi.data.getOffice.employees.items.forEach(async e => {
+        officeApi = await API.graphql(graphqlOperation(getOffice, { id: id }));
+        setOffice(officeApi.data.getOffice);
+        
+        companyApi = await API.graphql(graphqlOperation(getCompany, { id: officeApi.data.getOffice.companyId } ) );
+        companyServices = companyApi.data.getCompany.services.items;
+        
+        image =  await getImageFromStorage(officeApi.data.getOffice.image);
+
+        setImage(image);
+        officeApi.data.getOffice.employees.items.filter(_ => _.services.items.length > 0).forEach(async e => {
           var reqs = null;
+          var _companyServices = [];
           const _filter = {
             and: {or: {state: {eq: 'IN_PROCESS'}, state: {eq: 'ON_HOLD'}}, resposibleName: {eq: e.username}}
           }
           reqs =  await API.graphql(graphqlOperation(listRequests, { limit: 400, filter: _filter } ) );
-
-          _employees.push({ ...e, quantity: reqs.data.listRequests.items.length});
+          
+          e.services.items.forEach(es => {  
+            _companyServices.push(companyServices[companyServices.findIndex(_ => _.service.id === es.service.id)]);
+          });
+          
+          _employees.push({ ...e, companyId: officeApi.data.getOffice.companyId, _companyServices, quantity: reqs.data.listRequests.items.length});
         });
 
         setEmployees(_employees);
@@ -104,18 +116,13 @@ const Office = ({ route, navigation }) => {
     return new Promise((resolve) => setTimeout(resolve, time));
   }
   
-  const data = [
-    { title: 'test' , content: "Lorem ipsum dolor sit amet" },
-    { title: "2nd Chapter", content: JSON.stringify(id) },
-    { title: "3rd Chapter", content: "Lorem ipsum dolor sit amet" }
-  ];
 
  return (
     <Block flex style={styles.profile}>
       {loading &&
-        <View >
-            <ActivityIndicator size="large" />
-        </View>
+        <Content style={{marginTop: 40}}>
+          <Spinner color='blue' />
+        </Content>
       }
       {!loading &&
         <Block flex>
@@ -129,6 +136,7 @@ const Office = ({ route, navigation }) => {
               style={{ width, marginTop: '25%' }}
             > 
               <Container style={{marginTop: 200}}>
+                <Subtitle style={{margin: 5}}>{office.name}</Subtitle>
                 <Content>
                   <Card>
                     {_employeesList}

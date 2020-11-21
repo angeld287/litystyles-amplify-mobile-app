@@ -2,6 +2,7 @@ import React from 'react';
 import { withNavigation } from '@react-navigation/compat';
 import { TouchableOpacity, StyleSheet, Platform, Dimensions } from 'react-native';
 import { Button, Block, NavBar, Text, theme } from 'galio-framework';
+import { Icon as I} from 'native-base';
 
 import Icon from './Icon';
 import Input from './Input';
@@ -46,6 +47,17 @@ const ProfileButton = ({isWhite, style, navigation}) => (
   </TouchableOpacity>
 );
 
+const InfoButton = ({isWhite, style, navigation}) => (
+  <TouchableOpacity style={[styles.button, style]} onPress={() => navigation.navigate('RequestInfo')}>
+    <Icon
+      family="EvilIcons"
+      size={30}
+      name="exclamation"
+      color={argonTheme.COLORS[isWhite ? 'WHITE' : 'ICON']}
+    />
+  </TouchableOpacity>
+);
+
 const SearchButton = ({isWhite, style, navigation}) => (
   <TouchableOpacity style={[styles.button, style]} onPress={() => navigation.navigate('Pro')}>
     <Icon
@@ -81,6 +93,7 @@ class Header extends React.Component {
     switch (title) {
       case 'Home':
         return ([
+          <InfoButton key='info-title' navigation={navigation} isWhite={white} />,
           <ProfileButton key='profile-title' navigation={navigation} isWhite={white} />
         ]);
       case 'Office':

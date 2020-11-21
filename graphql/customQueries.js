@@ -61,7 +61,7 @@
   }
 `;
 
-export const getCompanyProductsAndServices = /* GraphQL */ `
+export const getCompany = /* GraphQL */ `
 query getCompanyProductsAndServices($id: ID!) {
   getCompany(id: $id) {
     id
@@ -77,19 +77,26 @@ query getCompanyProductsAndServices($id: ID!) {
         cost
       }
     }
-    products {
-      items {
-        id
-        product {
-          name
-          cost
-          id
-        }
-        cost
-      }
-    }
   }
 }
+`;
+
+export const getCompanyBasic = /* GraphQL */ `
+query getCompanyBasic($id: ID!) {
+  getCompany(id: $id) {
+    id
+    name
+  }
+}
+`;
+
+export const getOfficeBasic = /* GraphQL */ `
+  query GetOffice($id: ID!) {
+    getOffice(id: $id) {
+      id
+      name
+    }
+  }
 `;
 
 export const listCompanys = /* GraphQL */ `
@@ -159,9 +166,7 @@ query Office($id: String!) {
     }
   }
 }
-
 `;
-
 
 export const getOffice = /* GraphQL */ `
   query GetOffice($id: ID!) {
@@ -175,18 +180,21 @@ export const getOffice = /* GraphQL */ `
           name
           username
           officeId
-          deleted
-          deletedAt
-          createdAt
-          owner
+          services {
+            items {
+              service {
+                name
+                id
+                cost
+              }
+            }
+          }
         }
         nextToken
       }
       categoryId
       image
       location
-      deleted
-      deletedAt
       createdAt
       companyId
       owner
@@ -203,6 +211,52 @@ export const listRequests = /* GraphQL */ `
     listRequests(filter: $filter, limit: $limit, nextToken: $nextToken) {
       items {
         id
+      }
+      nextToken
+    }
+  }
+`;
+
+export const listRequestsFull = /* GraphQL */ `
+  query ListRequests(
+    $filter: ModelRequestFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    listRequests(filter: $filter, limit: $limit, nextToken: $nextToken) {
+      items {
+        id
+        companyId
+        service {
+          items {
+            id
+            cost
+            service {
+              name
+            }
+          }
+        }
+        resposible {
+          items {
+            id
+            employee {
+              name
+              officeId
+              username
+            }
+          }
+        }
+        product {
+          nextToken
+        }
+        resposibleName
+        customerName
+        customerUsername
+        state
+        paymentType
+        deleted
+        deletedAt
+        createdAt
       }
       nextToken
     }
@@ -277,6 +331,36 @@ export const listOffices = /* GraphQL */ `
         deleted
         deletedAt
         createdAt
+        owner
+      }
+      nextToken
+    }
+  }
+`;
+
+export const listOfficesHome = /* GraphQL */ `
+  query ListOffices(
+    $filter: ModelOfficeFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    listOffices(filter: $filter, limit: $limit, nextToken: $nextToken) {
+      items {
+        id
+        name
+        administrator
+        employees {
+          items{
+            id
+          }
+        }
+        categoryId
+        image
+        location
+        deleted
+        deletedAt
+        createdAt
+        companyId
         owner
       }
       nextToken

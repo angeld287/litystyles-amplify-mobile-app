@@ -1,33 +1,26 @@
-import React, { useEffect, useState, useCallback } from 'react';
-import { StyleSheet, Dimensions, ScrollView, Image, View, ActivityIndicator, ImageBackground } from 'react-native';
-import { Button, Block, NavBar, Text, theme, Accordion } from 'galio-framework';
-import { API, graphqlOperation, Storage } from 'aws-amplify';
-import { Images } from "../constants";
+import React, { useEffect, useState } from 'react';
+import { StyleSheet, Dimensions } from 'react-native';
+import { Container, Header, Content, List, ListItem, Left, Right, Button, Text, Icon } from 'native-base';
 
-import { getOffice, listRequests } from '../graphql/customQueries';
+import { theme } from 'galio-framework';
 
 const { width, height } = Dimensions.get("screen");
 
 const thumbMeasure = (width - 48 - 32) / 3;
 
-const RequestService = ({ route, navigation }) => {
-  const [ office, setOffice ] = useState(null);
-  const [ employees, setEmployees ] = useState(null);
-  const [ _image , setImage ] = useState('')
+const SelectServices = ({ route, navigation }) => {
   const [ loading, setLoading ] = useState(true);
 
-  const { employeeid, employeeusername } = route.params;
+  const { employee } = route.params;
 
   const isCustomer = (route.params?.authData.roles.indexOf('customer') !== -1);
 
   useEffect(() => {
-    console.log(employeeid, employeeusername);
     let didCancel = false;
 		const fetch = async () => {
       setLoading(true);
       try {
         
-
         sleep(1000).then(() => {
             setLoading(false)
         });
@@ -49,17 +42,27 @@ const RequestService = ({ route, navigation }) => {
   function sleep (time) {
     return new Promise((resolve) => setTimeout(resolve, time));
   }
-  
-  const data = [
-    { title: 'test' , content: "Lorem ipsum dolor sit amet" },
-    { title: "2nd Chapter", content: JSON.stringify(id) },
-    { title: "3rd Chapter", content: "Lorem ipsum dolor sit amet" }
-  ];
+
+  const _servicesList = (employee._companyServices !== null)?([].concat(employee._companyServices).map((e,i)=> 
+        <ListItem noIndent onPress={() => { navigation.navigate('SendRequest', {employee: employee, service: e})}}>
+          <Left>
+            <Text>{e.service.name}</Text>
+          </Left>
+          <Right>
+            <Button transparent onPress={() => { navigation.navigate('SendRequest', {employee: employee, service: e})}}><Icon name="arrow-forward" /></Button>
+          </Right>
+        </ListItem>
+  )):(<ListItem></ListItem>)
 
  return (
-    <Block flex style={styles.profile}>
-      <Text>Solicitar Servicio</Text>
-    </Block>
+  <Container>
+    <Header />
+    <Content>
+      <List>
+        {_servicesList}
+      </List>
+    </Content>
+  </Container>
  );
 }
 
@@ -119,4 +122,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default RequestService;
+export default SelectServices;

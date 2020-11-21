@@ -32,6 +32,7 @@ export const onCreateRequest = /* GraphQL */ `
       }
       resposibleName
       customerName
+      customerUsername
       state
       paymentType
       deleted
@@ -58,6 +59,7 @@ export const onCreateRequestService = /* GraphQL */ `
         }
         resposibleName
         customerName
+        customerUsername
         state
         paymentType
         deleted
@@ -119,6 +121,7 @@ export const onUpdateRequest = /* GraphQL */ `
       }
       resposibleName
       customerName
+      customerUsername
       state
       paymentType
       deleted
@@ -634,6 +637,7 @@ export const onCreateCategory = /* GraphQL */ `
         }
         nextToken
       }
+      code
       deleted
       deletedAt
       createdAt
@@ -662,6 +666,7 @@ export const onUpdateCategory = /* GraphQL */ `
         }
         nextToken
       }
+      code
       deleted
       deletedAt
       createdAt
@@ -690,6 +695,7 @@ export const onDeleteCategory = /* GraphQL */ `
         }
         nextToken
       }
+      code
       deleted
       deletedAt
       createdAt
@@ -1139,6 +1145,7 @@ export const onCreateRequestEmployee = /* GraphQL */ `
         }
         resposibleName
         customerName
+        customerUsername
         state
         paymentType
         deleted
@@ -1183,6 +1190,7 @@ export const onUpdateRequestEmployee = /* GraphQL */ `
         }
         resposibleName
         customerName
+        customerUsername
         state
         paymentType
         deleted
@@ -1227,6 +1235,7 @@ export const onDeleteRequestEmployee = /* GraphQL */ `
         }
         resposibleName
         customerName
+        customerUsername
         state
         paymentType
         deleted
@@ -1255,6 +1264,7 @@ export const onCreateRequestProduct = /* GraphQL */ `
         }
         resposibleName
         customerName
+        customerUsername
         state
         paymentType
         deleted
@@ -1299,6 +1309,7 @@ export const onUpdateRequestProduct = /* GraphQL */ `
         }
         resposibleName
         customerName
+        customerUsername
         state
         paymentType
         deleted
@@ -1343,6 +1354,7 @@ export const onDeleteRequestProduct = /* GraphQL */ `
         }
         resposibleName
         customerName
+        customerUsername
         state
         paymentType
         deleted

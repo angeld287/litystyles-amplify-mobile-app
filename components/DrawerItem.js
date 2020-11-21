@@ -55,6 +55,15 @@ class DrawerItem extends React.Component {
             color={focused ? "white" : argonTheme.COLORS.INFO}
           />
         );
+      case "RequestInfo":
+        return (
+          <Icon
+            name="info"
+            family="Feather"
+            size={16}
+            color={focused ? "white" : argonTheme.COLORS.INFO}
+          />
+        );
       case "Getting Started":
         return (<Icon
           name="spaceship"
@@ -98,7 +107,7 @@ class DrawerItem extends React.Component {
               bold={focused ? true : false}
               color={focused ? "white" : "rgba(0,0,0,0.5)"}
             >
-              {title}
+              {title === "RequestInfo" ? "Informacion de Solicitud" :  title}
             </Text>
           </Block>
         </Block>
