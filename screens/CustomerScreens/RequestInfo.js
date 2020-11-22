@@ -7,6 +7,7 @@ import { API, graphqlOperation, Storage } from 'aws-amplify';
 
 import { listRequestsFull, getOfficeBasic, listRequests } from '../../graphql/customQueries';
 import { updateRequest } from '../../graphql/mutations';
+import { HeaderHeight } from "../../constants/utils";
 
 import moment from 'moment';
 import 'moment/min/locales';

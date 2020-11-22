@@ -4,6 +4,7 @@ import { Container, Header, Content, List, ListItem, Thumbnail, Left, Spinner, R
 
 import { Button, Block, NavBar, theme, Input } from 'galio-framework';
 import { API, graphqlOperation, Storage } from 'aws-amplify';
+import { HeaderHeight } from "../../constants/utils";
 
 import moment from 'moment';
 
@@ -21,7 +22,6 @@ const SendRequest = ({ route, navigation }) => {
   const { authData, employee, service } = route.params;
 
   useEffect(() => {
-    console.log('Send Req');
 		return () => {
 			didCancel = true;
 		};
