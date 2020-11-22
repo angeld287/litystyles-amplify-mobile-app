@@ -6,6 +6,8 @@ import { Asset } from "expo-asset";
 import { Block, GalioProvider } from "galio-framework";
 import { NavigationContainer } from "@react-navigation/native";
 
+import PushNotification from 'react-native-push-notification'
+
 import Amplify, { Auth } from 'aws-amplify';
 import awsconfig from './aws-exports';
 import { ConfirmSignIn, ConfirmSignUp, ForgotPassword, RequireNewPassword, SignUp, VerifyContact, withAuthenticator } from 'aws-amplify-react-native';
@@ -48,6 +50,26 @@ Amplify.configure({
   },
 });
 
+
+
+PushNotification.configure({
+  onRegister: function(token) {
+    //GLOBAL.PHONE_TOKEN = token;
+    console.log(token);
+  },
+  onNotification: function(notification) {
+    notification.finish(PushNotificationIOS.FetchResult.NoData);
+  }, 
+  //senderID: GLOBAL.SENDERID,
+  permissions: {
+    alert: true,
+    badge: true,
+    sound: true
+  },
+  popInitialNotification: true,
+  requestPermissions: true
+});
+
 // cache app images
 const assetImages = [
   Images.Onboarding,
@@ -69,6 +91,16 @@ function cacheImages(images) {
     } else {
       return Asset.fromModule(image).downloadAsync();
     }
+  });
+}
+
+const sendLocalNotification = () => {
+  PushNotification.localNotification({ 
+      title: 'title', 
+      message: 'body', 
+      vibrate: true,
+      vibration: 300,
+      data: 'data',
   });
 }
 
@@ -105,7 +137,7 @@ const Home = props => {
       <NavigationContainer>
         <GalioProvider theme={argonTheme}>
           <Block flex>
-            <Screens {...props}/>
+            <Screens {...props} SLN={sendLocalNotification}/>
           </Block>
         </GalioProvider>
       </NavigationContainer>
