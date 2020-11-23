@@ -91,22 +91,19 @@ const sendLocalNotification = () => {
 
 const Home = props => {
 
-  useEffect(() => {
-
-    notificationManager.configure(onRegister, onNotification, onOpenNotification);
-    
-  }, []);
+  useEffect(() => { notificationManager.configure(onRegister, onNotification, onOpenNotification); }, []);
   
   const onRegister = (token) => {
-    console.log("[Notification] Registered: ", token);
+    console.log("Para insertar token en la db, si no existe", token);
   }
 
-  const onNotification = (notify) => {
-    console.log("[Notification] onNotification: ", notify);
+  const onNotification = (notification) => {
+    //console.log("[Notification] onNotification: ", notification);
+    notificationManager.showNotification(notification.id, notification.title, notification.message, notification.data = {} , {});
   }
 
   const onOpenNotification = (notify) => {
-    console.log("[Notification] onOpenNotification: ", notify);
+    //console.log("[Notification] onOpenNotification: ", notify);
     alert("Abrio por fin!!!");
   }
 
@@ -153,7 +150,7 @@ const Home = props => {
 }
 
 const AuthScreens = (props) => {
-  console.log('props', props.authState);
+  //console.log('props', props.authState);
   props.authData.roles = props.authData.signInUserSession.accessToken.payload['cognito:groups'];
   if(props.authData.attributes === undefined){
     Auth.currentAuthenticatedUser().then(r => {

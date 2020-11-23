@@ -7,23 +7,17 @@ class NotificationManager {
     configure = (onRegister, onNotification, onOpenNotification) => {
       PushNotification.configure({
         onRegister: function (token) {
-          console.log("[NotificationManager] onRegister token: ", token);
+          //console.log("[NotificationManager] onRegister token: ", token);
           onRegister(token)
         },
       
         onNotification: function (notification) {
-            console.log("[NotificationManager] onRegister token: ", notification);
+            //console.log("[NotificationManager] onNotification token: ", notification);
 
-            if (Platform.OS === "ios") {
-                if (notification.data.openedInForeground) {
-                    notification.userInteraction = true
-                }
-            }else{
-                notification.userInteraction = true
-            }
+            if (Platform.OS === "ios" && notification.data.openedInForeground) { notification.userInteraction = true }
 
             if (notification.userInteraction) {
-              onOpenNotification(notification);
+                onOpenNotification(notification);
             } else {
                 onNotification(notification);
             }
