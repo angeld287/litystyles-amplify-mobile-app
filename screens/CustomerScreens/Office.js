@@ -5,6 +5,7 @@ import { Container, Header, Content, List, ListItem, Thumbnail, Left, Body, Righ
 import { Block, NavBar, theme, Accordion } from 'galio-framework';
 import { API, graphqlOperation, Storage } from 'aws-amplify';
 import { Images } from "../../constants";
+import { HeaderHeight } from "../../constants/utils";
 
 import { getOffice, listRequests, getCompany } from '../../graphql/customQueries';
 
@@ -57,7 +58,6 @@ const Office = ({ route, navigation }) => {
   )):(<Block></Block>)
 
   useEffect(() => {
-    console.log('Office');
     let didCancel = false;
 		const fetch = async () => {
       setLoading(true);

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, Dimensions } from 'react-native';
 import { Container, Header, Content, List, ListItem, Left, Right, Button, Text, Icon } from 'native-base';
+import { HeaderHeight } from "../../constants/utils";
 
 import { theme } from 'galio-framework';
 

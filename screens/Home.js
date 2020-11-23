@@ -46,7 +46,6 @@ const exectFilter = (isBarber) => {
 
 
   useEffect(() => {
-    console.log('Home');
 		let didCancel = false;
 
 		const fetch = async () => {

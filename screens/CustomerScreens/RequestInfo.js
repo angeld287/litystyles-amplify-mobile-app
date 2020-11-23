@@ -7,6 +7,7 @@ import { API, graphqlOperation, Storage } from 'aws-amplify';
 
 import { listRequestsFull, getOfficeBasic, listRequests } from '../../graphql/customQueries';
 import { updateRequest } from '../../graphql/mutations';
+import { HeaderHeight } from "../../constants/utils";
 
 import moment from 'moment';
 import 'moment/min/locales';
@@ -31,11 +32,12 @@ const RequestInfo = ({ route, navigation }) => {
   const [ errorc, setErrorc ] = useState(false);
   const [ errorcm, setErrorcm ] = useState('no error');
 
-  const { authData } = route.params;
+  const { authData, SLN } = route.params;
 
   const isCustomer = (route.params?.authData.roles.indexOf('customer') !== -1);
 
   useEffect(() => {
+    console.log(route.params);
     let didCancel = false;
 		const fetch = async () => {
       setLoading(true);
@@ -182,6 +184,8 @@ const RequestInfo = ({ route, navigation }) => {
           <Button disabled={loading || cloading} round style={{ marginTop: 20, width: '97%'}} uppercase color="warning">Reagendar</Button>
 
           <Button disabled={loading || cloading} round style={{ width: '97%', marginTop: 5}} uppercase color="danger" onPress={() => { createTwoButtonAlert()}}>Cancelar Solicitud</Button>
+
+          <Button round style={{ width: '97%', marginTop: 5}} uppercase color="danger" onPress={() => { SLN()}}>Notify</Button>
 
           {cloading && <Content>
             <Spinner color='red' />
