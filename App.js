@@ -89,12 +89,36 @@ const sendLocalNotification = () => {
   
 }
 
+const sendNotifications = (object) => {
+  fetch('https://fcm.googleapis.com/fcm/send', {
+          method: 'POST',
+          headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'key=AIzaSyBnmavsrltI_zvcP8kmZVpwr8fS0e95fQY'
+          },
+          body: JSON.stringify({
+                  to: object.to,
+                  notification: {
+                      title: object.title,
+                      body: object.message,
+                      sound: 'default',
+                  },
+                  data: {
+                      consult_id: object.consultation_id,
+                  }
+              })
+      }).then((r) => r.json()).then().catch((err) => { // Error response
+          console.log(err);
+      });
+  
+}
+
 const Home = props => {
 
   useEffect(() => { notificationManager.configure(onRegister, onNotification, onOpenNotification); }, []);
   
   const onRegister = (token) => {
-    console.log("Para insertar token en la db, si no existe", token);
+    //console.log("Para insertar token en la db, si no existe", token);
   }
 
   const onNotification = (notification) => {
