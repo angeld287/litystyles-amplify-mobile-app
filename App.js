@@ -1,16 +1,15 @@
-import React, {useState} from 'react';
-import { Image, Linking } from "react-native";
+import React, {useEffect, useState} from 'react';
+import { Image, Linking, Platform, Alert } from "react-native";
 import { AppLoading } from "expo";
 import { useFonts } from '@use-expo/font';
 import { Asset } from "expo-asset";
 import { Block, GalioProvider } from "galio-framework";
 import { NavigationContainer } from "@react-navigation/native";
 
-import PushNotification from 'react-native-push-notification'
-
 import Amplify, { Auth } from 'aws-amplify';
 import awsconfig from './aws-exports';
 import { ConfirmSignIn, ConfirmSignUp, ForgotPassword, RequireNewPassword, SignUp, VerifyContact, withAuthenticator } from 'aws-amplify-react-native';
+import { notificationManager } from './NotificationManager';
 
 // Before rendering any navigation stack
 import { enableScreens } from "react-native-screens";
@@ -50,26 +49,6 @@ Amplify.configure({
   },
 });
 
-
-
-PushNotification.configure({
-  onRegister: function(token) {
-    //GLOBAL.PHONE_TOKEN = token;
-    console.log(token);
-  },
-  onNotification: function(notification) {
-    notification.finish(PushNotificationIOS.FetchResult.NoData);
-  }, 
-  //senderID: GLOBAL.SENDERID,
-  permissions: {
-    alert: true,
-    badge: true,
-    sound: true
-  },
-  popInitialNotification: true,
-  requestPermissions: true
-});
-
 // cache app images
 const assetImages = [
   Images.Onboarding,
@@ -95,16 +74,38 @@ function cacheImages(images) {
 }
 
 const sendLocalNotification = () => {
-  PushNotification.localNotification({ 
-      title: 'title', 
-      message: 'body', 
-      vibrate: true,
-      vibration: 300,
-      data: 'data',
-  });
+
+  notificationManager.showNotification(
+    1,
+    "App Notification",
+    "Esto es una prueba de notificacion",
+    {},
+    {}
+  );
+  
 }
 
 const Home = props => {
+
+  useEffect(() => {
+
+    notificationManager.configure(onRegister, onNotification, onOpenNotification);
+    
+  }, []);
+  
+  const onRegister = (token) => {
+    console.log("[Notification] Registered: ", token);
+  }
+
+  const onNotification = (notify) => {
+    console.log("[Notification] onNotification: ", notify);
+  }
+
+  const onOpenNotification = (notify) => {
+    console.log("[Notification] onOpenNotification: ", notify);
+    alert("Abrio por fin!!!");
+  }
+
   const [isLoadingComplete, setLoading] = useState(false);
   let [fontsLoaded] = useFonts({
     'ArgonExtra': require('./assets/font/argon.ttf'),
