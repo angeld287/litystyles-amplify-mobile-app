@@ -6,6 +6,11 @@ import { Asset } from "expo-asset";
 import { Block, GalioProvider } from "galio-framework";
 import { NavigationContainer } from "@react-navigation/native";
 
+
+import firebase from 'react-native-firebase';
+
+import GLOBAL from './global';
+
 import Amplify, { Auth } from 'aws-amplify';
 import awsconfig from './aws-exports';
 import { ConfirmSignIn, ConfirmSignUp, ForgotPassword, RequireNewPassword, SignUp, VerifyContact, withAuthenticator } from 'aws-amplify-react-native';
@@ -20,8 +25,6 @@ import { Images, articles, argonTheme } from "./constants";
 import MySignIn from './components/Auth/MySignIn';
 
 import InAppbrowser from 'react-native-inappbrowser-reborn'
-import { Title } from 'native-base';
-import { Authenticator } from 'aws-amplify-react-native/dist/Auth';
 
 async function urlOpener(url, redirectUrl){
   await InAppbrowser.isAvailable();
@@ -48,6 +51,7 @@ Amplify.configure({
     disabled: true,
   },
 });
+
 
 // cache app images
 const assetImages = [

@@ -1,6 +1,7 @@
 import PushNotificationIOS from "@react-native-community/push-notification-ios";
 import { Platform } from "react-native";
 import PushNotification from "react-native-push-notification";
+import GLOBAL from './global'
 
 class NotificationManager {
     configure = (onRegister, onNotification, onOpenNotification) => {
@@ -22,7 +23,7 @@ class NotificationManager {
             }
 
             if (notification.userInteraction) {
-                onOpenNotification(notification);
+              onOpenNotification(notification);
             } else {
                 onNotification(notification);
             }
@@ -35,6 +36,30 @@ class NotificationManager {
                 notification.finish("backgroundFetchResultNoData");
             }
         },
+        senderID: GLOBAL.SENDERID,
+        permissions: {
+          alert: true,
+          badge: true,
+          sound: true
+        },
+        popInitialNotification: true,
+        requestPermissions: true
+      });
+      //manage channel Id
+      PushNotification.channelExists('littystyles_notification_channel_id', function (exists) {
+        if (!exists) {
+          PushNotification.createChannel(
+            {
+              channelId: "littystyles_notification_channel_id", // (required)
+              channelName: "LittyStyle Channel", // (required)
+              channelDescription: "A channel to categorise your notifications", // (optional) default: undefined.
+              soundName: "default", // (optional) See `soundName` parameter of `localNotification` function
+              importance: 4, // (optional) default: 4. Int value of the Android notification importance
+              vibrate: true, // (optional) default: true. Creates the default vibration patten if true.
+            },
+            (created) => console.log(`createChannel returned '${created}'`) // (optional) callback returns whether the channel was created, false means it already existed.
+          );
+        }
       });
     }
   
