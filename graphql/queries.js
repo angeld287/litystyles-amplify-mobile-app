@@ -360,6 +360,53 @@ export const listEmployees = /* GraphQL */ `
     }
   }
 `;
+export const getCustomer = /* GraphQL */ `
+  query GetCustomer($id: ID!) {
+    getCustomer(id: $id) {
+      id
+      name
+      username
+      phoneid
+      request {
+        items {
+          id
+          cost
+          resposibleName
+          createdAt
+        }
+        nextToken
+      }
+      deleted
+      deletedAt
+      createdAt
+      owner
+    }
+  }
+`;
+export const listCustomers = /* GraphQL */ `
+  query ListCustomers(
+    $filter: ModelCustomerFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    listCustomers(filter: $filter, limit: $limit, nextToken: $nextToken) {
+      items {
+        id
+        name
+        username
+        phoneid
+        request {
+          nextToken
+        }
+        deleted
+        deletedAt
+        createdAt
+        owner
+      }
+      nextToken
+    }
+  }
+`;
 export const getRequest = /* GraphQL */ `
   query GetRequest($id: ID!) {
     getRequest(id: $id) {
@@ -392,8 +439,18 @@ export const getRequest = /* GraphQL */ `
       resposibleName
       customerName
       customerUsername
+      customer {
+        items {
+          id
+          cost
+          resposibleName
+          createdAt
+        }
+        nextToken
+      }
       state
       paymentType
+      date
       deleted
       deletedAt
       createdAt
@@ -422,8 +479,12 @@ export const listRequests = /* GraphQL */ `
         resposibleName
         customerName
         customerUsername
+        customer {
+          nextToken
+        }
         state
         paymentType
+        date
         deleted
         deletedAt
         createdAt

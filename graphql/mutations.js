@@ -1063,6 +1063,237 @@ export const deleteEmployee = /* GraphQL */ `
     }
   }
 `;
+export const createCustomer = /* GraphQL */ `
+  mutation CreateCustomer(
+    $input: CreateCustomerInput!
+    $condition: ModelCustomerConditionInput
+  ) {
+    createCustomer(input: $input, condition: $condition) {
+      id
+      name
+      username
+      phoneid
+      request {
+        items {
+          id
+          cost
+          resposibleName
+          createdAt
+        }
+        nextToken
+      }
+      deleted
+      deletedAt
+      createdAt
+      owner
+    }
+  }
+`;
+export const updateCustomer = /* GraphQL */ `
+  mutation UpdateCustomer(
+    $input: UpdateCustomerInput!
+    $condition: ModelCustomerConditionInput
+  ) {
+    updateCustomer(input: $input, condition: $condition) {
+      id
+      name
+      username
+      phoneid
+      request {
+        items {
+          id
+          cost
+          resposibleName
+          createdAt
+        }
+        nextToken
+      }
+      deleted
+      deletedAt
+      createdAt
+      owner
+    }
+  }
+`;
+export const deleteCustomer = /* GraphQL */ `
+  mutation DeleteCustomer(
+    $input: DeleteCustomerInput!
+    $condition: ModelCustomerConditionInput
+  ) {
+    deleteCustomer(input: $input, condition: $condition) {
+      id
+      name
+      username
+      phoneid
+      request {
+        items {
+          id
+          cost
+          resposibleName
+          createdAt
+        }
+        nextToken
+      }
+      deleted
+      deletedAt
+      createdAt
+      owner
+    }
+  }
+`;
+export const createRequestCustomer = /* GraphQL */ `
+  mutation CreateRequestCustomer(
+    $input: CreateRequestCustomerInput!
+    $condition: ModelRequestCustomerConditionInput
+  ) {
+    createRequestCustomer(input: $input, condition: $condition) {
+      id
+      cost
+      resposibleName
+      customer {
+        id
+        name
+        username
+        phoneid
+        request {
+          nextToken
+        }
+        deleted
+        deletedAt
+        createdAt
+        owner
+      }
+      request {
+        id
+        companyId
+        resposible {
+          nextToken
+        }
+        service {
+          nextToken
+        }
+        product {
+          nextToken
+        }
+        resposibleName
+        customerName
+        customerUsername
+        customer {
+          nextToken
+        }
+        state
+        paymentType
+        date
+        deleted
+        deletedAt
+        createdAt
+      }
+      createdAt
+    }
+  }
+`;
+export const updateRequestCustomer = /* GraphQL */ `
+  mutation UpdateRequestCustomer(
+    $input: UpdateRequestCustomerInput!
+    $condition: ModelRequestCustomerConditionInput
+  ) {
+    updateRequestCustomer(input: $input, condition: $condition) {
+      id
+      cost
+      resposibleName
+      customer {
+        id
+        name
+        username
+        phoneid
+        request {
+          nextToken
+        }
+        deleted
+        deletedAt
+        createdAt
+        owner
+      }
+      request {
+        id
+        companyId
+        resposible {
+          nextToken
+        }
+        service {
+          nextToken
+        }
+        product {
+          nextToken
+        }
+        resposibleName
+        customerName
+        customerUsername
+        customer {
+          nextToken
+        }
+        state
+        paymentType
+        date
+        deleted
+        deletedAt
+        createdAt
+      }
+      createdAt
+    }
+  }
+`;
+export const deleteRequestCustomer = /* GraphQL */ `
+  mutation DeleteRequestCustomer(
+    $input: DeleteRequestCustomerInput!
+    $condition: ModelRequestCustomerConditionInput
+  ) {
+    deleteRequestCustomer(input: $input, condition: $condition) {
+      id
+      cost
+      resposibleName
+      customer {
+        id
+        name
+        username
+        phoneid
+        request {
+          nextToken
+        }
+        deleted
+        deletedAt
+        createdAt
+        owner
+      }
+      request {
+        id
+        companyId
+        resposible {
+          nextToken
+        }
+        service {
+          nextToken
+        }
+        product {
+          nextToken
+        }
+        resposibleName
+        customerName
+        customerUsername
+        customer {
+          nextToken
+        }
+        state
+        paymentType
+        date
+        deleted
+        deletedAt
+        createdAt
+      }
+      createdAt
+    }
+  }
+`;
 export const createRequestEmployee = /* GraphQL */ `
   mutation CreateRequestEmployee(
     $input: CreateRequestEmployeeInput!
@@ -1101,8 +1332,12 @@ export const createRequestEmployee = /* GraphQL */ `
         resposibleName
         customerName
         customerUsername
+        customer {
+          nextToken
+        }
         state
         paymentType
+        date
         deleted
         deletedAt
         createdAt
@@ -1149,8 +1384,12 @@ export const updateRequestEmployee = /* GraphQL */ `
         resposibleName
         customerName
         customerUsername
+        customer {
+          nextToken
+        }
         state
         paymentType
+        date
         deleted
         deletedAt
         createdAt
@@ -1197,8 +1436,12 @@ export const deleteRequestEmployee = /* GraphQL */ `
         resposibleName
         customerName
         customerUsername
+        customer {
+          nextToken
+        }
         state
         paymentType
+        date
         deleted
         deletedAt
         createdAt
@@ -1229,8 +1472,12 @@ export const createRequestService = /* GraphQL */ `
         resposibleName
         customerName
         customerUsername
+        customer {
+          nextToken
+        }
         state
         paymentType
+        date
         deleted
         deletedAt
         createdAt
@@ -1281,8 +1528,12 @@ export const updateRequestService = /* GraphQL */ `
         resposibleName
         customerName
         customerUsername
+        customer {
+          nextToken
+        }
         state
         paymentType
+        date
         deleted
         deletedAt
         createdAt
@@ -1333,8 +1584,12 @@ export const deleteRequestService = /* GraphQL */ `
         resposibleName
         customerName
         customerUsername
+        customer {
+          nextToken
+        }
         state
         paymentType
+        date
         deleted
         deletedAt
         createdAt
@@ -1385,8 +1640,12 @@ export const createRequestProduct = /* GraphQL */ `
         resposibleName
         customerName
         customerUsername
+        customer {
+          nextToken
+        }
         state
         paymentType
+        date
         deleted
         deletedAt
         createdAt
@@ -1433,8 +1692,12 @@ export const updateRequestProduct = /* GraphQL */ `
         resposibleName
         customerName
         customerUsername
+        customer {
+          nextToken
+        }
         state
         paymentType
+        date
         deleted
         deletedAt
         createdAt
@@ -1481,8 +1744,12 @@ export const deleteRequestProduct = /* GraphQL */ `
         resposibleName
         customerName
         customerUsername
+        customer {
+          nextToken
+        }
         state
         paymentType
+        date
         deleted
         deletedAt
         createdAt
@@ -1542,8 +1809,18 @@ export const createRequest = /* GraphQL */ `
       resposibleName
       customerName
       customerUsername
+      customer {
+        items {
+          id
+          cost
+          resposibleName
+          createdAt
+        }
+        nextToken
+      }
       state
       paymentType
+      date
       deleted
       deletedAt
       createdAt
@@ -1585,8 +1862,18 @@ export const updateRequest = /* GraphQL */ `
       resposibleName
       customerName
       customerUsername
+      customer {
+        items {
+          id
+          cost
+          resposibleName
+          createdAt
+        }
+        nextToken
+      }
       state
       paymentType
+      date
       deleted
       deletedAt
       createdAt
@@ -1628,8 +1915,18 @@ export const deleteRequest = /* GraphQL */ `
       resposibleName
       customerName
       customerUsername
+      customer {
+        items {
+          id
+          cost
+          resposibleName
+          createdAt
+        }
+        nextToken
+      }
       state
       paymentType
+      date
       deleted
       deletedAt
       createdAt
