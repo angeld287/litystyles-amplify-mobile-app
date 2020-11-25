@@ -1,11 +1,14 @@
-import React, {useEffect, useState} from 'react';
-import { Image, Linking, Platform, Alert } from "react-native";
+import React, {useEffect, useState, useCallback} from 'react';
+import { Image, Linking, Platform, Alert, ActivityIndicator, View } from "react-native";
 import { AppLoading } from "expo";
 import { useFonts } from '@use-expo/font';
 import { Asset } from "expo-asset";
 import { Block, GalioProvider } from "galio-framework";
 import { NavigationContainer } from "@react-navigation/native";
+import { API, graphqlOperation } from 'aws-amplify';
 
+import { createCustomer } from './graphql/mutations';
+import { listCustomers } from './graphql/queries';
 
 import firebase from 'react-native-firebase';
 
@@ -115,10 +118,79 @@ const sendNotifications = (object) => {
 
 const Home = props => {
 
-  useEffect(() => { notificationManager.configure(onRegister, onNotification, onOpenNotification); }, []);
+  const { roles, username, attributes, userdb } = props.authData;
+
+  const [_roles, setRoles ] = useState(roles);
+
+  const addUserToGroup = useCallback( 
+    async (username) => {
+      try {
+        const apiOptions = {};
+
+        apiOptions['headers'] = {
+            'Content-Type': 'application/json'
+        };
+        
+        apiOptions['body'] = {
+          GroupName: 'customer',
+          UserPoolId: awsconfig.aws_user_pools_id,
+          Username: username
+        };
+
+        await API.post('apiForLambda', '/addUserToGroup', apiOptions);
+        return true;
+
+      } catch (e) {
+        console.log(e);
+        return false;
+      }
+    },
+    []
+  );
+
+  const appStart = useCallback(
+    async () => {
+      try {
+        var _r = roles;
+
+        const hasOnlyGoogleRole = _r !== undefined && _r.length === 1 && _r[0].toUpperCase().includes("GOOGLE");
+
+        if (hasOnlyGoogleRole) {
+          
+          var added = await addUserToGroup(username); 
+
+          if (added) {
+            
+            _r.push('customer');
+            
+            setRoles(_r);
+
+            const _input = {
+              username: username,
+              phoneid: GLOBAL.PHONE_TOKEN,
+              name: attributes.name
+            }
+
+            const cuser = userdb === null ? await API.graphql(graphqlOperation(createCustomer, {input: _input})) : null;
+            console.log(cuser);
+          }
+        }
+      } catch (e) {
+        console.log(e);
+      }
+    },
+    [addUserToGroup]
+  );
+
+  useEffect(() => { 
+    notificationManager.configure(onRegister, onNotification, onOpenNotification); 
+    appStart();
+
+  }, [notificationManager, appStart]);
   
   const onRegister = (token) => {
-    //console.log("Para insertar token en la db, si no existe", token);
+    GLOBAL.PHONE_TOKEN = token.token;
+    //console.log("Token", token);
   }
 
   const onNotification = (notification) => {
@@ -159,6 +231,9 @@ const Home = props => {
       />
     );
   } else if(fontsLoaded) {
+
+    props.authData.roles = _roles;
+
     return (
       <NavigationContainer>
         <GalioProvider theme={argonTheme}>
@@ -173,31 +248,40 @@ const Home = props => {
   }
 }
 
-const AuthScreens = (props) => {
-  //console.log('props', props.authState);
-  props.authData.roles = props.authData.signInUserSession.accessToken.payload['cognito:groups'];
-  if(props.authData.attributes === undefined){
-    Auth.currentAuthenticatedUser().then(r => {
-      props.authData.attributes = r.attributes;
-    });
-  }
+// sleep time expects milliseconds
+function sleep (time) {
+  return new Promise((resolve) => setTimeout(resolve, time));
+}
 
-  switch (props.authState) {
-    case 'signIn':
-      return <MySignIn {...props} />;
-    case 'signUp':
-      return <MySignIn {...props} />;
-    case 'forgotPassword':
-      return <MySignIn {...props} />;
-    case 'confirmSignUp':
-      return <MySignIn {...props} />;
-    case 'changePassword':
-      return <MySignIn {...props} />;
-    case 'signedIn':
-      return <Home {...props}/>;
-    default:
-      return <></>;
-  }
+const AuthScreens = (props) => {
+  const [loaging , setLoading] = useState(true);
+  
+  props.authData.roles = props.authData.signInUserSession.accessToken.payload['cognito:groups'];
+  API.graphql(graphqlOperation(listCustomers, {limit: 400, filter: { username: {eq: props.authData.username}}}))
+  .then(r => {
+    props.authData.userdb = r.data.listCustomers.items.length !== 0 ? r.data.listCustomers.items[0] : null;
+    if(props.authData.attributes === undefined){
+      Auth.currentAuthenticatedUser().then(r => {
+        props.authData.attributes = r.attributes;
+        setLoading(false);
+      })
+      .catch(e => {
+        setLoading(false);
+        console.log(e);
+      });
+    }else{
+      sleep(1000).then(() => {
+          setLoading(false)
+      });
+    }
+  })
+  .catch(e => {
+    setLoading(false);
+    console.log(e);
+  });
+  
+
+  return loaging ? <View style={{marginTop: 40}}><ActivityIndicator size="large" color="#0000ff" /></View> :  <Home {...props}/>
 };
 
 export default withAuthenticator(AuthScreens, false, [
