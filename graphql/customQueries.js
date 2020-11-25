@@ -211,6 +211,8 @@ export const listRequests = /* GraphQL */ `
     listRequests(filter: $filter, limit: $limit, nextToken: $nextToken) {
       items {
         id
+        customerUsername
+        date
       }
       nextToken
     }

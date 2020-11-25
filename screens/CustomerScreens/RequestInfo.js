@@ -45,6 +45,7 @@ const RequestInfo = ({ route, navigation }) => {
         var requestsApi = null;
         var officeApi = null;
         var reqs = null;
+        var req_pos = null;
 
         const _filter = {
           and: {or: {state: {eq: 'IN_PROCESS'}, state: {eq: 'ON_HOLD'}}, customerUsername: {eq: authData.username}}
@@ -63,7 +64,9 @@ const RequestInfo = ({ route, navigation }) => {
           }
 
           reqs =  await API.graphql(graphqlOperation(listRequests, { limit: 400, filter: _filterR } ) );
-          setPosition(reqs.data.listRequests.items.length);
+          req_pos = reqs.data.listRequests.items.sort((a, b) => new Date(a.date) - new Date(b.date))
+          
+          setPosition(req_pos.findIndex(_ => _.customerUsername === authData.username) + 1);
           setRequest(requestsApi.data.listRequests.items[0]);
           setRequests(requestsApi.data.listRequests.items);
           setOffice(officeApi.data.getOffice);
