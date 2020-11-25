@@ -118,7 +118,7 @@ const sendNotifications = (object) => {
 
 const Home = props => {
 
-  const { roles, username, attributes } = props.authData;
+  const { roles, username, attributes, userdb } = props.authData;
 
   const [_roles, setRoles ] = useState(roles);
 
@@ -171,8 +171,7 @@ const Home = props => {
               name: attributes.name
             }
 
-            const guser = await API.graphql(graphqlOperation(listCustomers, {limit: 400, filter: { username: {eq: username}}}));
-            const cuser = guser.data.listCustomers.items.length === 0 ? await API.graphql(graphqlOperation(createCustomer, {input: _input})) : null;
+            const cuser = userdb === null ? await API.graphql(graphqlOperation(createCustomer, {input: _input})) : null;
             console.log(cuser);
           }
         }
@@ -258,20 +257,29 @@ const AuthScreens = (props) => {
   const [loaging , setLoading] = useState(true);
   
   props.authData.roles = props.authData.signInUserSession.accessToken.payload['cognito:groups'];
-  if(props.authData.attributes === undefined){
-    Auth.currentAuthenticatedUser().then(r => {
-      props.authData.attributes = r.attributes;
-      setLoading(false);
-    })
-    .catch(e => {
-      setLoading(false);
-      console.log(e);
-    });
-  }else{
-    sleep(1000).then(() => {
-        setLoading(false)
-    });
-  }
+  API.graphql(graphqlOperation(listCustomers, {limit: 400, filter: { username: {eq: props.authData.username}}}))
+  .then(r => {
+    props.authData.userdb = r.data.listCustomers.items.length !== 0 ? r.data.listCustomers.items[0] : null;
+    if(props.authData.attributes === undefined){
+      Auth.currentAuthenticatedUser().then(r => {
+        props.authData.attributes = r.attributes;
+        setLoading(false);
+      })
+      .catch(e => {
+        setLoading(false);
+        console.log(e);
+      });
+    }else{
+      sleep(1000).then(() => {
+          setLoading(false)
+      });
+    }
+  })
+  .catch(e => {
+    setLoading(false);
+    console.log(e);
+  });
+  
 
   return loaging ? <View style={{marginTop: 40}}><ActivityIndicator size="large" color="#0000ff" /></View> :  <Home {...props}/>
 };

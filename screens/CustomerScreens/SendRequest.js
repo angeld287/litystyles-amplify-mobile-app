@@ -8,7 +8,7 @@ import { HeaderHeight } from "../../constants/utils";
 
 import moment from 'moment';
 
-import { createRequest, createRequestEmployee, createRequestService } from '../../graphql/mutations';
+import { createRequest, createRequestEmployee, createRequestService, createRequestCustomer } from '../../graphql/mutations';
 
 const { width, height } = Dimensions.get("screen");
 
@@ -22,36 +22,31 @@ const SendRequest = ({ route, navigation }) => {
   const { authData, employee, service } = route.params;
 
   useEffect(() => {
-		return () => {
-			didCancel = true;
-		};
+		
   }, []);
 
 
   const sendRequest = async () => {
-    const ri = {state: 'ON_HOLD', customerName: authData.attributes.name, customerUsername: authData.username, companyId: employee.companyId};
+    const _date = moment(new Date()).format('YYYY-MM-DDTHH:mm:ss.SSS')+'Z';
 
-    const rei = {}
-		const rsi = {}
-    ri.paymentType = 'CASH';
-		ri.resposibleName = employee.username;
-		rei.requestEmployeeEmployeeId = employee.id;
-		rsi.requestServiceServiceId = service.service.id;
-    rsi.cost = service.cost;
+    const ri = {state: 'ON_HOLD', resposibleName: employee.username, paymentType: 'CASH', customerName: authData.attributes.name, customerUsername: authData.username, companyId: employee.companyId, date: _date, createdAt: _date};
+    const rei = {requestEmployeeEmployeeId: employee.id, requestEmployeeRequestId: "", cost: service.cost, createdAt: _date,};
+		const rsi = {resposibleName: employee.username, requestServiceServiceId: service.service.id, requestServiceRequestId: "", cost: service.cost, createdAt: _date};
+    const rci = {requestCustomerCustomerId: authData.userdb.id, requestCustomerRequestId: "", resposibleName: employee.username, cost: service.cost, createdAt: _date};
     
     try {
       setLoading(true);
       
 			var request = {};
-			ri.createdAt = moment(new Date()).format('YYYY-MM-DDTHH:mm:ss.SSS')+'Z';
 			request = await API.graphql(graphqlOperation(createRequest, {input: ri}));
 
 			rei.requestEmployeeRequestId = request.data.createRequest.id;
-			rsi.requestServiceRequestId = request.data.createRequest.id;
-			rsi.createdAt = moment(new Date()).format('YYYY-MM-DDTHH:mm:ss.SSS')+'Z';
-      rsi.resposibleName = ri.resposibleName;
+      rsi.requestServiceRequestId = request.data.createRequest.id;
+      rci.requestCustomerRequestId = request.data.createRequest.id;
+
 			await API.graphql(graphqlOperation(createRequestEmployee, {input: rei}));
       await API.graphql(graphqlOperation(createRequestService, {input: rsi}));
+      await API.graphql(graphqlOperation(createRequestCustomer, {input: rci}));
       
       navigation.navigate('Homee');
       navigation.navigate('RequestInfo');
