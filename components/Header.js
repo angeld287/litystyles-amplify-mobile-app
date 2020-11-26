@@ -251,7 +251,7 @@ const styles = StyleSheet.create({
   navbar: {
     paddingVertical: 0,
     paddingBottom: theme.SIZES.BASE * 1.5,
-    paddingTop: ((Platform.OS === 'ios') && (height === 812 || width === 812 || height === 896 || width === 896)) ? (theme.SIZES.BASE * 4) : theme.SIZES.BASE,
+    paddingTop: ((Platform.OS === 'ios') && (height === 812 || width === 812 || height === 896 || width === 896)) ? (theme.SIZES.BASE * 4) : (Platform.OS === "ios" ? (theme.SIZES.BASE * 3) : theme.SIZES.BASE),
     zIndex: 5,
   },
   shadow: {

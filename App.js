@@ -1,5 +1,5 @@
 import React, {useEffect, useState, useCallback} from 'react';
-import { Image, Linking, Platform, Alert, ActivityIndicator, View } from "react-native";
+import { Image, Linking, Platform, Alert, ActivityIndicator, View, Modal, StyleSheet, Text } from "react-native";
 import { AppLoading } from "expo";
 import { useFonts } from '@use-expo/font';
 import { Asset } from "expo-asset";
@@ -7,7 +7,7 @@ import { Block, GalioProvider } from "galio-framework";
 import { NavigationContainer } from "@react-navigation/native";
 import { API, graphqlOperation } from 'aws-amplify';
 
-import { createCustomer } from './graphql/mutations';
+import { createCustomer, updateCustomer } from './graphql/mutations';
 import { listCustomers } from './graphql/queries';
 
 import firebase from 'react-native-firebase';
@@ -121,6 +121,8 @@ const Home = props => {
   const { roles, username, attributes, userdb } = props.authData;
 
   const [_roles, setRoles ] = useState(roles);
+  const [modalVisible, setModalVisible] = useState(false);
+
 
   const addUserToGroup = useCallback( 
     async (username) => {
@@ -138,10 +140,13 @@ const Home = props => {
         };
 
         await API.post('apiForLambda', '/addUserToGroup', apiOptions);
+
         return true;
 
       } catch (e) {
+
         console.log(e);
+
         return false;
       }
     },
@@ -157,7 +162,7 @@ const Home = props => {
 
         if (hasOnlyGoogleRole) {
           
-          var added = await addUserToGroup(username); 
+          var added = userdb === null ? await addUserToGroup(username) : true; 
 
           if (added) {
             
@@ -167,12 +172,18 @@ const Home = props => {
 
             const _input = {
               username: username,
-              phoneid: GLOBAL.PHONE_TOKEN,
+              //phoneid: GLOBAL.PHONE_TOKEN,
               name: attributes.name
             }
 
             const cuser = userdb === null ? await API.graphql(graphqlOperation(createCustomer, {input: _input})) : null;
-            console.log(cuser);
+
+            //cierre de sesion para que se refleje el nuevo rol agregado
+            setModalVisible(true);
+            sleep(6000).then(async () => {
+                setModalVisible(false)
+                await Auth.signOut({ global: true });
+            });
           }
         }
       } catch (e) {
@@ -190,7 +201,9 @@ const Home = props => {
   
   const onRegister = (token) => {
     GLOBAL.PHONE_TOKEN = token.token;
-    //console.log("Token", token);
+    if(userdb !== null && userdb.phoneid !== token.token){
+      API.graphql(graphqlOperation(updateCustomer, {input: {id: userdb.id, phoneid: token.token}})).catch(_ => console.log("ha ocurrido un error al actualizar el phoneid del usuario"));
+    }
   }
 
   const onNotification = (notification) => {
@@ -200,7 +213,7 @@ const Home = props => {
 
   const onOpenNotification = (notify) => {
     //console.log("[Notification] onOpenNotification: ", notify);
-    alert("Abrio por fin!!!");
+    alert("");
   }
 
   const [isLoadingComplete, setLoading] = useState(false);
@@ -239,6 +252,18 @@ const Home = props => {
         <GalioProvider theme={argonTheme}>
           <Block flex>
             <Screens {...props} SLN={sendLocalNotification}/>
+            <Modal
+              animationType="slide"
+              transparent={true}
+              visible={modalVisible}
+            >
+              <View style={styles.centeredView}>
+                <View style={styles.modalView}>
+                  <Text style={{marginBottom: 3, fontSize: 16}}>Cierre de Sesion Programado</Text>
+                  <Text style={styles.modalText}>En unos segundos procederemos a cerrar la sesion para que se terminen de completar algunas configuracion. Favor iniciar sesion nuevamente.</Text>
+                </View>
+              </View>
+            </Modal>
           </Block>
         </GalioProvider>
       </NavigationContainer>
@@ -293,3 +318,42 @@ export default withAuthenticator(AuthScreens, false, [
   <ForgotPassword/>,
   <RequireNewPassword />
 ]);
+
+const styles = StyleSheet.create({
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 22
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5
+  },
+  openButton: {
+    backgroundColor: "#F194FF",
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2
+  },
+  textStyle: {
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "center"
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: "center"
+  }
+});
