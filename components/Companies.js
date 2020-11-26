@@ -8,7 +8,6 @@ const { width } = Dimensions.get('screen');
 
 const Companies = (props) => {
 
-
 const _offices = (!props.loading && props.offices !== null)?([].concat(props.offices)
 		.map((item,i)=>
 			{      

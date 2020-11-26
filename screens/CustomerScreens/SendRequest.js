@@ -6,6 +6,8 @@ import { Button, Block, NavBar, theme, Input } from 'galio-framework';
 import { API, graphqlOperation, Storage } from 'aws-amplify';
 import { HeaderHeight } from "../../constants/utils";
 
+import GLOBAL from '../../global';
+
 import moment from 'moment';
 
 import { createRequest, createRequestEmployee, createRequestService, createRequestCustomer } from '../../graphql/mutations';
@@ -48,6 +50,8 @@ const SendRequest = ({ route, navigation }) => {
       await API.graphql(graphqlOperation(createRequestService, {input: rsi}));
       await API.graphql(graphqlOperation(createRequestCustomer, {input: rci}));
       
+      GLOBAL.HAS_REQUEST = true;
+
       navigation.navigate('Homee');
       navigation.navigate('RequestInfo');
       

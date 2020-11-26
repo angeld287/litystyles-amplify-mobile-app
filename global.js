@@ -6,4 +6,5 @@ module.exports = {
     PHONE: "",
     USER_ROLL: "",
     PHONE_TOKEN: "",
+    HAS_REQUEST: false,
  };
