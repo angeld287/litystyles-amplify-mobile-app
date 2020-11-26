@@ -439,6 +439,7 @@ export const createOffice = /* GraphQL */ `
           name
           username
           officeId
+          phoneid
           deleted
           deletedAt
           createdAt
@@ -472,6 +473,7 @@ export const updateOffice = /* GraphQL */ `
           name
           username
           officeId
+          phoneid
           deleted
           deletedAt
           createdAt
@@ -505,6 +507,7 @@ export const deleteOffice = /* GraphQL */ `
           name
           username
           officeId
+          phoneid
           deleted
           deletedAt
           createdAt
@@ -847,6 +850,7 @@ export const createEmployeeService = /* GraphQL */ `
         name
         username
         officeId
+        phoneid
         services {
           nextToken
         }
@@ -892,6 +896,7 @@ export const updateEmployeeService = /* GraphQL */ `
         name
         username
         officeId
+        phoneid
         services {
           nextToken
         }
@@ -937,6 +942,7 @@ export const deleteEmployeeService = /* GraphQL */ `
         name
         username
         officeId
+        phoneid
         services {
           nextToken
         }
@@ -980,6 +986,7 @@ export const createEmployee = /* GraphQL */ `
       name
       username
       officeId
+      phoneid
       services {
         items {
           id
@@ -990,6 +997,7 @@ export const createEmployee = /* GraphQL */ `
       request {
         items {
           id
+          cost
           createdAt
         }
         nextToken
@@ -1011,6 +1019,7 @@ export const updateEmployee = /* GraphQL */ `
       name
       username
       officeId
+      phoneid
       services {
         items {
           id
@@ -1021,6 +1030,7 @@ export const updateEmployee = /* GraphQL */ `
       request {
         items {
           id
+          cost
           createdAt
         }
         nextToken
@@ -1042,6 +1052,7 @@ export const deleteEmployee = /* GraphQL */ `
       name
       username
       officeId
+      phoneid
       services {
         items {
           id
@@ -1052,6 +1063,7 @@ export const deleteEmployee = /* GraphQL */ `
       request {
         items {
           id
+          cost
           createdAt
         }
         nextToken
@@ -1306,6 +1318,7 @@ export const createRequestEmployee = /* GraphQL */ `
         name
         username
         officeId
+        phoneid
         services {
           nextToken
         }
@@ -1342,6 +1355,7 @@ export const createRequestEmployee = /* GraphQL */ `
         deletedAt
         createdAt
       }
+      cost
       createdAt
     }
   }
@@ -1358,6 +1372,7 @@ export const updateRequestEmployee = /* GraphQL */ `
         name
         username
         officeId
+        phoneid
         services {
           nextToken
         }
@@ -1394,6 +1409,7 @@ export const updateRequestEmployee = /* GraphQL */ `
         deletedAt
         createdAt
       }
+      cost
       createdAt
     }
   }
@@ -1410,6 +1426,7 @@ export const deleteRequestEmployee = /* GraphQL */ `
         name
         username
         officeId
+        phoneid
         services {
           nextToken
         }
@@ -1446,6 +1463,7 @@ export const deleteRequestEmployee = /* GraphQL */ `
         deletedAt
         createdAt
       }
+      cost
       createdAt
     }
   }
@@ -1785,6 +1803,7 @@ export const createRequest = /* GraphQL */ `
       resposible {
         items {
           id
+          cost
           createdAt
         }
         nextToken
@@ -1838,6 +1857,7 @@ export const updateRequest = /* GraphQL */ `
       resposible {
         items {
           id
+          cost
           createdAt
         }
         nextToken
@@ -1891,6 +1911,7 @@ export const deleteRequest = /* GraphQL */ `
       resposible {
         items {
           id
+          cost
           createdAt
         }
         nextToken

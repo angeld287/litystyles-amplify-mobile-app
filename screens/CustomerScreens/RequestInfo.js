@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { StyleSheet, Dimensions, Alert } from 'react-native';
+import { StyleSheet, Dimensions, Alert, ScrollView, RefreshControl, SafeAreaView, Modal, View } from 'react-native';
 import { Container, Badge, Content, List, ListItem, Thumbnail, Left, Spinner, Right, Card, CardItem, Text, Icon } from 'native-base';
 
 import { Button, Block, NavBar, theme, Input, Text as T } from 'galio-framework';
@@ -7,7 +7,7 @@ import { API, graphqlOperation, Storage } from 'aws-amplify';
 
 import { listRequestsFull, getOfficeBasic, listRequests } from '../../graphql/customQueries';
 import { updateRequest } from '../../graphql/mutations';
-import { HeaderHeight } from "../../constants/utils";
+import { onUpdateRequestC } from '../../graphql/subscriptions';
 import GLOBAL from '../../global';
 
 import moment from 'moment';
@@ -32,10 +32,34 @@ const RequestInfo = ({ route, navigation }) => {
   const [ errorm, setErrorm ] = useState('no error');
   const [ errorc, setErrorc ] = useState(false);
   const [ errorcm, setErrorcm ] = useState('no error');
+  const [ responsible, setResponsible ] = useState(null);
+  const [refreshing, setRefreshing] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
+
 
   const { authData, SLN } = route.params;
 
   const isCustomer = (route.params?.authData.roles.indexOf('customer') !== -1);
+
+  const subscribeRequest = useCallback(async () => {
+    try {
+  
+      await API.graphql(graphqlOperation(onUpdateRequestC, {customerUsername: authData.username, state: "FINISHED"})).subscribe({
+        next: r => {
+          setHasRequests(false);
+          GLOBAL.HAS_REQUEST = false;
+          setModalVisible(true);
+          sleep(3000).then(() => {
+            setModalVisible(false);
+            navigation.navigate('Homee');
+        });
+        }
+      });
+
+    } catch (e) {
+      console.log(e);
+    }
+  }, []);
 
   useEffect(() => {
     let didCancel = false;
@@ -48,7 +72,13 @@ const RequestInfo = ({ route, navigation }) => {
         var req_pos = null;
 
         const _filter = {
-          and: {or: {state: {eq: 'IN_PROCESS'}, state: {eq: 'ON_HOLD'}}, customerUsername: {eq: authData.username}}
+          and: [
+            {or: [
+              {state: {eq: 'IN_PROCESS'}},
+              {state: {eq: 'ON_HOLD'}}
+            ]},
+            {customerUsername: {eq: authData.username}}
+          ]
         };
 
         requestsApi = await API.graphql(graphqlOperation(listRequestsFull, {limit: 400, filter: _filter}));
@@ -60,13 +90,20 @@ const RequestInfo = ({ route, navigation }) => {
           officeApi = await API.graphql(graphqlOperation(getOfficeBasic, {id: requestsApi.data.listRequests.items[0].resposible.items[0].employee.officeId}));
 
           const _filterR = {
-            and: {or: {state: {eq: 'IN_PROCESS'}, state: {eq: 'ON_HOLD'}}, resposibleName: {eq: requestsApi.data.listRequests.items[0].resposible.items[0].employee.username}}
-          }
+            and: [
+              {or: [
+                {state: {eq: 'IN_PROCESS'}},
+                {state: {eq: 'ON_HOLD'}}
+              ]},
+              {resposibleName: {eq: requestsApi.data.listRequests.items[0].resposible.items[0].employee.username}}
+            ]
+          };
 
           reqs =  await API.graphql(graphqlOperation(listRequests, { limit: 400, filter: _filterR } ) );
-          req_pos = reqs.data.listRequests.items.sort((a, b) => new Date(a.date) - new Date(b.date))
+          req_pos = reqs.data.listRequests.items.sort((a, b) => new Date(a.date) - new Date(b.date));
           
           setPosition(req_pos.findIndex(_ => _.customerUsername === authData.username) + 1);
+          setResponsible(requestsApi.data.listRequests.items[0].resposible.items[0].employee.username);
           setRequest(requestsApi.data.listRequests.items[0]);
           setRequests(requestsApi.data.listRequests.items);
           setOffice(officeApi.data.getOffice);
@@ -84,12 +121,41 @@ const RequestInfo = ({ route, navigation }) => {
       }
     };
 
-		fetch();
+    fetch();
+    subscribeRequest();
 
 		return () => {
 			didCancel = true;
 		};
-  }, []);
+  }, [subscribeRequest]);
+
+  const updatePosition = async () => {
+    try {
+      setRefreshing(true);
+      var reqs = null;
+      var req_pos = null;
+
+      const _filterR = {
+        and: [
+          {or: [
+            {state: {eq: 'IN_PROCESS'}},
+            {state: {eq: 'ON_HOLD'}}
+          ]},
+          {resposibleName: {eq: responsible}}
+        ]
+      };
+
+      reqs =  await API.graphql(graphqlOperation(listRequests, { limit: 400, filter: _filterR } ) );
+
+      req_pos = reqs.data.listRequests.items.sort((a, b) => new Date(a.date) - new Date(b.date));
+      
+      setPosition(req_pos.findIndex(_ => _.customerUsername === authData.username) + 1);
+      setRefreshing(false);
+    } catch (e) {
+      setRefreshing(false);
+      console.log(e);
+    }
+  };
 
   const createTwoButtonAlert = () =>
     Alert.alert(
@@ -146,65 +212,85 @@ const RequestInfo = ({ route, navigation }) => {
   )}
 
  return (
-    <Content style={{ margin: 10}}>
-      {(hasRequests) && <Block flex style={styles.profile}>
-          <Block center style={{marginBottom: 10, marginTop: 10}}>
-            <T h1 color={position < 4 ? "red" : (position > 3 && position < 5) ? "orange" : "green"}>{position}</T>
-            <Text note> Posicion en la lista de espera</Text>
-          </Block>
-          <Card>
-            <CardItem>
-              <Icon type="FontAwesome" style={{color: '#85bb65'}} name="building-o" />
-              <Text style={{marginLeft: 5}}>{office?.name}</Text>
-              <Right>
-              </Right>
-            </CardItem>
-          </Card>
-          <Card>
-            <CardItem>
-              <Icon active style={{color: '#d9534f'}}  name="person" />
-              <Text style={{marginLeft: 5}}>Estilista: {requests[0]?.resposible.items[0].employee.name}</Text>
-              <Right>
-              </Right>
-            </CardItem>
-          </Card>
-          <Card>
-            <CardItem>
-              <Icon type="Entypo" style={{color: '#0275d8'}} name="scissors" />
-              <Text style={{marginLeft: 5}}>Servicio: {requests[0]?.service.items[0].service.name}</Text>
-              <Right>
-              </Right>
-            </CardItem>
-          </Card>
-          <Card>
-            <CardItem>
-              <Icon type="Fontisto" style={{color: '#f0ad4e'}} name="date" />
-                {/* dddd, MMMM Do, h:mm a */}
-                <Text style={{marginLeft: 5}}>Fecha: {moment(requests[0]?.createdAt).format("dddd, MMMM Do")}</Text>
-              <Right>
-              </Right>
-            </CardItem>
-          </Card>
-          <Button disabled={loading || cloading} round style={{ marginTop: 20, width: '97%'}} uppercase color="warning">Reagendar</Button>
+    <SafeAreaView style={styles.container}>
+      <ScrollView
+        contentContainerStyle={styles.scrollView}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={updatePosition} />
+        }
+      >
+        <Content style={{ margin: 10}}>
+          {(hasRequests) && <Block flex style={styles.profile}>
+              <Block center style={{marginBottom: 10, marginTop: 10}}>
+                <T h1 color={position < 4 ? "red" : (position > 3 && position < 5) ? "orange" : "green"}>{position}</T>
+                <Text note> Posicion en la lista de espera</Text>
+              </Block>
+              <Card>
+                <CardItem>
+                  <Icon type="FontAwesome" style={{color: '#85bb65'}} name="building-o" />
+                  <Text style={{marginLeft: 5}}>{office?.name}</Text>
+                  <Right>
+                  </Right>
+                </CardItem>
+              </Card>
+              <Card>
+                <CardItem>
+                  <Icon active style={{color: '#d9534f'}}  name="person" />
+                  <Text style={{marginLeft: 5}}>Estilista: {requests[0]?.resposible.items[0].employee.name}</Text>
+                  <Right>
+                  </Right>
+                </CardItem>
+              </Card>
+              <Card>
+                <CardItem>
+                  <Icon type="Entypo" style={{color: '#0275d8'}} name="scissors" />
+                  <Text style={{marginLeft: 5}}>Servicio: {requests[0]?.service.items[0].service.name}</Text>
+                  <Right>
+                  </Right>
+                </CardItem>
+              </Card>
+              <Card>
+                <CardItem>
+                  <Icon type="Fontisto" style={{color: '#f0ad4e'}} name="date" />
+                    {/* dddd, MMMM Do, h:mm a */}
+                    <Text style={{marginLeft: 5}}>Fecha: {moment(requests[0]?.createdAt).format("dddd, MMMM Do")}</Text>
+                  <Right>
+                  </Right>
+                </CardItem>
+              </Card>
+              <Button disabled={loading || cloading} round style={{ marginTop: 20, width: '97%'}} uppercase color="warning">Reagendar</Button>
 
-          <Button disabled={loading || cloading} round style={{ width: '97%', marginTop: 5}} uppercase color="danger" onPress={() => { createTwoButtonAlert()}}>Cancelar Solicitud</Button>
+              <Button disabled={loading || cloading} round style={{ width: '97%', marginTop: 5}} uppercase color="danger" onPress={() => { createTwoButtonAlert()}}>Cancelar Solicitud</Button>
 
-          <Button round style={{ width: '97%', marginTop: 5}} uppercase color="danger" onPress={() => { SLN()}}>Notify</Button>
+              <Button round style={{ width: '97%', marginTop: 5}} uppercase color="danger" onPress={() => { SLN()}}>Notify</Button>
 
-          {cloading && <Content>
-            <Spinner color='red' />
-          </Content>}
+              {cloading && <Content>
+                <Spinner color='red' />
+              </Content>}
 
-          {errorc && <Content>
-             <Badge><Text>{errorcm}</Text></Badge>
-          </Content>}
-      </Block>}
-      {!hasRequests && 
-          <Block center>
-             <Badge><Text>No hay solicitudes realizadas</Text></Badge>
-          </Block>
-      }
-    </Content>
+              {errorc && <Content>
+                <Badge><Text>{errorcm}</Text></Badge>
+              </Content>}
+          </Block>}
+          {!hasRequests && 
+              <Block center>
+                <Badge><Text>No hay solicitudes realizadas</Text></Badge>
+              </Block>
+          }
+          <Modal
+              animationType="slide"
+              transparent={true}
+              visible={modalVisible}
+            >
+              <View style={styles.centeredView}>
+                <View style={styles.modalView}>
+                  <Text style={{marginBottom: 3, fontSize: 16}}>Su solicitud ha finalizado!</Text>
+                </View>
+              </View>
+          </Modal>
+        </Content>
+      </ScrollView>
+    </SafeAreaView>
  );
 }
 
@@ -261,7 +347,35 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     width: thumbMeasure,
     height: thumbMeasure
-  }
+  },
+  container: {
+    flex: 1,
+    //marginTop: Constants.statusBarHeight,
+  },
+  scrollView: {
+    flex: 1,
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 22
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5
+  },
 });
 
 export default RequestInfo;
