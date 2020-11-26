@@ -115,7 +115,7 @@ const SendRequest = ({ route, navigation }) => {
 
 const styles = StyleSheet.create({
   profile: {
-    marginTop: Platform.OS === "android" ? -HeaderHeight : 0,
+    marginTop: Platform.OS === "android" ? 30 : 0,
     // marginBottom: -HeaderHeight * 2,
     flex: 1
   },

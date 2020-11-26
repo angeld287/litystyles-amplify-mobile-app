@@ -8,7 +8,8 @@ import {
   StatusBar,
   KeyboardAvoidingView,
   ActivityIndicator,
-  View
+  View,
+  Platform
 } from "react-native";
 import { Auth } from "aws-amplify";
 import { Block, Text, theme } from "galio-framework";
@@ -186,7 +187,7 @@ class MySignIn extends SignIn {
 const styles = StyleSheet.create({
     registerContainer: {
       width: width * 0.9,
-      height: height * 0.50,
+      height: Platform.OS === 'ios' ? height * 0.50 : height * 0.60,
       backgroundColor: "#F4F5F7",
       borderRadius: 4,
       shadowColor: argonTheme.COLORS.BLACK,

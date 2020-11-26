@@ -11,7 +11,7 @@ import argonTheme from '../constants/Theme';
 import '../constants/global';
 
 const { height, width } = Dimensions.get('window');
-const iPhoneX = () => Platform.OS === 'ios' && (height === 812 || width === 812 || height === 896 || width === 896);
+const iPhoneX = () => ( (Platform.OS === 'ios') && (height === 812 || width === 812 || height === 896 || width === 896));
 
 const BellButton = ({isWhite, style, navigation}) => (
   <TouchableOpacity style={[styles.button, style]} onPress={() => navigation.navigate('Pro')}>
@@ -251,7 +251,7 @@ const styles = StyleSheet.create({
   navbar: {
     paddingVertical: 0,
     paddingBottom: theme.SIZES.BASE * 1.5,
-    paddingTop: iPhoneX ? theme.SIZES.BASE * 4 : theme.SIZES.BASE,
+    paddingTop: ((Platform.OS === 'ios') && (height === 812 || width === 812 || height === 896 || width === 896)) ? (theme.SIZES.BASE * 4) : theme.SIZES.BASE,
     zIndex: 5,
   },
   shadow: {

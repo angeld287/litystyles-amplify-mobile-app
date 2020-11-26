@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { StyleSheet, Dimensions, ScrollView, Image, View, ActivityIndicator, ImageBackground } from 'react-native';
+import { StyleSheet, Dimensions, ScrollView, Image, View, ActivityIndicator, ImageBackground, Platform } from 'react-native';
 import { Container, Header, Content, List, ListItem, Thumbnail, Left, Body, Right, Button, Card, CardItem, Icon, Text, Subtitle, Spinner } from 'native-base';
 
 import { Block, NavBar, theme, Accordion } from 'galio-framework';
@@ -120,7 +120,7 @@ const Office = ({ route, navigation }) => {
  return (
     <Block flex style={styles.profile}>
       {loading &&
-        <Content style={{marginTop: 40}}>
+        <Content style={{marginTop: 100}}>
           <Spinner color='blue' />
         </Content>
       }
@@ -136,7 +136,8 @@ const Office = ({ route, navigation }) => {
               style={{ width, marginTop: '25%' }}
             > 
               <Container style={{marginTop: 200}}>
-                <Subtitle style={{margin: 5}}>{office.name}</Subtitle>
+                {Platform.OS === "ios" && <Subtitle style={{margin: 5}}>{office.name}</Subtitle>}
+                {Platform.OS === "android" && <Block center><Text note style={{margin: 5}}>{office.name}</Text></Block>}
                 <Content>
                   <Card>
                     {_employeesList}
@@ -153,7 +154,7 @@ const Office = ({ route, navigation }) => {
 
 const styles = StyleSheet.create({
   profile: {
-    marginTop: Platform.OS === "android" ? -HeaderHeight : 0,
+    //marginTop: Platform.OS === "android" ? -HeaderHeight : 0,
     // marginBottom: -HeaderHeight * 2,
     flex: 1
   },
@@ -161,7 +162,7 @@ const styles = StyleSheet.create({
     width: width,
     height: height,
     padding: 0,
-    zIndex: 1
+    zIndex: Platform.OS === "ios" ? 1 : 0
   },
   profileBackground: {
     width: width,
