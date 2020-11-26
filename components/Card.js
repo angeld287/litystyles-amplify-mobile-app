@@ -2,9 +2,10 @@ import React, {useEffect , useCallback, useState} from 'react';
 import { withNavigation } from '@react-navigation/compat';
 import PropTypes from 'prop-types';
 import { API, graphqlOperation, Storage } from 'aws-amplify';
-import { StyleSheet, Dimensions, Image, TouchableWithoutFeedback } from 'react-native';
+import { StyleSheet, Dimensions, Image, TouchableWithoutFeedback, Alert } from 'react-native';
 import { Block, Text, theme } from 'galio-framework';
 import defaultImage from  '../images/default-image.png';
+import GLOBAL from '../global';
 
 import { argonTheme } from '../constants';
 
@@ -33,6 +34,14 @@ const Card = (props) => {
       [],
     );
 
+    const onSelectCompany = () => {
+      if (GLOBAL.HAS_REQUEST) {
+        Alert.alert("Ya tienes una solicitud creada", "Para poder crear otra solicitud debe finalizar o cancelar la existente.");
+      }else{
+        navigation.navigate('Office', {id: item.id, loading: true})
+      }
+    }
+
     useEffect(() => {
       async function fetchData() {
           try {
@@ -60,12 +69,12 @@ const Card = (props) => {
 
     return (
       <Block row={horizontal} card flex style={cardContainer}>
-        <TouchableWithoutFeedback onPress={() => { navigation.navigate('Office', {id: item.id, loading: true})}}>
+        <TouchableWithoutFeedback onPress={() => { onSelectCompany() }}>
           <Block flex style={imgContainer}>
             <Image source={{uri: _image}} style={imageStyles} />
           </Block>
         </TouchableWithoutFeedback>
-        <TouchableWithoutFeedback onPress={() => navigation.navigate('Office', {id: item.id, loading: true})}>
+        <TouchableWithoutFeedback onPress={() => onSelectCompany()}>
           <Block flex space="between" style={styles.cardDescription}>
             <Text size={14} style={styles.cardTitle}>{item.title}</Text>
             <Text size={12} muted={!ctaColor} color={ctaColor || argonTheme.COLORS.ACTIVE} bold>{item.cta}</Text>

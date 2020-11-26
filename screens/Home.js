@@ -9,7 +9,9 @@ import argonTheme from '../constants/Theme';
 import { API, graphqlOperation } from 'aws-amplify';
 
 import { listCategorys } from '../graphql/queries';
-import { listOfficesHome } from '../graphql/customQueries';
+import { listOfficesHome, listRequests } from '../graphql/customQueries';
+
+import GLOBAL from '../global';
 
 const { width } = Dimensions.get('screen');
 
@@ -46,18 +48,27 @@ const exectFilter = (isBarber) => {
 
 
   useEffect(() => {
-		let didCancel = false;
+    let didCancel = false;
 
 		const fetch = async () => {
       setLoading(true);
       try {
         var officesApi = null;
         var categoriesApi = null;
+        var requestsApi = null;
         var c = categories;
         var o = offices;
  
         officesApi = await API.graphql(graphqlOperation(listOfficesHome, {limit: 400, filter: {and: { deleted: {ne: true}, companyId: {ne: null}, image: {ne: null}, categoryId: {ne: null} } } } ) );
         categoriesApi = await API.graphql(graphqlOperation(listCategorys));
+
+        const _filter = {
+          and: {or: {state: {eq: 'IN_PROCESS'}, state: {eq: 'ON_HOLD'}}, customerUsername: {eq: props.route.params?.authData.username}}
+        };
+
+        requestsApi = await API.graphql(graphqlOperation(listRequests, {limit: 400, filter: _filter}));
+        var hasRed = (requestsApi.data.listRequests.items.length !== 0);
+        GLOBAL.HAS_REQUEST = hasRed;
 
         c = categoriesApi.data.listCategorys.items;
         o = officesApi.data.listOffices.items;
@@ -134,7 +145,7 @@ const exectFilter = (isBarber) => {
        showsVerticalScrollIndicator={false}
        contentContainerStyle={styles.articles}>
        {renderHeader()}
-       <Companies {...props} offices={_offices} loading={loading}/>
+       <Companies {...props} offices={_offices} loading={loading} />
       </ScrollView>
    </Block>
  );

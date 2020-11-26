@@ -8,6 +8,7 @@ import { API, graphqlOperation, Storage } from 'aws-amplify';
 import { listRequestsFull, getOfficeBasic, listRequests } from '../../graphql/customQueries';
 import { updateRequest } from '../../graphql/mutations';
 import { HeaderHeight } from "../../constants/utils";
+import GLOBAL from '../../global';
 
 import moment from 'moment';
 import 'moment/min/locales';
@@ -37,7 +38,6 @@ const RequestInfo = ({ route, navigation }) => {
   const isCustomer = (route.params?.authData.roles.indexOf('customer') !== -1);
 
   useEffect(() => {
-    console.log(route.params);
     let didCancel = false;
 		const fetch = async () => {
       setLoading(true);
@@ -115,6 +115,7 @@ const RequestInfo = ({ route, navigation }) => {
       sleep(1000).then(() => {
           setHasRequests(requests.length !== 0)
           setCloading(false);
+          GLOBAL.HAS_REQUEST = false;
       });
 		})
 		.catch(e => {
