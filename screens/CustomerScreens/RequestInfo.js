@@ -145,11 +145,11 @@ const RequestInfo = ({ route, navigation }) => {
   )}
 
  return (
-    <Content style={{marginTop: 20, margin: 10}}>
+    <Content style={{ margin: 10}}>
       {(hasRequests) && <Block flex style={styles.profile}>
-          <Block center style={{marginBottom: 20, marginTop: 20}}>
-            <Text note> Posicion en la lista de espera</Text>
+          <Block center style={{marginBottom: 10, marginTop: 10}}>
             <T h1 color={position < 4 ? "red" : (position > 3 && position < 5) ? "orange" : "green"}>{position}</T>
+            <Text note> Posicion en la lista de espera</Text>
           </Block>
           <Card>
             <CardItem>
@@ -209,7 +209,7 @@ const RequestInfo = ({ route, navigation }) => {
 
 const styles = StyleSheet.create({
   profile: {
-    marginTop: Platform.OS === "android" ? -HeaderHeight : 0,
+    //marginTop: Platform.OS === "android" ? 0 : 0,
     // marginBottom: -HeaderHeight * 2,
     flex: 1
   },

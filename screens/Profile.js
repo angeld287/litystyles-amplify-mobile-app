@@ -184,7 +184,7 @@ const Profile = (props) => {
 
 const styles = StyleSheet.create({
   profile: {
-    marginTop: Platform.OS === "android" ? -HeaderHeight : 0,
+    //marginTop: Platform.OS === "android" ? -HeaderHeight : 0,
     // marginBottom: -HeaderHeight * 2,
     flex: 1
   },
@@ -192,7 +192,7 @@ const styles = StyleSheet.create({
     width: width,
     height: height,
     padding: 0,
-    zIndex: 1
+    zIndex: Platform.OS === "ios" ? 1 : 0
   },
   profileBackground: {
     width: width,
