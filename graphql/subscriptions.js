@@ -9,6 +9,7 @@ export const onCreateRequest = /* GraphQL */ `
       resposible {
         items {
           id
+          cost
           createdAt
         }
         nextToken
@@ -112,6 +113,58 @@ export const onUpdateRequest = /* GraphQL */ `
       resposible {
         items {
           id
+          cost
+          createdAt
+        }
+        nextToken
+      }
+      service {
+        items {
+          id
+          resposibleName
+          cost
+          createdAt
+        }
+        nextToken
+      }
+      product {
+        items {
+          id
+          cost
+          createdAt
+        }
+        nextToken
+      }
+      resposibleName
+      customerName
+      customerUsername
+      customer {
+        items {
+          id
+          cost
+          resposibleName
+          createdAt
+        }
+        nextToken
+      }
+      state
+      paymentType
+      date
+      deleted
+      deletedAt
+      createdAt
+    }
+  }
+`;
+export const onUpdateRequestC = /* GraphQL */ `
+  subscription OnUpdateRequestC($customerUsername: String, $state: State) {
+    onUpdateRequestC(customerUsername: $customerUsername, state: $state) {
+      id
+      companyId
+      resposible {
+        items {
+          id
+          cost
           createdAt
         }
         nextToken
@@ -562,6 +615,7 @@ export const onCreateOffice = /* GraphQL */ `
           name
           username
           officeId
+          phoneid
           deleted
           deletedAt
           createdAt
@@ -592,6 +646,7 @@ export const onUpdateOffice = /* GraphQL */ `
           name
           username
           officeId
+          phoneid
           deleted
           deletedAt
           createdAt
@@ -622,6 +677,7 @@ export const onDeleteOffice = /* GraphQL */ `
           name
           username
           officeId
+          phoneid
           deleted
           deletedAt
           createdAt
@@ -934,6 +990,7 @@ export const onCreateEmployeeService = /* GraphQL */ `
         name
         username
         officeId
+        phoneid
         services {
           nextToken
         }
@@ -976,6 +1033,7 @@ export const onUpdateEmployeeService = /* GraphQL */ `
         name
         username
         officeId
+        phoneid
         services {
           nextToken
         }
@@ -1018,6 +1076,7 @@ export const onDeleteEmployeeService = /* GraphQL */ `
         name
         username
         officeId
+        phoneid
         services {
           nextToken
         }
@@ -1058,6 +1117,7 @@ export const onCreateEmployee = /* GraphQL */ `
       name
       username
       officeId
+      phoneid
       services {
         items {
           id
@@ -1068,6 +1128,7 @@ export const onCreateEmployee = /* GraphQL */ `
       request {
         items {
           id
+          cost
           createdAt
         }
         nextToken
@@ -1086,6 +1147,7 @@ export const onUpdateEmployee = /* GraphQL */ `
       name
       username
       officeId
+      phoneid
       services {
         items {
           id
@@ -1096,6 +1158,7 @@ export const onUpdateEmployee = /* GraphQL */ `
       request {
         items {
           id
+          cost
           createdAt
         }
         nextToken
@@ -1114,6 +1177,7 @@ export const onDeleteEmployee = /* GraphQL */ `
       name
       username
       officeId
+      phoneid
       services {
         items {
           id
@@ -1124,6 +1188,7 @@ export const onDeleteEmployee = /* GraphQL */ `
       request {
         items {
           id
+          cost
           createdAt
         }
         nextToken
@@ -1357,6 +1422,7 @@ export const onCreateRequestEmployee = /* GraphQL */ `
         name
         username
         officeId
+        phoneid
         services {
           nextToken
         }
@@ -1393,6 +1459,7 @@ export const onCreateRequestEmployee = /* GraphQL */ `
         deletedAt
         createdAt
       }
+      cost
       createdAt
     }
   }
@@ -1406,6 +1473,7 @@ export const onUpdateRequestEmployee = /* GraphQL */ `
         name
         username
         officeId
+        phoneid
         services {
           nextToken
         }
@@ -1442,6 +1510,7 @@ export const onUpdateRequestEmployee = /* GraphQL */ `
         deletedAt
         createdAt
       }
+      cost
       createdAt
     }
   }
@@ -1455,6 +1524,7 @@ export const onDeleteRequestEmployee = /* GraphQL */ `
         name
         username
         officeId
+        phoneid
         services {
           nextToken
         }
@@ -1491,6 +1561,7 @@ export const onDeleteRequestEmployee = /* GraphQL */ `
         deletedAt
         createdAt
       }
+      cost
       createdAt
     }
   }

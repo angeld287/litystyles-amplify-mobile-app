@@ -87,6 +87,7 @@ export const getOffice = /* GraphQL */ `
           name
           username
           officeId
+          phoneid
           deleted
           deletedAt
           createdAt
@@ -312,6 +313,7 @@ export const getEmployee = /* GraphQL */ `
       name
       username
       officeId
+      phoneid
       services {
         items {
           id
@@ -322,6 +324,7 @@ export const getEmployee = /* GraphQL */ `
       request {
         items {
           id
+          cost
           createdAt
         }
         nextToken
@@ -345,6 +348,7 @@ export const listEmployees = /* GraphQL */ `
         name
         username
         officeId
+        phoneid
         services {
           nextToken
         }
@@ -415,6 +419,7 @@ export const getRequest = /* GraphQL */ `
       resposible {
         items {
           id
+          cost
           createdAt
         }
         nextToken
