@@ -83,7 +83,7 @@ const Office = ({ route, navigation }) => {
           const _filter = {
             and: {or: {state: {eq: 'IN_PROCESS'}, state: {eq: 'ON_HOLD'}}, resposibleName: {eq: e.username}}
           }
-          reqs =  await API.graphql(graphqlOperation(listRequests, { limit: 400, filter: _filter } ) );
+          reqs =  await API.graphql(graphqlOperation(listRequests, { limit: 1000, filter: _filter } ) );
           
           e.services.items.forEach(es => {  
             _companyServices.push(companyServices[companyServices.findIndex(_ => _.service.id === es.service.id)]);
