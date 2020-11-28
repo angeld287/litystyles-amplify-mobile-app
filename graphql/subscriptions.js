@@ -207,6 +207,7 @@ export const onUpdateRequestC = /* GraphQL */ `
     }
   }
 `;
+
 export const onCreateCompany = /* GraphQL */ `
   subscription OnCreateCompany($owner: String) {
     onCreateCompany(owner: $owner) {

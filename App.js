@@ -14,6 +14,8 @@ import firebase from 'react-native-firebase';
 
 import GLOBAL from './global';
 
+import PushNotification from "react-native-push-notification";
+
 import Amplify, { Auth } from 'aws-amplify';
 import awsconfig from './aws-exports';
 import { ConfirmSignIn, ConfirmSignUp, ForgotPassword, RequireNewPassword, SignUp, VerifyContact, withAuthenticator } from 'aws-amplify-react-native';
@@ -55,7 +57,13 @@ const messaging = firebase.messaging();
 
 firebase.notifications().onNotification((notification) => {
   const {data, title, body} = notification;
-  console.log(notification);
+  PushNotification.localNotification({
+      /* iOS and Android properties */
+      title: title, // (optional)
+      message: body, // (required)
+      vibrate: true,
+      vibration: 300,
+  });
 })
 
 async function urlOpener(url, redirectUrl){
@@ -237,12 +245,10 @@ const Home = props => {
 
   const onNotification = (notification) => {
     //console.log("[Notification] onNotification: ", notification);
-    notificationManager.showNotification(notification.id, notification.title, notification.message, notification.data = {} , {});
   }
 
   const onOpenNotification = (notify) => {
     //console.log("[Notification] onOpenNotification: ", notify.data.naviateto);
-    navigation.navigate(notify.data.naviateto);
   }
 
   const [isLoadingComplete, setLoading] = useState(false);

@@ -7,7 +7,7 @@ import { API, graphqlOperation, Storage } from 'aws-amplify';
 
 import { listRequestsFull, getOfficeBasic, listRequests } from '../../graphql/customQueries';
 import { updateRequest } from '../../graphql/mutations';
-import { onUpdateRequestC } from '../../graphql/subscriptions';
+import { onUpdateRequestC, onUpdateRequestE } from '../../graphql/customSubscptions';
 import GLOBAL from '../../global';
 
 import moment from 'moment';
@@ -43,23 +43,28 @@ const RequestInfo = ({ route, navigation }) => {
 
   const subscribeRequest = useCallback(async () => {
     try {
-  
-      await API.graphql(graphqlOperation(onUpdateRequestC, {customerUsername: authData.username, state: "FINISHED"})).subscribe({
-        next: r => {
-          setHasRequests(false);
-          GLOBAL.HAS_REQUEST = false;
-          setModalVisible(true);
-          sleep(3000).then(() => {
-            setModalVisible(false);
-            navigation.navigate('Homee');
+      if(hasRequests){
+        await API.graphql(graphqlOperation(onUpdateRequestE, {resposibleName: responsible, state: "FINISHED"})).subscribe({
+          next: r => {
+            if(r.value.data.onUpdateRequestE.customerUsername === authData.username){
+              setHasRequests(false);
+              GLOBAL.HAS_REQUEST = false;
+              setModalVisible(true);
+              sleep(3000).then(() => {
+                setModalVisible(false);
+                navigation.navigate('Homee');
+              });
+            }else{
+              updatePosition();
+            }
+          }
         });
-        }
-      });
+      }
 
     } catch (e) {
       console.log(e);
     }
-  }, []);
+  }, [updatePosition]);
 
   useEffect(() => {
     let didCancel = false;
@@ -83,7 +88,7 @@ const RequestInfo = ({ route, navigation }) => {
 
         requestsApi = await API.graphql(graphqlOperation(listRequestsFull, {limit: 400, filter: _filter}));
         var hasRed = (requestsApi.data.listRequests.items.length !== 0);
-
+        console.log(requestsApi.data.listRequests.items.length);
         setHasRequests(hasRed);
         
         if (hasRed) {
@@ -148,7 +153,15 @@ const RequestInfo = ({ route, navigation }) => {
       reqs =  await API.graphql(graphqlOperation(listRequests, { limit: 400, filter: _filterR } ) );
 
       req_pos = reqs.data.listRequests.items.sort((a, b) => new Date(a.date) - new Date(b.date));
-      
+      if(req_pos.findIndex(_ => _.customerUsername === authData.username)){
+        setHasRequests(false);
+        GLOBAL.HAS_REQUEST = false;
+        setModalVisible(true);
+        sleep(3000).then(() => {
+          setModalVisible(false);
+          navigation.navigate('Homee');
+        });
+      }
       setPosition(req_pos.findIndex(_ => _.customerUsername === authData.username) + 1);
       setRefreshing(false);
     } catch (e) {
@@ -182,6 +195,8 @@ const RequestInfo = ({ route, navigation }) => {
           setHasRequests(requests.length !== 0)
           setCloading(false);
           GLOBAL.HAS_REQUEST = false;
+
+          navigation.navigate('Homee');
       });
 		})
 		.catch(e => {
