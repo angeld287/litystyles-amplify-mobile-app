@@ -196,7 +196,6 @@ const Home = props => {
         var _r = roles;
 
         const hasOnlyGoogleRole = _r !== undefined && _r.length === 1 && _r[0].toUpperCase().includes("GOOGLE");
-
         if (hasOnlyGoogleRole) {
           
           var added = userdb === null ? await addUserToGroup(username) : true; 
@@ -207,13 +206,7 @@ const Home = props => {
             
             setRoles(_r);
 
-            const _input = {
-              username: username,
-              //phoneid: GLOBAL.PHONE_TOKEN,
-              name: attributes.name
-            }
-
-            const cuser = userdb === null ? await API.graphql(graphqlOperation(createCustomer, {input: _input})) : null;
+            const cuser = userdb === null ? await API.graphql(graphqlOperation(createCustomer, {input: {username: username, name: attributes.name}})) : null;
 
             //cierre de sesion para que se refleje el nuevo rol agregado
             setModalVisible(true);
@@ -222,7 +215,11 @@ const Home = props => {
                 await Auth.signOut({ global: true });
             });
           }
+        }else if(roles.indexOf('customer') !== -1 && userdb === null) {
+
+          const cuser = await API.graphql(graphqlOperation(createCustomer, {input: {username: username, name: attributes.name}}));
         }
+
       } catch (e) {
         console.log(e);
       }
