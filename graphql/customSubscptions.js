@@ -75,3 +75,51 @@ export const onUpdateRequestE = /* GraphQL */ `
     }
   }
 `;
+
+export const onCreateRequestCustomer = /* GraphQL */ `
+  subscription OnCreateRequestCustomer($resposibleName: String) {
+    onCreateRequestCustomer(resposibleName: $resposibleName) {
+      id
+      request {
+        id
+        companyId
+        resposible {
+          items {
+            id
+            createdAt
+          }
+          nextToken
+        }
+        service {
+          items {
+            service {
+              name
+            }
+          }
+        }
+        product {
+          items {
+            id
+            createdAt
+          }
+          nextToken
+        }
+        customer {
+          items {
+            customer {
+              name
+              phoneid
+              id
+            }
+          }
+        }
+        resposibleName
+        customerName
+        state
+        deleted
+        deletedAt
+        createdAt
+      }
+    }
+  }
+`;

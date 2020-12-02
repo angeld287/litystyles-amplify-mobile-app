@@ -10,14 +10,17 @@ import { Block, Text, theme } from "galio-framework";
 import Images from "../constants/Images";
 import { DrawerItem as DrawerCustomItem } from '../components';
 
-function CustomDrawerContent({ drawerPosition, navigation, profile, focused, state, ...rest }) {
+function CustomDrawerContent({ params, _, ...rest }) {
+
   const insets = useSafeArea();
   const screens = [
     "Home",  
-    /* "Account",
     "Elements",
-    "Articles", */
+    "Articles",
   ];
+
+  if((params.authData.roles.indexOf('employee') !== -1)) { screens.push("Employee")}
+
   return (
     <Block
       style={styles.container}
@@ -34,8 +37,8 @@ function CustomDrawerContent({ drawerPosition, navigation, profile, focused, sta
                 <DrawerCustomItem
                   title={item}
                   key={index}
-                  navigation={navigation}
-                  focused={state.index === index ? true : false}
+                  navigation={_.navigation}
+                  focused={_.state.index === index ? true : false}
                 />
               );
             })}

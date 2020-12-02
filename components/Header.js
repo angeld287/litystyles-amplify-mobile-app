@@ -128,6 +128,10 @@ class Header extends React.Component {
         return ([
           <ProfileButton key='profile-title' navigation={navigation} isWhite={white} />
         ]);
+      case 'Estilista':
+        return ([
+          <ProfileButton key='profile-title' navigation={navigation} isWhite={white} />
+        ]);
       default:
         break;
     }
