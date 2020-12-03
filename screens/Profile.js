@@ -14,22 +14,38 @@ import { Auth } from 'aws-amplify';
 import { Button } from "../components";
 import { Images, argonTheme } from "../constants";
 import { HeaderHeight } from "../constants/utils";
+import { updateEmployee, updateCustomer} from '../graphql/mutations';
+import { API, graphqlOperation } from 'aws-amplify';
 
 const { width, height } = Dimensions.get("screen");
 
 const thumbMeasure = (width - 48 - 32) / 3;
 
-async function signOut() {
-  try {
-      await Auth.signOut({ global: true });
-  } catch (error) {
-      console.log('error signing out: ', error);
-  }
-}
-
 const Profile = (props) => {
 
     const {name, email, picture } = props.route.params.authData.attributes;
+    const { userdb, employeedb, roles } = props.route.params.authData;
+
+    /* useEffect(() => {
+      console.log(props.route.params.authData);
+    }, []); */
+
+    async function signOut() {
+      try {
+        
+          if(userdb !== null ){
+            API.graphql(graphqlOperation(updateCustomer, {input: {id: userdb.id, phoneid: ''}})).catch(_ => console.log("ha ocurrido un error al actualizar el phoneid del usuario"));
+          }
+    
+          if(roles.indexOf('employee') !== -1 && employeedb !== null ){
+            API.graphql(graphqlOperation(updateEmployee, {input: {id: employeedb.id, phoneid: ''}})).catch(_ => console.log("ha ocurrido un error al actualizar el phoneid del empleado ", _));
+          }
+    
+          await Auth.signOut({ global: true });
+      } catch (error) {
+          console.log('error signing out: ', error);
+      }
+    }
 
     return (
       <Block flex style={styles.profile}>
