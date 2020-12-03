@@ -114,6 +114,7 @@ export const onCreateRequestCustomer = /* GraphQL */ `
           }
         }
         resposibleName
+        paymentType
         customerName
         state
         deleted

@@ -7,8 +7,8 @@ import { Block, GalioProvider } from "galio-framework";
 import { NavigationContainer } from "@react-navigation/native";
 import { API, graphqlOperation } from 'aws-amplify';
 
-import { createCustomer, updateCustomer } from './graphql/mutations';
-import { listCustomers } from './graphql/queries';
+import { createCustomer, updateCustomer, updateEmployee } from './graphql/mutations';
+import { listCustomers, listEmployees } from './graphql/queries';
 
 import firebase from 'react-native-firebase';
 
@@ -155,7 +155,7 @@ const sendNotifications = (object) => {
 
 const Home = props => {
 
-  const { roles, username, attributes, userdb } = props.authData;
+  const { roles, username, attributes, userdb, employeedb } = props.authData;
 
   const [_roles, setRoles ] = useState(roles);
   const [modalVisible, setModalVisible] = useState(false);
@@ -237,6 +237,10 @@ const Home = props => {
     GLOBAL.PHONE_TOKEN = token.token;
     if(userdb !== null && userdb.phoneid !== token.token){
       API.graphql(graphqlOperation(updateCustomer, {input: {id: userdb.id, phoneid: token.token}})).catch(_ => console.log("ha ocurrido un error al actualizar el phoneid del usuario"));
+    }
+
+    if(roles.indexOf('employee') !== -1 && employeedb !== null && employeedb.phoneid !== token.token){
+      API.graphql(graphqlOperation(updateEmployee, {input: {id: employeedb.id, phoneid: token.token}})).catch(_ => console.log("ha ocurrido un error al actualizar el phoneid del empleado ", _));
     }
   }
 
@@ -331,12 +335,26 @@ const AuthScreens = (props) => {
           setLoading(false)
       });
     }
+
+    if(props.authData.signInUserSession.accessToken.payload['cognito:groups'].indexOf('employee') !== -1){
+      _getEmployee();
+    }else{
+      props.authData.employeedb = null;
+    }
   })
   .catch(e => {
     setLoading(false);
     console.log(e);
   });
   
+  const _getEmployee = () => {
+    API.graphql(graphqlOperation(listEmployees, {limit: 400, filter: { username: {eq: props.authData.username}}})).then(r => {
+      props.authData.employeedb = r.data.listEmployees.items.length !== 0 ? r.data.listEmployees.items[0] : null;
+    }).catch(e => {
+      setLoading(false);
+      console.log(e);
+    });
+  }
 
   return loaging ? <View style={{marginTop: 40}}><ActivityIndicator size="large" color="#0000ff" /></View> :  <Home {...props}/>
 };

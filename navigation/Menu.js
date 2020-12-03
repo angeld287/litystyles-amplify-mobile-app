@@ -15,8 +15,8 @@ function CustomDrawerContent({ params, _, ...rest }) {
   const insets = useSafeArea();
   const screens = [
     "Home",  
-    "Elements",
-    "Articles",
+    //"Elements",
+    //"Articles",
   ];
 
   if((params.authData.roles.indexOf('employee') !== -1)) { screens.push("Employee")}

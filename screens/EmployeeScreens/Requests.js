@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { StyleSheet, Dimensions, ScrollView, Image, View, RefreshControl, ImageBackground, Platform } from 'react-native';
+import { StyleSheet, Dimensions, ScrollView, Image, View, RefreshControl, Modal, Platform } from 'react-native';
 import { Container, Header, Content, List, ListItem, Thumbnail, Left, Body, Right, Button, Card, CardItem, Icon as I, Text, Subtitle, Spinner } from 'native-base';
 
 import { Block, theme, Accordion } from 'galio-framework';
@@ -40,6 +40,12 @@ const Requests = ({ route, navigation }) => {
   const [ inProcessError, setInProcessError ] = useState(false);
   const [ inProcessErrorMessage, setInProcessErrorMessage ] = useState(false);
 
+  const [ requestToCancel, setRequestToCancel ] = useState('');
+  const [ cancelOverlay, setCancelOverlay ] = useState(false);
+  const [ cancelLoading, setCancelLoading ] = useState(false);
+  const [ cancelerror, setCancelError ] = useState(false);
+  const [ cancelerrorMessage, setCancelErrorMessage ] = useState(false);
+
   useEffect(() => {
     let didCancel = false;
 
@@ -62,8 +68,7 @@ const Requests = ({ route, navigation }) => {
 
                 reqs =  await API.graphql(graphqlOperation(listRequestsEmployee, { limit: 1000, filter: _filterR } ) );
 
-                setRequests(reqs.data.listRequests.items);
-                console.log(reqs.data.listRequests.items);
+                setRequests(reqs.data.listRequests.items.sort((a, b) => new Date(a.date) - new Date(b.date)));
                 setLoading(false);
 
             } catch (e) {
@@ -95,7 +100,7 @@ const Requests = ({ route, navigation }) => {
 
         fetch();
         //subscribeRequest();
-        //subscribeRequestCustomer();
+        subscribeRequestCustomer();
 
         return () => {
             didCancel = true;
@@ -125,7 +130,7 @@ const Requests = ({ route, navigation }) => {
 
       reqs =  await API.graphql(graphqlOperation(listRequestsEmployee, { limit: 1000, filter: _filterR } ) );
       
-      setRequests(reqs.data.listRequests.items);
+      setRequests(reqs.data.listRequests.items.sort((a, b) => new Date(a.date) - new Date(b.date)));
       setRefreshing(false);
     } catch (e) {
       setRefreshing(false);
@@ -183,7 +188,7 @@ const Requests = ({ route, navigation }) => {
         setFinishLoading(true);
         API.graphql(graphqlOperation(updateRequest, { input: { id: requests[0].id, state: 'FINISHED' } }))
         .then(r => {
-            requests.splice(requests.findIndex(e => e.id === requestToFinish), 1);
+            requests.splice(requests.findIndex(e => e.id === requests[0].id), 1);
             if(requests[2] !== undefined && requests[2].customer.items.length !== 0){
                 notify(requests[2], '3');
             }
@@ -191,6 +196,7 @@ const Requests = ({ route, navigation }) => {
             setFinishLoading(false);
         })
         .catch(e => {
+            console.log(e);
             setFinishError(true);
             setFinishLoading(false)
             setFinishErrorMessage(e);
@@ -201,29 +207,54 @@ const Requests = ({ route, navigation }) => {
         setTcPayLoading(true);
         API.graphql(graphqlOperation(updateRequest, { input: { id: requests[0].id, paymentType: 'CARD' } }))
         .then(r => {
-            var req = requests[requests.findIndex(e => e.id === requestToFinish)];
+            var req = requests[requests.findIndex(e => e.id === requests[0].id)];
             req.paymentType = "CARD";
             setTcPayLoading(false);
         })
         .catch(e => {
+            console.log(e);
             setTcPayError(true);
             setTcPayLoading(false)
             setTcPayErrorMessage(e);
         });
     }
 
-const _requestsList = (requests !== null)?([].concat(requests).map((e,i)=> 
+    const confirmCancelRequest = () => {
+        setCancelOverlay(false);
+		setCancelLoading(true);
+		API.graphql(graphqlOperation(updateRequest, { input: { id: requestToCancel, state: 'CANCELED' } }))
+		.then(r => {
+			requests.splice(requests.findIndex(e => e.id === requestToCancel), 1);
+			setCancelOverlay(false);
+			setCancelLoading(false);
+		})
+		.catch(e => {
+			setCancelError(true);
+			setCancelLoading(false);
+			console.log(e)
+			setCancelErrorMessage('Ha ocurrido un error al cancelar la solicitud');
+		});
+    }
+    
+    const openCancelModal = (item) => {
+        setRequestToCancel(item.id);
+        setCancelOverlay(true);
+    }
+
+const _requestsList = (requests !== null)?([].concat(requests)
+    .sort((a, b) => new Date(a.date) - new Date(b.date))
+    .map((item,i)=> 
     <ListItem avatar>
         <Left>
             <Thumbnail source={image} />
         </Left>
         <Body>
-            <Text style={{marginTop: 5}} >{e.customerName}</Text>
+            <Text style={{marginTop: 5}} >{item.customerName}</Text>
             <Text note></Text>
         </Body>
         <Right>
-            {(i === 1 && e.customer.items.length !== 0 && !e.notified) && <Button warning transparent onPress={() => { notify }}><I active type="MaterialIcons" name="notifications-active" />{false && < Spinner color='orange' />}</Button>}
-            {(i === 0) && <Button danger transparent onPress={() => { notify }}><I active type="MaterialIcons" name="cancel" />{false && < Spinner color='red' />}</Button>}
+            {(i === 1 && item.customer.items.length !== 0 && !item.notified) && <Button warning transparent onPress={(e) => { e.preventDefault(); notify(item, "2") }}>{!notifyLoading && <I active type="MaterialIcons" name="notifications-active" />}{notifyLoading && < Spinner color='orange' />}</Button>}
+            {(i === 0 && item.state === "ON_HOLD") && <Button danger transparent={cancelLoading} onPress={(e) => { e.preventDefault(); openCancelModal(item) }}>{!cancelLoading && <I active type="MaterialIcons" name="cancel" />}{cancelLoading && <Spinner size="small" color='red' />}</Button>}
         </Right>
     </ListItem>
   )):(<Block></Block>)
@@ -236,7 +267,7 @@ const _requestsList = (requests !== null)?([].concat(requests).map((e,i)=>
           <Spinner color='blue' />
         </Content>
       }
-      {!loading &&
+      {!loading  &&
         <Block flex>
             <ScrollView
               showsVerticalScrollIndicator={false}
@@ -244,7 +275,7 @@ const _requestsList = (requests !== null)?([].concat(requests).map((e,i)=>
                 <RefreshControl refreshing={refreshing} onRefresh={getList} />
               }
             > 
-                <Block>
+                { requests.length > 0 &&<Block>
                 <Card style={{flex: 0}}>
                     <CardItem>
                         <Left>
@@ -257,26 +288,69 @@ const _requestsList = (requests !== null)?([].concat(requests).map((e,i)=>
                     </CardItem>
                     <CardItem>
                         <Body>
-                            {requestInProcess && <Button onPress={FinishRequest} rounded style={{height: 150}} large block blue><Text uppercase style={{fontSize: 60}}>FINALIZAR</Text></Button>}
-                            {!requestInProcess && <Button onPress={nextRequest} rounded style={{height: 150}} large block blue><Text uppercase style={{fontSize: 60}}>PROXIMO</Text></Button>}
+                            {requestInProcess && <Button onPress={ (e) => {e.preventDefault(); FinishRequest()}} rounded style={{height: 150}} large block danger>{ !finishLoading && <Text uppercase style={{fontSize: 50}}>FINALIZAR</Text>}{finishLoading && <Spinner color="#fff" size="large" />}</Button>}
+                            {!requestInProcess && <Button onPress={ (e) => { e.preventDefault(); nextRequest()}} rounded style={{height: 150}} large block blue>{ !inProcessLoading && <Text uppercase style={{fontSize: 60}}>PROXIMO</Text>}{inProcessLoading && <Spinner size="large" color="#fff" />}</Button>}
                         </Body>
                     </CardItem>
                     <CardItem>
                         <Left>
-                            {requestInProcess && <Button onPress={setTCPayment}><Icon size={30} color="#C0C0C0" name="credit-card-alt" ></Icon></Button>}
+                            {(requestInProcess && (requests[0].paymentType !== "CARD")) && <Button transparent style={{padding: 3}} onPress={(e) => { e.preventDefault(); setTCPayment()}}>{ !tcPayLoading && <Icon size={30} color="#f0ad4e" name="credit-card-alt" ></Icon>}{tcPayLoading && <Spinner size="small" color="#f0ad4e" />}</Button>}
                         </Left>
                     </CardItem>
                 </Card>
-                </Block>
+                </Block>}
                 <Block style={{margin: 5}}>
                     <List>{_requestsList}</List>
                 </Block>
             </ScrollView>
+            <Modal
+              animationType="slide"
+              transparent={true}
+              visible={cancelOverlay}
+            >
+              <View style={styles.centeredView}>
+                <View style={styles.modalView}>
+                  <Text style={{marginBottom: 3, fontSize: 16}}>Seguro que desea cancelar?</Text>
+                  <Block style={{flexDirection: "row", justifyContent: "space-around", padding: 10}}>
+                    <Button style={{marginRight: 5}} success onPress={confirmCancelRequest}>{ !cancelLoading && <Text>Si</Text>}{cancelLoading && <Spinner size="small" color="#fff" />}</Button>
+                    <Button danger onPress={ (e) => { e.preventDefault(); setCancelOverlay(false);}}><Text>No</Text></Button>
+                  </Block>
+                </View>
+              </View>
+            </Modal>
         </Block>
       }
     </Block>
  );
 }
+
+const styles = StyleSheet.create({
+    centeredView: {
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+      marginTop: 22
+    },
+    modalView: {
+      margin: 20,
+      backgroundColor: "white",
+      borderRadius: 20,
+      padding: 35,
+      alignItems: "center",
+      shadowColor: "#000",
+      shadowOffset: {
+        width: 0,
+        height: 2
+      },
+      shadowOpacity: 0.25,
+      shadowRadius: 3.84,
+      elevation: 5
+    },
+    modalText: {
+      marginBottom: 15,
+      textAlign: "center"
+    }
+  });
 
 
 export default Requests;

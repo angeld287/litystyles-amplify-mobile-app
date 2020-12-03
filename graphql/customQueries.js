@@ -180,6 +180,7 @@ export const getOffice = /* GraphQL */ `
           name
           username
           officeId
+          phoneid
           services {
             items {
               service {
@@ -245,6 +246,7 @@ export const listRequestsFull = /* GraphQL */ `
               name
               officeId
               username
+              phoneid
             }
           }
         }
