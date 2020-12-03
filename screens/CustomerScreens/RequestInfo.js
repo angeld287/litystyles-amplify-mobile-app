@@ -10,6 +10,8 @@ import { updateRequest } from '../../graphql/mutations';
 import { onUpdateRequestC, onUpdateRequestE } from '../../graphql/customSubscptions';
 import GLOBAL from '../../global';
 
+import { sendNotifications } from '../../constants/functions'; 
+
 import moment from 'moment';
 import 'moment/min/locales';
 
@@ -42,13 +44,10 @@ const RequestInfo = ({ route, navigation }) => {
   const isCustomer = (route.params?.authData.roles.indexOf('customer') !== -1);
 
   const subscribeRequest = useCallback(async () => {
-    console.log(hasRequests);
     try {
       if(hasRequests){
-        console.log('hasReq');
         await API.graphql(graphqlOperation(onUpdateRequestE, {resposibleName: responsible, state: "FINISHED"})).subscribe({
           next: r => {
-            console.log(r);
             if(r.value.data.onUpdateRequestE.customerUsername === authData.username){
               setHasRequests(false);
               GLOBAL.HAS_REQUEST = false;
@@ -191,6 +190,19 @@ const RequestInfo = ({ route, navigation }) => {
 		setCloading(true);
 		API.graphql(graphqlOperation(updateRequest, { input: { id: requests[0].id, state: 'CANCELED' } }))
 		.then(r => {
+
+      if(requests[0].resposible.items[0].employee.phoneid !== null && requests[0].resposible.items[0].employee.phoneid !== ""){
+        const object = {
+            to: requests[0].resposible.items[0].employee.phoneid,
+            title: 'Solicitud Cancelada',
+            body: authData.attributes.name+ " ha cancelado la solicitud.",
+            sound: 'default',
+            naviateto: "Employee",
+        }
+
+        sendNotifications(object);
+      }
+
       requests.splice(requests.findIndex(e => e.id === requests[0].id), 1);
 
       sleep(1000).then(() => {

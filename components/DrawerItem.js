@@ -64,6 +64,15 @@ class DrawerItem extends React.Component {
             color={focused ? "white" : argonTheme.COLORS.INFO}
           />
         );
+      case "Employee":
+        return (
+          <Icon
+            name="scissors"
+            family="Feather"
+            size={16}
+            color={focused ? "white" : argonTheme.COLORS.INFO}
+          />
+        );
       case "Getting Started":
         return (<Icon
           name="spaceship"

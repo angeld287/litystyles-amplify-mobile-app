@@ -180,6 +180,7 @@ export const getOffice = /* GraphQL */ `
           name
           username
           officeId
+          phoneid
           services {
             items {
               service {
@@ -245,6 +246,7 @@ export const listRequestsFull = /* GraphQL */ `
               name
               officeId
               username
+              phoneid
             }
           }
         }
@@ -258,6 +260,53 @@ export const listRequestsFull = /* GraphQL */ `
         paymentType
         deleted
         deletedAt
+        createdAt
+      }
+      nextToken
+    }
+  }
+`;
+
+export const listRequestsEmployee = /* GraphQL */ `
+  query ListRequests(
+    $filter: ModelRequestFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    listRequests(filter: $filter, limit: $limit, nextToken: $nextToken) {
+      items {
+        id
+        companyId
+        resposible {
+          nextToken
+        }
+        service {
+          items {
+            service {
+              name
+            }
+          }
+        }
+        product {
+          nextToken
+        }
+        customer {
+          items {
+            customer {
+              name
+              phoneid
+              id
+            }
+          }
+        }
+        resposibleName
+        customerName
+        state
+        notified
+        paymentType
+        deleted
+        deletedAt
+        date
         createdAt
       }
       nextToken

@@ -54,7 +54,7 @@ class MySignIn extends SignIn {
           } else if (user.challengeName === "MFA_SETUP") {
             this.changeState("TOTPSetup", user);
           } else {
-            this.props.onStateChange('signedIn',{});
+            this.props.onStateChange('signedIn', user);
           }
       
         } catch (e) {

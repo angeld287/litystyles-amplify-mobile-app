@@ -5,6 +5,7 @@ import { Container, Header, Content, List, ListItem, Thumbnail, Left, Spinner, R
 import { Button, Block, NavBar, theme, Input } from 'galio-framework';
 import { API, graphqlOperation, Storage } from 'aws-amplify';
 import { HeaderHeight } from "../../constants/utils";
+import { sendNotifications } from '../../constants/functions'; 
 
 import GLOBAL from '../../global';
 
@@ -23,9 +24,9 @@ const SendRequest = ({ route, navigation }) => {
 
   const { authData, employee, service } = route.params;
 
-  useEffect(() => {
-		
-  }, []);
+  /* useEffect(() => {
+    console.log(employee);
+  }, []); */
 
 
   const sendRequest = async () => {
@@ -49,6 +50,18 @@ const SendRequest = ({ route, navigation }) => {
 			await API.graphql(graphqlOperation(createRequestEmployee, {input: rei}));
       await API.graphql(graphqlOperation(createRequestService, {input: rsi}));
       await API.graphql(graphqlOperation(createRequestCustomer, {input: rci}));
+
+      if(employee.phoneid !== null && employee.phoneid !== ""){
+        const object = {
+            to: employee.phoneid,
+            title: 'Nueva Solicitud de Servicio',
+            body: "Ha recibido una nueva solicitud de "+authData.attributes.name,
+            sound: 'default',
+            naviateto: "Employee",
+        }
+
+        await sendNotifications(object);
+      }
       
       GLOBAL.HAS_REQUEST = true;
 
