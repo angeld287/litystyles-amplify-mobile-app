@@ -22,14 +22,19 @@ const _offices = (!props.loading && props.offices !== null)?([].concat(props.off
                     case 0:
                         return (<Card {...props} key={i} item={office} horizontal  />)
                     case 1:
-                        var office_2 = {
-                            id: props.offices[i+1].id,
-                            title: props.offices[i+1].name,
-                            image: props.offices[i+1].image,
-                            cta: 'Entrar', 
-                            horizontal: true
-                        };
-                        return (<Block flex row><Card {...props} key={i} item={office}  style={{ marginRight: theme.SIZES.BASE }}  /><Card {...props} key={i+1} item={office_2} /></Block>)
+                        if(props.offices.length > 2){
+                          var office_2 = {
+                              id: props.offices[i+1].id,
+                              title: props.offices[i+1].name,
+                              image: props.offices[i+1].image,
+                              cta: 'Entrar', 
+                              horizontal: true
+                          };
+                          return (<Block flex row><Card {...props} key={i} item={office}  style={{ marginRight: theme.SIZES.BASE }}  /><Card {...props} key={i+1} item={office_2} /></Block>)
+                        }else{
+                          return (<Card {...props} key={i} item={office} horizontal  />)
+                        }
+                        
                     case 2:
                         break
                     case 3:

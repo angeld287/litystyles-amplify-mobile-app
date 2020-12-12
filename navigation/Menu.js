@@ -20,6 +20,7 @@ function CustomDrawerContent({ params, _, ...rest }) {
   ];
 
   if((params.authData.roles.indexOf('employee') !== -1)) { screens.push("Employee")}
+  if((params.authData.roles.indexOf('employee') !== -1)) { screens.push("Suppliers")}
 
   return (
     <Block

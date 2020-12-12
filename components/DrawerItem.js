@@ -64,6 +64,15 @@ class DrawerItem extends React.Component {
             color={focused ? "white" : argonTheme.COLORS.INFO}
           />
         );
+      case "Suppliers":
+        return (
+          <Icon
+            name="spray-bottle"
+            family="MaterialCommunityIcons"
+            size={16}
+            color={focused ? "white" : argonTheme.COLORS.BLACK}
+          />
+        );
       case "Employee":
         return (
           <Icon

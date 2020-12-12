@@ -2,6 +2,7 @@ import React from 'react';
 import * as Font from 'expo-font';
 import { createIconSetFromIcoMoon } from '@expo/vector-icons';
 import { Icon } from 'galio-framework';
+import { Icon as I} from 'native-base';
 
 import argonConfig from '../assets/config/argon.json';
 const ArgonExtra = require('../assets/font/argon.ttf');
@@ -18,13 +19,16 @@ class IconExtra extends React.Component {
   }
 
   render() {
-    const { name, family, ...rest } = this.props;
+    const { name, family, color, size, ...rest } = this.props;
     
     if (name && family && this.state.fontLoaded) {
       if (family === 'ArgonExtra') {
-        return <IconArgonExtra name={name} family={family} {...rest} />;
+        return <IconArgonExtra name={name} family={family} color={color} size={size} {...rest} />;
       }
-      return <Icon name={name} family={family} {...rest} />;
+      if (family === 'MaterialCommunityIcons') {
+        return <I style={{fontSize: size, color: color}} name={name} type={family} {...rest} />;
+      }
+      return <Icon name={name} family={family} color={color} size={size} {...rest} />;
     }
 
     return null;

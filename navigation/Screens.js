@@ -9,6 +9,7 @@ import { Block } from "galio-framework";
 
 // screens
 import Home from "../screens/Home";
+import Suppliers from "../screens/SupplierScreens/Suppliers";
 import Onboarding from "../screens/Onboarding";
 import Pro from "../screens/Pro";
 import Profile from "../screens/Profile";
@@ -268,6 +269,103 @@ function HomeStack(props) {
   );
 }
 
+
+// Stack de suplidores para solicitudes de productos
+
+function SupplierStack(props) {
+
+
+  const params = {
+    ...props.route.params,
+  }
+
+  return (
+    <Stack.Navigator mode="card" headerMode="screen">
+      <Stack.Screen
+        name="Suppliers"
+        component={Suppliers}
+        initialParams={params}
+        options={{
+          header: ({ navigation, scene }) => (
+            <Header
+              title="Suplidores"
+              navigation={navigation}
+              scene={scene}
+            />
+          ),
+          cardStyle: { backgroundColor: "#F8F9FE" }
+        }}
+      />
+      <Stack.Screen
+        name="ProductRequests"
+        component={RequestInfo}
+        initialParams={props.route.params}
+        options={{
+          header: ({ navigation, scene }) => (
+            <Header
+              title="Solicitudes de Productos"
+              back
+              navigation={navigation}
+              scene={scene}
+            />
+          ),
+          cardStyle: { backgroundColor: "#F8F9FE" }
+        }}
+      />
+      <Stack.Screen
+        name="Profile"
+        component={Profile}
+        initialParams={props.route.params}
+        options={{
+          header: ({ navigation, scene }) => (
+            <Header
+              title=""
+              back
+              white
+              transparent
+              navigation={navigation}
+              scene={scene}
+            />
+          ),
+          headerTransparent: true
+        }}
+      />
+      <Stack.Screen
+        name="Office"
+        component={Office}
+        initialParams={props.route.params}
+        options={{
+          header: ({ navigation, scene }) => (
+            <Header
+              title="Empresa"
+              back
+              navigation={navigation}
+              scene={scene}
+            />
+          ),
+          headerTransparent: true
+        }}
+      />
+      <Stack.Screen
+        name="ProductDetail"
+        component={SelectService}
+        initialParams={props.route.params}
+        options={{
+          header: ({ navigation, scene }) => (
+            <Header
+              title="Seleccione un Servicio"
+              back
+              navigation={navigation}
+              scene={scene}
+            />
+          ),
+          headerTransparent: true
+        }}
+      />
+    </Stack.Navigator>
+  );
+}
+
 export default function OnboardingStack(props) {
   return (
     <Stack.Navigator mode="card" headerMode="none">
@@ -327,6 +425,7 @@ const AppStack = (props) => {
     >
       <Drawer.Screen name="Home" component={HomeStack} initialParams={props.route.params}/>
       <Drawer.Screen name="Employee" component={EmployeeStack} initialParams={props.route.params}/>
+      <Drawer.Screen name="Suppliers" component={SupplierStack} initialParams={props.route.params}/>
       <Drawer.Screen name="Elements" component={ElementsStack} />
       <Drawer.Screen name="Articles" component={ArticlesStack} />
     </Drawer.Navigator>
