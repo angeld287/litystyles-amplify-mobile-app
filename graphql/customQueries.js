@@ -77,6 +77,18 @@ query getCompanyProductsAndServices($id: ID!) {
         cost
       }
     }
+    products {
+      items {
+        cost
+        quantity
+        product {
+          name
+          image
+          id
+          packagingformat
+        }
+      }
+    }
   }
 }
 `;

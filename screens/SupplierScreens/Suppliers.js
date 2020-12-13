@@ -102,7 +102,7 @@ const Suppliers = (props) => {
        showsVerticalScrollIndicator={false}
        contentContainerStyle={styles.articles}>
        {renderHeader()}
-       <Companies {...props} offices={_offices} loading={loading} />
+       <Companies supplier={true} {...props} offices={_offices} loading={loading} />
       </ScrollView>
    </Block>
  );

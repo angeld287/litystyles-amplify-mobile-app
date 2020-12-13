@@ -7,20 +7,26 @@ import { API, graphqlOperation, Storage } from 'aws-amplify';
 import { Images } from "../../constants";
 import { HeaderHeight } from "../../constants/utils";
 
+import { Image as I } from '../../components'
+
+import _image from "../../images/avatardefault.png";
+
 import { getOffice, listRequests, getCompany } from '../../graphql/customQueries';
 
 const { width, height } = Dimensions.get("screen");
 
 const thumbMeasure = (width - 48 - 32) / 3;
 
-const Office = ({ route, navigation }) => {
+const Office = (props) => {
   
+  const { route, navigation } = props;
   const [ office, setOffice ] = useState(null);
+  const [ products, setProducts ] = useState([]);
   const [ employees, setEmployees ] = useState(null);
   const [ _image , setImage ] = useState('')
   const [ loading, setLoading ] = useState(true);
 
-  const { id } = route.params;
+  const { id, supplier } = route.params;
 
   const isCustomer = (route.params?.authData.roles.indexOf('customer') !== -1);
 
@@ -32,15 +38,31 @@ const Office = ({ route, navigation }) => {
             var i = await Storage.get(image, { level: 'public' });
             return i
         }else{
-            return defaultImage;
+            return _image;
         }
       } catch (e) {
           console.log(e); 
-          return defaultImage;
+          return _image;
       }
     },
     [],
   );
+
+  const _products = (!loading && products !== null)?([].concat(products)
+    .map((item,i)=> 
+      <ListItem avatar>
+            <Left>
+                <ProductImage image={item.product.image} />
+            </Left>
+            <Body>
+                <Text>{item.product.name}</Text>
+                <Text note>{item.quantity} unidad(es) disponible(s)</Text>
+            </Body>
+            <Right>
+                <Button transparent onPress={() => { navigation.navigate('ProductDetail', {product: item})}}><Text>Ver</Text></Button>
+            </Right>
+      </ListItem>
+    ) ):(<ListItem></ListItem>)
 
   const _employeesList = (employees !== null)?([].concat(employees).map((e,i)=> 
         <CardItem>
@@ -65,6 +87,7 @@ const Office = ({ route, navigation }) => {
         var officeApi = null;
         var companyApi = null;
         var companyServices = [];
+        var companyProducts = [];
         var image = '';
         var _employees = [];
 
@@ -73,6 +96,7 @@ const Office = ({ route, navigation }) => {
         
         companyApi = await API.graphql(graphqlOperation(getCompany, { id: officeApi.data.getOffice.companyId } ) );
         companyServices = companyApi.data.getCompany.services.items;
+        companyProducts = companyApi.data.getCompany.products.items;
         
         image =  await getImageFromStorage(officeApi.data.getOffice.image);
 
@@ -83,7 +107,9 @@ const Office = ({ route, navigation }) => {
           const _filter = {
             and: {or: {state: {eq: 'IN_PROCESS'}, state: {eq: 'ON_HOLD'}}, resposibleName: {eq: e.username}}
           }
-          reqs =  await API.graphql(graphqlOperation(listRequests, { limit: 1000, filter: _filter } ) );
+
+          //solo puede ver la cantidad de request del empleado si la oficina es diferente de suplidor ya que los suplidores no necesitan empleados
+          if(!supplier){reqs =  await API.graphql(graphqlOperation(listRequests, { limit: 1000, filter: _filter } ) );}
           
           e.services.items.forEach(es => {  
             _companyServices.push(companyServices[companyServices.findIndex(_ => _.service.id === es.service.id)]);
@@ -92,6 +118,7 @@ const Office = ({ route, navigation }) => {
           _employees.push({ ...e, companyId: officeApi.data.getOffice.companyId, _companyServices, quantity: reqs.data.listRequests.items.length});
         });
 
+        setProducts(companyProducts);
         setEmployees(_employees);
 
         sleep(1000).then(() => {
@@ -139,9 +166,8 @@ const Office = ({ route, navigation }) => {
                 {Platform.OS === "ios" && <Subtitle style={{margin: 5}}>{office.name}</Subtitle>}
                 {Platform.OS === "android" && <Block center><Text note style={{margin: 5}}>{office.name}</Text></Block>}
                 <Content>
-                  <Card>
-                    {_employeesList}
-                  </Card>
+                  {!supplier && <Card>{_employeesList}</Card>}
+                  {supplier && <List>{_products}</List>}
                 </Content>
               </Container>
             </ScrollView>
@@ -150,6 +176,49 @@ const Office = ({ route, navigation }) => {
       }
     </Block>
  );
+}
+
+const ProductImage = (props) => {
+  
+  const { image } = props;
+
+  const [ _image , setImage ] = useState('')
+  const [ loading , setLoading ] = useState(true)
+
+  const getImageFromStorage = useCallback(
+    async (image) => {
+      try {
+        if(image !== null) {
+            var i = await Storage.get(image, { level: 'public' });
+            return i
+        }else{
+            return defaultImage;
+        }
+      } catch (e) {
+          console.log(e); 
+          return defaultImage;
+      }
+    },
+    [],
+  );
+
+  useEffect(() => {
+    async function fetchData() {
+        try {
+          setLoading(true)
+          const img = await getImageFromStorage(image);
+          setImage(img);
+          setLoading(false);
+        } catch (e) {
+          console.log(e);
+          setLoading(false);
+        }
+    }
+    fetchData();
+  }, [getImageFromStorage]);
+
+  return (<Thumbnail source={{uri: _image}} />);
+
 }
 
 const styles = StyleSheet.create({
