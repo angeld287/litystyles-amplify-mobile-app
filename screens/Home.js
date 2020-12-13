@@ -145,7 +145,7 @@ const exectFilter = (isBarber) => {
        showsVerticalScrollIndicator={false}
        contentContainerStyle={styles.articles}>
        {renderHeader()}
-       <Companies {...props} offices={_offices} loading={loading} />
+       <Companies supplier={false} {...props} offices={_offices} loading={loading} />
       </ScrollView>
    </Block>
  );

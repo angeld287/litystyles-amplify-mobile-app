@@ -16,7 +16,8 @@ const _offices = (!props.loading && props.offices !== null)?([].concat(props.off
                     title: item.name,
                     image: item.image,
                     cta: 'Entrar', 
-                    horizontal: true
+                    horizontal: true,
+                    supplier: props.supplier
                 };
                 switch (i) {
                     case 0:

@@ -6,6 +6,9 @@ import Header from './Header';
 import Input from './Input';
 import Switch from './Switch';
 import Companies from './Companies';
+import Item from "./Item";
+import Products from "./Products"
+import Image from './Image';
 
 export {
   Button,
@@ -15,5 +18,8 @@ export {
   Input,
   Header,
   Switch,
-  Companies
+  Companies,
+  Item,
+  Products,
+  Image
 };
