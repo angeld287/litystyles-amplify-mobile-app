@@ -5,15 +5,9 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 
-import { Block } from "galio-framework";
-
 // screens
 import Home from "../screens/Home";
-import Suppliers from "../screens/SupplierScreens/Suppliers";
-import Onboarding from "../screens/Onboarding";
-import Pro from "../screens/Pro";
 import Profile from "../screens/Profile";
-import Register from "../screens/Register";
 import Elements from "../screens/Elements";
 import Articles from "../screens/Articles";
 
@@ -25,12 +19,16 @@ import RequestInfo from '../screens/CustomerScreens/RequestInfo'
 
 //employee screens 
 import Requests from '../screens/EmployeeScreens/Requests'
+
+//suppliers screens
+import Suppliers from "../screens/SupplierScreens/Suppliers";
+import ProductDetail from "../screens/SupplierScreens/ProductDetail";
+
 // drawer
 import CustomDrawerContent from "./Menu";
 
 // header for screens
 import { Icon, Header } from "../components";
-import { argonTheme, tabs } from "../constants";
 
 const { width } = Dimensions.get("screen");
 
@@ -348,12 +346,12 @@ function SupplierStack(props) {
       />
       <Stack.Screen
         name="ProductDetail"
-        component={SelectService}
+        component={ProductDetail}
         initialParams={props.route.params}
         options={{
           header: ({ navigation, scene }) => (
             <Header
-              title="Seleccione un Servicio"
+              title="Detalle de Producto"
               back
               navigation={navigation}
               scene={scene}

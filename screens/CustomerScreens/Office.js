@@ -2,12 +2,8 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { StyleSheet, Dimensions, ScrollView, Image, View, ActivityIndicator, ImageBackground, Platform } from 'react-native';
 import { Container, Header, Content, List, ListItem, Thumbnail, Left, Body, Right, Button, Card, CardItem, Icon, Text, Subtitle, Spinner } from 'native-base';
 
-import { Block, NavBar, theme, Accordion } from 'galio-framework';
+import { Block, theme } from 'galio-framework';
 import { API, graphqlOperation, Storage } from 'aws-amplify';
-import { Images } from "../../constants";
-import { HeaderHeight } from "../../constants/utils";
-
-import { Image as I } from '../../components'
 
 import _image from "../../images/avatardefault.png";
 
@@ -55,11 +51,11 @@ const Office = (props) => {
                 <ProductImage image={item.product.image} />
             </Left>
             <Body>
-                <Text>{item.product.name}</Text>
+                <Text style={{marginBottom: 5}}>{item.product.name}</Text>
                 <Text note>{item.quantity} unidad(es) disponible(s)</Text>
             </Body>
             <Right>
-                <Button transparent onPress={() => { navigation.navigate('ProductDetail', {product: item})}}><Text>Ver</Text></Button>
+                <Button transparent onPress={() => { navigation.navigate('ProductDetail', {product: item})}}><Text style={{color: 'blue'}}>Ver</Text></Button>
             </Right>
       </ListItem>
     ) ):(<ListItem></ListItem>)
