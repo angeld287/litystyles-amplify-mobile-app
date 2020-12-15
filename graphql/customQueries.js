@@ -445,3 +445,47 @@ export const listCustomers = /* GraphQL */ `
     }
   }
 `;
+
+export const listRequestsForProducts = /* GraphQL */ `
+  query ListRequests(
+    $filter: ModelRequestFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    listRequests(filter: $filter, limit: $limit, nextToken: $nextToken) {
+      items {
+        id
+        companyId
+        resposible {
+          nextToken
+        }
+        service {
+          nextToken
+        }
+        product {
+          items {
+            id
+            product {
+              name
+              id
+            }
+            quantity
+          }
+        }
+        resposibleName
+        customerName
+        customerUsername
+        customer {
+          nextToken
+        }
+        state
+        paymentType
+        date
+        deleted
+        deletedAt
+        createdAt
+      }
+      nextToken
+    }
+  }
+`;

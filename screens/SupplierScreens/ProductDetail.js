@@ -2,7 +2,15 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { Image } from 'react-native';
 import { Container, Header, Content, Card, CardItem, Thumbnail, Text, Button, Icon, Left, Body, Right, Input, Spinner } from 'native-base';
 import { API, graphqlOperation, Storage } from 'aws-amplify';
-import { Block } from "galio-framework";
+import { createRequest, createRequestProduct, createRequestCustomer, updateRequestProduct } from "../../graphql/mutations";
+import { listRequestsForProducts } from "../../graphql/customQueries";
+
+import { sendNotifications } from '../../constants/functions'; 
+
+import moment from 'moment';
+import 'moment/min/locales';
+
+moment.locale('es')
 
 import NumericInput from 'react-native-numeric-input'
 
@@ -46,49 +54,72 @@ const ProductDetail = (props) => {
     }, [getImageFromStorage]);
 
     const addToTheCart = async () => {
-        const _date = moment(new Date()).format('YYYY-MM-DDTHH:mm:ss.SSS')+'Z';
-    /* 
-        const ri = {state: 'ON_CART', paymentType: 'CASH', customerName: authData.attributes.name, customerUsername: authData.username, companyId: employee.companyId, date: _date, createdAt: _date};
-        const rpi = {requestProductRequestId: "", requestProductProductId: "", quantity: "", cost: "", createdAt: _date};
-        const rci = {resposibleName: "", requestCustomerRequestId: "", requestCustomerCustomerId: "", createdAt: _date, cost: ""};
-        
-        try {
-          setLoading(true);
-          
-                var request = {};
-                request = await API.graphql(graphqlOperation(createRequest, {input: ri}));
-    
-                rei.requestEmployeeRequestId = request.data.createRequest.id;
-          rsi.requestServiceRequestId = request.data.createRequest.id;
-          rci.requestCustomerRequestId = request.data.createRequest.id;
-    
-          await API.graphql(graphqlOperation(createRequestService, {input: rsi}));
-          await API.graphql(graphqlOperation(createRequestCustomer, {input: rci}));
-    
-          if(employee.phoneid !== null && employee.phoneid !== ""){
+       try {
+        setAddCartLoading(true);
+
+          const _date = moment(new Date()).format('YYYY-MM-DDTHH:mm:ss.SSS')+'Z';
+              
+          const ri = {state: 'ON_CART', paymentType: 'CASH', customerName: props.route.params.authData.attributes.name, customerUsername: props.route.params.authData.username, companyId: props.route.params.office.companyId, date: _date, createdAt: _date};
+          const rpi = {requestProductRequestId: "", requestProductProductId: product.id, quantity: _quantity, cost: _cost, createdAt: _date};
+          const rci = { requestCustomerRequestId: "", requestCustomerCustomerId: props.route.params.authData.userdb.id, createdAt: _date, cost: _cost};
+          var request = null;
+          var userRequests = {};
+          var _nextToken = null;
+
+          userRequests = await API.graphql(graphqlOperation(listRequestsForProducts, {limit: 100, filter: {state: {eq: 'ON_CART'}}}));
+          _nextToken = userRequests.data.listRequests.nextToken;
+
+          while (_nextToken !== null) {
+            userRequests = await API.graphql(graphqlOperation(listRequestsForProducts, {limit: 100, nextToken: userRequests.data.listRequests.nextToken, filter: {state: {eq: 'ON_CART'}}}));
+            if(userRequests.data.listRequests.items.length > 0){
+              request = userRequests.data.listRequests.items[0];
+              break;
+            }
+            _nextToken = userRequests.data.listRequests.nextToken;
+          }
+
+          if(request === null){
+            request = await API.graphql(graphqlOperation(createRequest, {input: ri}));
+            rpi.requestProductRequestId = request.data.createRequest.id;
+            rci.requestCustomerRequestId = request.data.createRequest.id;
+
+            await API.graphql(graphqlOperation(createRequestCustomer, {input: rci}));
+            await API.graphql(graphqlOperation(createRequestProduct, {input: rpi}));
+
+          }else{
+            rpi.requestProductRequestId = request.id;
+            console.log(request.id);
+            if(request.product.items.findIndex(_ =>_.product.id === product.id) === -1){
+              await API.graphql(graphqlOperation(createRequestProduct, {input: rpi}));
+            }else{
+              const qty = parseInt(request.product.items[request.product.items.findIndex(_ =>_.product.id === product.id)].quantity) + parseInt(_quantity);
+              const id = request.product.items[request.product.items.findIndex(_ =>_.product.id === product.id)].id;
+              const rpcost = cost * qty;
+              
+              await API.graphql(graphqlOperation(updateRequestProduct, {input: {id: id, quantity: qty, cost: rpcost }}));
+            }
+          }
+
+          /* if(props.route.params.office.employees.items[0].phoneid !== null && props.route.params.office.employees.items[0].phoneid !== ""){
             const object = {
                 to: employee.phoneid,
-                title: 'Nueva Solicitud de Servicio',
-                body: "Ha recibido una nueva solicitud de "+authData.attributes.name,
+                title: 'Nueva Solicitud de Producto',
+                body: "Ha recibido una nueva solicitud de "+props.route.params.authData.attributes.name,
                 sound: 'default',
                 naviateto: "Employee",
             }
     
             await sendNotifications(object);
-          }
+          } */
           
-          GLOBAL.HAS_REQUEST = true;
-    
-          navigation.navigate('Homee');
-          navigation.navigate('RequestInfo');
-          
-          setLoading(false);
+          setAddCartLoading(false);
     
         } catch (e) {
-          setLoading(false);
+          console.log(e);
+          setAddCartLoading(false);
           setErrorsr(true)
           setErrorsrm('Ha ocurrido un error. Favor intentar mas tarde');
-        } */
+        }
     }
   
     return (

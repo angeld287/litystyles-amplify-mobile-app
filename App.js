@@ -239,7 +239,7 @@ const Home = props => {
       API.graphql(graphqlOperation(updateCustomer, {input: {id: userdb.id, phoneid: token.token}})).catch(_ => console.log("ha ocurrido un error al actualizar el phoneid del usuario"));
     }
 
-    if(roles.indexOf('employee') !== -1 && employeedb !== null && employeedb.phoneid !== token.token){
+    if((roles.indexOf('employee') !== -1 || roles.indexOf('supplier') !== -1) && employeedb !== null && employeedb.phoneid !== token.token){
       API.graphql(graphqlOperation(updateEmployee, {input: {id: employeedb.id, phoneid: token.token}})).catch(_ => console.log("ha ocurrido un error al actualizar el phoneid del empleado ", _));
     }
   }
@@ -336,7 +336,7 @@ const AuthScreens = (props) => {
       });
     }
 
-    if(props.authData.signInUserSession.accessToken.payload['cognito:groups'].indexOf('employee') !== -1){
+    if(props.authData.signInUserSession.accessToken.payload['cognito:groups'].indexOf('employee') !== -1 || props.authData.signInUserSession.accessToken.payload['cognito:groups'].indexOf('supplier') !== -1){
       _getEmployee();
     }else{
       props.authData.employeedb = null;
