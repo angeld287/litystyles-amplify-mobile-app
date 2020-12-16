@@ -24,6 +24,9 @@ import Requests from '../screens/EmployeeScreens/Requests'
 import Suppliers from "../screens/SupplierScreens/Suppliers";
 import ProductDetail from "../screens/SupplierScreens/ProductDetail";
 
+//cart
+import Cart from "../screens/Cart";
+
 // drawer
 import CustomDrawerContent from "./Menu";
 
@@ -295,22 +298,6 @@ function SupplierStack(props) {
         }}
       />
       <Stack.Screen
-        name="ProductRequests"
-        component={RequestInfo}
-        initialParams={props.route.params}
-        options={{
-          header: ({ navigation, scene }) => (
-            <Header
-              title="Solicitudes de Productos"
-              back
-              navigation={navigation}
-              scene={scene}
-            />
-          ),
-          cardStyle: { backgroundColor: "#F8F9FE" }
-        }}
-      />
-      <Stack.Screen
         name="Profile"
         component={Profile}
         initialParams={props.route.params}
@@ -321,6 +308,22 @@ function SupplierStack(props) {
               back
               white
               transparent
+              navigation={navigation}
+              scene={scene}
+            />
+          ),
+          headerTransparent: true
+        }}
+      />
+      <Stack.Screen
+        name="Cart"
+        component={Cart}
+        initialParams={props.route.params}
+        options={{
+          header: ({ navigation, scene }) => (
+            <Header
+              title="Carrito"
+              back
               navigation={navigation}
               scene={scene}
             />

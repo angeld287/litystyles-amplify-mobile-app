@@ -58,6 +58,12 @@ const InfoButton = ({isWhite, style, navigation}) => (
   </TouchableOpacity>
 );
 
+const CartButton = ({isWhite, style, navigation}) => (
+  <TouchableOpacity style={[styles.button, style]} onPress={() => navigation.navigate('Cart')}>
+    <I type="EvilIcons" name="cart" style={{fontSize: 30}}/>
+  </TouchableOpacity>
+);
+
 const SearchButton = ({isWhite, style, navigation}) => (
   <TouchableOpacity style={[styles.button, style]} onPress={() => navigation.navigate('Pro')}>
     <Icon
@@ -96,7 +102,7 @@ class Header extends React.Component {
           <InfoButton key='info-title' navigation={navigation} isWhite={white} />,
           <ProfileButton key='profile-title' navigation={navigation} isWhite={white} />
         ]);
-      case 'Office':
+      case 'Empresa':
         return ([
           <ProfileButton key='profile-title' navigation={navigation} isWhite={white} />
         ]);
@@ -132,6 +138,16 @@ class Header extends React.Component {
         return ([
           <ProfileButton key='profile-title' navigation={navigation} isWhite={white} />
         ]);
+      case 'Suplidores':
+          return ([
+            <CartButton  key='profile-title' navigation={navigation} isWhite={white} />,
+            <ProfileButton key='profile-title' navigation={navigation} isWhite={white} />
+          ]);
+      case 'Detalle de Producto':
+          return ([
+            <CartButton  key='profile-title' navigation={navigation} isWhite={white} />,
+            <ProfileButton key='profile-title' navigation={navigation} isWhite={white} />
+          ]);
       default:
         break;
     }
