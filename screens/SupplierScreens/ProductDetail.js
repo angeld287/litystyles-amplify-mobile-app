@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { Image } from 'react-native';
+import { Image, Alert } from 'react-native';
 import { Container, Header, Content, Card, CardItem, Thumbnail, Text, Button, Icon, Left, Body, Right, Input, Spinner } from 'native-base';
 import { API, graphqlOperation, Storage } from 'aws-amplify';
 import { createRequest, createRequestProduct, createRequestCustomer, updateRequestProduct } from "../../graphql/mutations";
@@ -87,16 +87,23 @@ const ProductDetail = (props) => {
             await API.graphql(graphqlOperation(createRequestProduct, {input: rpi}));
 
           }else{
-            rpi.requestProductRequestId = request.id;
-            console.log(request.id);
-            if(request.product.items.findIndex(_ =>_.product.id === product.id) === -1){
-              await API.graphql(graphqlOperation(createRequestProduct, {input: rpi}));
+            if (props.route.params.office.companyId === request.companyId) {
+              rpi.requestProductRequestId = request.id;
+
+              if(request.product.items.findIndex(_ =>_.product.id === product.id) === -1){
+
+                await API.graphql(graphqlOperation(createRequestProduct, {input: rpi}));
+
+              }else{
+
+                const qty = parseInt(request.product.items[request.product.items.findIndex(_ =>_.product.id === product.id)].quantity) + parseInt(_quantity);
+                const id = request.product.items[request.product.items.findIndex(_ =>_.product.id === product.id)].id;
+                const rpcost = cost * qty;
+                
+                await API.graphql(graphqlOperation(updateRequestProduct, {input: {id: id, quantity: qty, cost: rpcost }}));
+              }
             }else{
-              const qty = parseInt(request.product.items[request.product.items.findIndex(_ =>_.product.id === product.id)].quantity) + parseInt(_quantity);
-              const id = request.product.items[request.product.items.findIndex(_ =>_.product.id === product.id)].id;
-              const rpcost = cost * qty;
-              
-              await API.graphql(graphqlOperation(updateRequestProduct, {input: {id: id, quantity: qty, cost: rpcost }}));
+              Alert.alert("Hay una compra en el carrito", "Para poder comprar a otro suplidor, debe solicitar o cancelar la existente.");
             }
           }
 
