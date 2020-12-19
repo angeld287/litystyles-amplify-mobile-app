@@ -1,5 +1,4 @@
 import React from "react";
-import { useSafeArea } from "react-native-safe-area-context";
 import {
   ScrollView,
   StyleSheet,
@@ -12,7 +11,6 @@ import { DrawerItem as DrawerCustomItem } from '../components';
 
 function CustomDrawerContent({ params, _, ...rest }) {
 
-  const insets = useSafeArea();
   const screens = [
     "Home",  
     //"Elements",
@@ -21,6 +19,7 @@ function CustomDrawerContent({ params, _, ...rest }) {
 
   if((params.authData.roles.indexOf('employee') !== -1)) { screens.push("Employee")}
   if((params.authData.roles.indexOf('employee') !== -1)) { screens.push("Suppliers")}
+  screens.push("Profile");
 
   return (
     <Block

@@ -19,7 +19,7 @@ moment.locale('es')
 
 import NumericInput from 'react-native-numeric-input'
 
-const Cart = (props) => {
+const Orders = (props) => {
 
     const [image, setImage ] = useState('');
     const [_quantity, setQuantity ] = useState(1);
@@ -99,28 +99,14 @@ const Cart = (props) => {
             </CardItem>
             <CardItem>
                 <Content>
-                  <Button rounded block warning>
-                    <Text>Enviar Solicitud</Text>
-                  </Button>
+                  <Text>En Espera de Aprobacion</Text>
                 </Content>
             </CardItem>
             <CardItem cardBody>
               <Block flex style={{padding: 5}}>
-                <CartItems remove numeric item={office} horizontal/>
-                <CartItems remove numeric item={office1} horizontal/>
+                <CartItems item={office} horizontal/>
+                <CartItems item={office1} horizontal/>
               </Block>
-            </CardItem>
-            <CardItem>
-              <Left>
-                <Button warning rounded>
-                  <Text>Solicitar</Text>
-                </Button>
-              </Left>
-              <Right>
-                <Button danger rounded>
-                  <Text>Cancelar</Text>
-                </Button>
-              </Right>
             </CardItem>
           </Card>
         </Content>
@@ -128,4 +114,4 @@ const Cart = (props) => {
     );
 }
 
-export default Cart
+export default Orders

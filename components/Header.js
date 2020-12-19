@@ -64,6 +64,12 @@ const CartButton = ({isWhite, style, navigation}) => (
   </TouchableOpacity>
 );
 
+const OrdersButton = ({isWhite, style, navigation}) => (
+  <TouchableOpacity style={[styles.button, style]} onPress={() => navigation.navigate('Orders')}>
+    <I type="EvilIcons" name="navicon" style={{fontSize: 30}}/>
+  </TouchableOpacity>
+);
+
 const SearchButton = ({isWhite, style, navigation}) => (
   <TouchableOpacity style={[styles.button, style]} onPress={() => navigation.navigate('Pro')}>
     <Icon
@@ -140,13 +146,13 @@ class Header extends React.Component {
         ]);
       case 'Suplidores':
           return ([
-            <CartButton  key='profile-title' navigation={navigation} isWhite={white} />,
-            <ProfileButton key='profile-title' navigation={navigation} isWhite={white} />
+            <OrdersButton key='profile-title' navigation={navigation} isWhite={white} />,
+            <CartButton  key='profile-title' navigation={navigation} isWhite={white} />
           ]);
       case 'Detalle de Producto':
           return ([
-            <CartButton  key='profile-title' navigation={navigation} isWhite={white} />,
-            <ProfileButton key='profile-title' navigation={navigation} isWhite={white} />
+            <OrdersButton key='profile-title' navigation={navigation} isWhite={white} />,
+            <CartButton  key='profile-title' navigation={navigation} isWhite={white} />
           ]);
       default:
         break;

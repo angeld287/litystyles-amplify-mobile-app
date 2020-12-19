@@ -23,6 +23,7 @@ import Requests from '../screens/EmployeeScreens/Requests'
 //suppliers screens
 import Suppliers from "../screens/SupplierScreens/Suppliers";
 import ProductDetail from "../screens/SupplierScreens/ProductDetail";
+import Orders from "../screens/SupplierScreens/Orders";
 
 //cart
 import Cart from "../screens/Cart";
@@ -323,6 +324,22 @@ function SupplierStack(props) {
           header: ({ navigation, scene }) => (
             <Header
               title="Carrito"
+              back
+              navigation={navigation}
+              scene={scene}
+            />
+          ),
+          headerTransparent: true
+        }}
+      />
+      <Stack.Screen
+        name="Orders"
+        component={Orders}
+        initialParams={props.route.params}
+        options={{
+          header: ({ navigation, scene }) => (
+            <Header
+              title="Pedidos"
               back
               navigation={navigation}
               scene={scene}

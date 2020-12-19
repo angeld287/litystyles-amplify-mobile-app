@@ -15,7 +15,7 @@ import { Content, Button, Text, Left, Right, Icon, Body, Spinner } from 'native-
 
 const CartItems = (props) => {
   
-    const { navigation, item, horizontal, full, style, ctaColor, imageStyle } = props;
+    const { navigation, item, horizontal, full, style, ctaColor, imageStyle, numeric, remove, view } = props;
 
     const [ _image , setImage ] = useState('')
     const [ loading , setLoading ] = useState(true)
@@ -84,10 +84,10 @@ const CartItems = (props) => {
               <Text note>RD$ {item.cost}</Text>
             </Content>
             <Block row>
-              <Left><NumericInput minValue={1} maxValue={4} value={1} onChange={value => {console.log(value);}} /></Left>
+              <Left>{numeric && <NumericInput minValue={1} maxValue={4} value={1} onChange={value => {console.log(value);}} />}</Left>
               <Body></Body>
               <Right>
-                <Button danger transparent>{!removeLoading && <Icon style={{fontSize: 30}} type="MaterialCommunityIcons" name="cart-remove"/>}{removeLoading && <Spinner color='red' style={{marginRight: 10}} />}</Button>
+                { remove && <Button danger transparent>{!removeLoading && <Icon style={{fontSize: 30}} type="MaterialCommunityIcons" name="cart-remove"/>}{removeLoading && <Spinner color='red' style={{marginRight: 10}} />}</Button>}
               </Right>
             </Block>
           </Block>
