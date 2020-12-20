@@ -54,11 +54,11 @@ const Orders = (props) => {
               var userRequests = {};
               var _nextToken = null;
 
-              userRequests = await API.graphql(graphqlOperation(listRequestsForProducts, {limit: 100, filter: {state: {eq: 'ON_CART'}}}));
+              userRequests = await API.graphql(graphqlOperation(listRequestsForProducts, {limit: 100, filter: { or: [ {state: {eq: 'AWAITING_APPROVAL'}}, {state: {eq: 'APPROVED'}}]}}));
               _nextToken = userRequests.data.listRequests.nextToken;
 
               while (_nextToken !== null) {
-                userRequests = await API.graphql(graphqlOperation(listRequestsForProducts, {limit: 100, nextToken: userRequests.data.listRequests.nextToken, filter: {state: {eq: 'ON_CART'}}}));
+                userRequests = await API.graphql(graphqlOperation(listRequestsForProducts, {limit: 100, nextToken: userRequests.data.listRequests.nextToken, filter: { or: [ {state: {eq: 'AWAITING_APPROVAL'}}, {state: {eq: 'APPROVED'}}]}}));
                 if(userRequests.data.listRequests.items.length > 0){
                   request = userRequests.data.listRequests.items[0];
                   break;

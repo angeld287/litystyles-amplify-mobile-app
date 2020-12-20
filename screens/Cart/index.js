@@ -91,9 +91,10 @@ const Cart = (props) => {
 
     }, [getImageFromStorage]);
 
-    const _products = (request !== null && request.product.items.length > 0)?([].concat(request.product.items)
+    const _products = (request !== null && company !== null && request.product.items.length > 0)?([].concat(request.product.items)
 		  .map((item,i)=>
 			  {      
+          console.log(company);
                 var product = {
                     id: item.id,
                     title: item.product.name,
