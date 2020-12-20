@@ -15,9 +15,10 @@ import { Content, Button, Text, Left, Right, Icon, Body, Spinner } from 'native-
 
 const CartItems = (props) => {
   
-    const { navigation, item, horizontal, full, style, ctaColor, imageStyle, numeric, remove, view } = props;
+    const { navigation, item, horizontal, full, style, ctaColor, imageStyle, numeric, remove, quantity } = props;
 
-    const [ _image , setImage ] = useState('')
+    const [ _image , setImage ] = useState('');
+    const [ _quantity, setQuatity] = useState(parseInt(item.quantity_requested));
     const [ loading , setLoading ] = useState(true)
     const [ removeLoading , setRemoveLoading ] = useState(false)
 
@@ -82,9 +83,10 @@ const CartItems = (props) => {
             <Content>
               <Text>{item.title}</Text>
               <Text note>RD$ {item.cost}</Text>
+              { quantity && <Text note>Qty: {item.quantity_requested}</Text>}
             </Content>
             <Block row>
-              <Left>{numeric && <NumericInput minValue={1} maxValue={4} value={1} onChange={value => {console.log(value);}} />}</Left>
+              <Left>{numeric && <NumericInput minValue={1} maxValue={item.quantity_available} key={item.id} value={_quantity} onChange={value => {setQuatity(value); console.log(value);}} />}</Left>
               <Body></Body>
               <Right>
                 { remove && <Button danger transparent>{!removeLoading && <Icon style={{fontSize: 30}} type="MaterialCommunityIcons" name="cart-remove"/>}{removeLoading && <Spinner color='red' style={{marginRight: 10}} />}</Button>}

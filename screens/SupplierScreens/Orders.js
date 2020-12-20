@@ -1,10 +1,10 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { Image, Alert } from 'react-native';
 import { Block } from "galio-framework";
-import { Container, Header, Content, Card, CardItem, Thumbnail, Text, Button, Icon, Left, Body, Right, Badge, List, ListItem } from 'native-base';
+import { Container, Header, Content, Card, CardItem, Thumbnail, Text, Button, Icon, Left, Body, Right, Badge, List, ListItem, Spinner } from 'native-base';
 import { API, graphqlOperation, Storage } from 'aws-amplify';
 import { createRequest, createRequestProduct, createRequestCustomer, updateRequestProduct } from "../../graphql/mutations";
-import { listRequestsForProducts } from "../../graphql/customQueries";
+import { listRequestsForProducts, getCompanyForCart } from "../../graphql/customQueries";
 
 import _default from "../../images/default-image.png";
 
@@ -22,9 +22,11 @@ import NumericInput from 'react-native-numeric-input'
 const Orders = (props) => {
 
     const [image, setImage ] = useState('');
-    const [_quantity, setQuantity ] = useState(1);
-    const [_cost, setCost ] = useState();
-    const [loading, setLoading ] = useState(false);
+    const [supplier, setSupplier ] = useState(null);
+    const [company, setCompany ] = useState(null);
+    const [request, setRequest ] = useState(null);
+    const [loading, setLoading ] = useState(true);
+    const [hasReq, setHasReq ] = useState(false);
 
 
     const getImageFromStorage = useCallback(
@@ -47,8 +49,38 @@ const Orders = (props) => {
     useEffect(() => {
         async function fetchData() {
             try {
-              const img = await getImageFromStorage('OFFICES_PROFILE_IMAGES/4cef4c33-d515-4245-bd0e-21c98f016455.jpeg');
-              setImage(img);
+              setLoading(true)
+              var request = null;
+              var userRequests = {};
+              var _nextToken = null;
+
+              userRequests = await API.graphql(graphqlOperation(listRequestsForProducts, {limit: 100, filter: {state: {eq: 'ON_CART'}}}));
+              _nextToken = userRequests.data.listRequests.nextToken;
+
+              while (_nextToken !== null) {
+                userRequests = await API.graphql(graphqlOperation(listRequestsForProducts, {limit: 100, nextToken: userRequests.data.listRequests.nextToken, filter: {state: {eq: 'ON_CART'}}}));
+                if(userRequests.data.listRequests.items.length > 0){
+                  request = userRequests.data.listRequests.items[0];
+                  break;
+                }
+                _nextToken = userRequests.data.listRequests.nextToken;
+              }
+
+              setHasReq(request !== null);
+
+              if(request !== null){
+                setRequest(request);
+                const company = await API.graphql(graphqlOperation(getCompanyForCart, {id: request.companyId}));
+
+                setSupplier(company.data.getCompany.offices.items[0]);
+  
+                setCompany(company.data.getCompany);
+  
+                const img = await getImageFromStorage(company.data.getCompany.offices.items[0].image);
+                setImage(img);
+              }
+
+              setLoading(false);
             } catch (e) {
               console.log(e);
             }
@@ -57,43 +89,42 @@ const Orders = (props) => {
 
     }, [getImageFromStorage]);
 
-    var office = {
-        id: 'item.id',
-        title: 'Alcoholado',
-        image: 'PRODUCTS_IMAGES/1607660366760_Alcoholado.jpeg',
-        cta: 'Entrar', 
-        horizontal: true,
-        supplier: false,
-        cost: "140"
-    };
+    const _products = (request !== null && request.product.items.length > 0)?([].concat(request.product.items)
+		  .map((item,i)=>
+			  {      
+                var product = {
+                    id: item.id,
+                    title: item.product.name,
+                    image: item.product.image,
+                    cta: 'Entrar', 
+                    horizontal: true,
+                    supplier: false,
+                    cost: item.cost,
+                    quantity_requested: item.quantity,
+                };
 
-    var office1 = {
-      id: 'item.id',
-      title: 'Neck Paper',
-      image: 'PRODUCTS_IMAGES/1607734206667_Neck_Paper.jpeg',
-      cta: 'Entrar', 
-      horizontal: true,
-      supplier: false,
-      cost: "140"
-  };
+          return (<CartItems quantity item={product} horizontal/>);
+        }
+
+    )):(<CartItems></CartItems>)
   
-    return (
+    const body = (
       <Container>
         <Header />
         <Content>
           <Card>
             <CardItem>
-              <Text>Subtotal (3 Items):</Text>
+              <Text>Subtotal ({request !== null ? request.product.items.length : "0"} Items):</Text>
               <Badge style={{marginLeft: 4}} danger>
-                <Text>RD$ 400</Text>
+                <Text>RD$ {request !== null ? request?.total : ""}</Text>
               </Badge>
             </CardItem>
             <CardItem>
               <Left>
                 <Thumbnail source={{uri: image}} />
                 <Body>
-                  <Text>Angel Barber Supplier</Text>
-                  <Text note>George David Mateo Rosario</Text>
+                  <Text>{supplier !== null ? supplier.name : ""}</Text>
+                  <Text note>{supplier !== null ? supplier?.employees.items[0].name : ""}</Text>
                 </Body>
               </Left>
             </CardItem>
@@ -104,13 +135,35 @@ const Orders = (props) => {
             </CardItem>
             <CardItem cardBody>
               <Block flex style={{padding: 5}}>
-                <CartItems item={office} horizontal/>
-                <CartItems item={office1} horizontal/>
+                {_products}
               </Block>
             </CardItem>
           </Card>
         </Content>
       </Container>
+    );
+
+    const noRequest = (
+      <Container>
+        <Header />
+        <Content>
+          <Card>
+            <CardItem>
+              <Text>No tiene ninguna solicitud</Text>
+            </CardItem>
+          </Card>
+        </Content>
+      </Container>
+    );
+
+    const spinner = (
+        <Content style={{marginTop: 100}}>
+          <Spinner color='blue' />
+        </Content>
+    );
+
+    return (
+      loading ? spinner : ( hasReq ? body : noRequest)
     );
 }
 

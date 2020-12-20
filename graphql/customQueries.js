@@ -465,8 +465,10 @@ export const listRequestsForProducts = /* GraphQL */ `
         product {
           items {
             id
+            cost
             product {
               name
+              image
               id
             }
             quantity
@@ -484,8 +486,39 @@ export const listRequestsForProducts = /* GraphQL */ `
         deleted
         deletedAt
         createdAt
+        total
       }
       nextToken
+    }
+  }
+`;
+
+export const getCompanyForCart = /* GraphQL */ `
+  query GetCompany($id: ID!) {
+    getCompany(id: $id) {
+      id
+      products {
+        items {
+          quantity
+          id
+          product {
+            id
+          }
+        }
+      }
+      offices {
+        items {
+          id
+          name
+          image
+          employees {
+            items {
+              name
+              phoneid
+            }
+          }
+        }
+      }
     }
   }
 `;
