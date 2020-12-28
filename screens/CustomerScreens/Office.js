@@ -55,7 +55,7 @@ const Office = (props) => {
                 <Text note>{item.quantity} unidad(es) disponible(s)</Text>
             </Body>
             <Right>
-                <Button transparent onPress={() => { navigation.navigate('ProductDetail', {product: item})}}><Text style={{color: 'blue'}}>Ver</Text></Button>
+                <Button transparent onPress={() => { navigation.navigate('ProductDetail', {product: item, office: office})}}><Text style={{color: 'blue'}}>Ver</Text></Button>
             </Right>
       </ListItem>
     ) ):(<ListItem></ListItem>)

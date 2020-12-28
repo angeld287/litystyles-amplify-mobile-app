@@ -445,3 +445,81 @@ export const listCustomers = /* GraphQL */ `
     }
   }
 `;
+
+export const listRequestsForProducts = /* GraphQL */ `
+  query ListRequests(
+    $filter: ModelRequestFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    listRequests(filter: $filter, limit: $limit, nextToken: $nextToken) {
+      items {
+        id
+        companyId
+        resposible {
+          nextToken
+        }
+        service {
+          nextToken
+        }
+        product {
+          items {
+            id
+            cost
+            product {
+              name
+              image
+              id
+            }
+            quantity
+          }
+        }
+        resposibleName
+        customerName
+        customerUsername
+        customer {
+          nextToken
+        }
+        state
+        paymentType
+        date
+        deleted
+        deletedAt
+        createdAt
+        total
+      }
+      nextToken
+    }
+  }
+`;
+
+export const getCompanyForCart = /* GraphQL */ `
+  query GetCompany($id: ID!) {
+    getCompany(id: $id) {
+      id
+      products {
+        items {
+          quantity
+          cost
+          id
+          product {
+            id
+          }
+        }
+      }
+      offices {
+        items {
+          id
+          name
+          image
+          employees {
+            items {
+              name
+              phoneid
+            }
+          }
+        }
+      }
+    }
+  }
+`;
