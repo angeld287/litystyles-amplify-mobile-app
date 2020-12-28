@@ -15,7 +15,7 @@ import { Content, Button, Text, Left, Right, Icon, Body, Spinner } from 'native-
 
 const CartItems = (props) => {
   
-    const { navigation, item, horizontal, full, style, ctaColor, imageStyle, numeric, remove, quantity } = props;
+    const { navigation, item, horizontal, full, style, ctaColor, imageStyle, numeric, remove, quantity, updateQuatity, itemLoading, deleteItem, deleteItemLoading } = props;
 
     const [ _image , setImage ] = useState('');
     const [ _quantity, setQuatity] = useState(parseInt(item.quantity_requested));
@@ -86,10 +86,13 @@ const CartItems = (props) => {
               { quantity && <Text note>Qty: {item.quantity_requested}</Text>}
             </Content>
             <Block row>
-              <Left>{numeric && <NumericInput minValue={1} maxValue={item.quantity_available} key={item.id} value={_quantity} onChange={value => {setQuatity(value); console.log(value);}} />}</Left>
+              <Left>
+                {(numeric && (itemLoading !== item.id)) && <NumericInput minValue={1} maxValue={item.quantity_available} key={item.id} value={_quantity} onChange={value => {setQuatity(value); updateQuatity(item, value);}} />}
+                {( itemLoading === item.id) && <Spinner color='blue' />}
+              </Left>
               <Body></Body>
               <Right>
-                { remove && <Button danger transparent>{!removeLoading && <Icon style={{fontSize: 30}} type="MaterialCommunityIcons" name="cart-remove"/>}{removeLoading && <Spinner color='red' style={{marginRight: 10}} />}</Button>}
+                { remove && <Button danger onPress={(e) => { e.preventDefault(); deleteItem(item); }} transparent>{(deleteItemLoading !== item.id) && <Icon style={{fontSize: 30}} type="MaterialCommunityIcons" name="cart-remove"/>}{(deleteItemLoading === item.id) && <Spinner color='red' style={{marginRight: 10}} />}</Button>}
               </Right>
             </Block>
           </Block>

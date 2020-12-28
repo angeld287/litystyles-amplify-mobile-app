@@ -500,6 +500,7 @@ export const getCompanyForCart = /* GraphQL */ `
       products {
         items {
           quantity
+          cost
           id
           product {
             id

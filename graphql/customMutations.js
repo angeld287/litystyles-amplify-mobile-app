@@ -142,3 +142,46 @@ export const updateRequestE = /* GraphQL */ `
     }
   }
 `;
+
+export const updateRequestForCart = /* GraphQL */ `
+  mutation UpdateRequest(
+    $input: UpdateRequestInput!
+    $condition: ModelRequestConditionInput
+  ) {
+    updateRequest(input: $input, condition: $condition) {
+      id
+      companyId
+      resposible {
+        nextToken
+      }
+      service {
+        nextToken
+      }
+      product {
+        items {
+          id
+          cost
+          product {
+            name
+            image
+            id
+          }
+          quantity
+        }
+      }
+      resposibleName
+      customerName
+      customerUsername
+      customer {
+        nextToken
+      }
+      state
+      paymentType
+      date
+      deleted
+      deletedAt
+      createdAt
+      total
+    }
+  }
+`;

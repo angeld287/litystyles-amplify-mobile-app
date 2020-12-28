@@ -3,9 +3,10 @@ import { Image, Alert } from 'react-native';
 import { Block } from "galio-framework";
 import { Container, Header, Content, Card, CardItem, Thumbnail, Text, Button, Icon, Left, Body, Right, Badge, List, ListItem , Spinner} from 'native-base';
 import { API, graphqlOperation, Storage } from 'aws-amplify';
-import { createRequest, createRequestProduct, createRequestCustomer, updateRequestProduct } from "../../graphql/mutations";
+import { updateRequestProduct, deleteRequestProduct } from "../../graphql/mutations";
 import { getCompany, getRequest } from "../../graphql/queries";
 import { listRequestsForProducts, getCompanyForCart } from "../../graphql/customQueries";
+import { updateRequestForCart } from "../../graphql/customMutations";
 
 import _default from "../../images/default-image.png";
 
@@ -27,7 +28,12 @@ const Cart = (props) => {
     const [company, setCompany ] = useState(null);
     const [request, setRequest ] = useState(null);
     const [loading, setLoading ] = useState(true);
+    const [cancelLoading, setCancelLoading ] = useState(false);
+    const [sendLoading, setSendLoading ] = useState(false);
     const [hasReq, setHasReq ] = useState(false);
+    const [ updateQtyLoading , setUpdateQtyLoading ] = useState(true)
+    const [ itemLoading, setItemLoading ] = useState('')
+    const [ deleteItemLoading, setDeleteItemLoading ] = useState('')
 
 
     const getImageFromStorage = useCallback(
@@ -47,6 +53,88 @@ const Cart = (props) => {
         [],
     );
 
+    const updateQuatity = async (item, qty) => {
+      try {
+        setItemLoading(item.id)
+        var _total = 0;
+        var _productCost = 0;
+        
+        request.product.items.filter(_ => _.id !== item.id).forEach(e => {
+          _total = _total + parseInt(e.cost);
+        });
+
+        _productCost = (item.productCost * qty)
+        _total = _total + _productCost;
+
+        await API.graphql(graphqlOperation(updateRequestProduct, { input: {id: item.id, quantity: qty, cost: _productCost}}));
+        const req = await API.graphql(graphqlOperation(updateRequestForCart, {input: {id: request.id, total: _total}}));
+
+        setRequest(req.data.updateRequest);
+        setItemLoading('')
+      } catch (e) { 
+        console.log(e);
+        setItemLoading('')
+      }
+    }
+
+    const deleteItem = async (item) => {
+      try {
+        setDeleteItemLoading(item.id);
+        if(request.product.items.length === 1){
+          await API.graphql(graphqlOperation(updateRequestForCart, {input: {id: request.id, state: 'CANCELED'}}));
+          setRequest(null);
+          setHasReq(false);
+        }else{
+
+          var _total = 0;
+          
+          request.product.items.filter(_ => _.id !== item.id).forEach(e => {
+            _total = _total + parseInt(e.cost);
+          });
+
+          await API.graphql(graphqlOperation(deleteRequestProduct, { input: {id: item.id}}));
+          const req = await API.graphql(graphqlOperation(updateRequestForCart, {input: {id: request.id, total: _total}}));
+
+          setRequest(req.data.updateRequest);
+        }
+
+        setDeleteItemLoading('');
+      } catch (e) {
+        console.log(e);
+        setDeleteItemLoading('');
+      }
+    }
+
+    const SendRequest = async (item) => {
+      try {
+        setSendLoading(true);
+          
+        await API.graphql(graphqlOperation(updateRequestForCart, {input: {id: request.id, state: 'AWAITING_APPROVAL'}}));
+        setRequest(null);
+        setHasReq(false);
+
+        setSendLoading(false);
+      } catch (e) {
+        console.log(e);
+        setSendLoading(false);
+      }
+    }
+
+    const CancelRequest = async (item) => {
+      try {
+        setCancelLoading(true);
+          
+        await API.graphql(graphqlOperation(updateRequestForCart, {input: {id: request.id, state: 'CANCELED'}}));
+        setRequest(null);
+        setHasReq(false);
+
+        setCancelLoading(false);
+      } catch (e) {
+        console.log(e);
+        setCancelLoading(false);
+      }
+    }
+
     useEffect(() => {
         async function fetchData() {
             try {
@@ -58,13 +146,17 @@ const Cart = (props) => {
               userRequests = await API.graphql(graphqlOperation(listRequestsForProducts, {limit: 100, filter: {state: {eq: 'ON_CART'}}}));
               _nextToken = userRequests.data.listRequests.nextToken;
 
-              while (_nextToken !== null) {
-                userRequests = await API.graphql(graphqlOperation(listRequestsForProducts, {limit: 100, nextToken: userRequests.data.listRequests.nextToken, filter: {state: {eq: 'ON_CART'}}}));
-                if(userRequests.data.listRequests.items.length > 0){
-                  request = userRequests.data.listRequests.items[0];
-                  break;
+              if(userRequests.data.listRequests.items.length === 0){
+                while (_nextToken !== null) {
+                  userRequests = await API.graphql(graphqlOperation(listRequestsForProducts, {limit: 100, nextToken: userRequests.data.listRequests.nextToken, filter: {state: {eq: 'ON_CART'}}}));
+                  if(userRequests.data.listRequests.items.length > 0){
+                    request = userRequests.data.listRequests.items[0];
+                    break;
+                  }
+                  _nextToken = userRequests.data.listRequests.nextToken;
                 }
-                _nextToken = userRequests.data.listRequests.nextToken;
+              }else{
+                request = userRequests.data.listRequests.items[0];
               }
 
               setHasReq(request !== null);
@@ -94,7 +186,6 @@ const Cart = (props) => {
     const _products = (request !== null && company !== null && request.product.items.length > 0)?([].concat(request.product.items)
 		  .map((item,i)=>
 			  {      
-          console.log(company);
                 var product = {
                     id: item.id,
                     title: item.product.name,
@@ -104,13 +195,15 @@ const Cart = (props) => {
                     supplier: false,
                     cost: item.cost,
                     quantity_requested: item.quantity,
-                    quantity_available: company.products.items.filter(_ => _.product.id === item.product.id)[0].quantity
+                    quantity_available: company.products.items.filter(_ => _.product.id === item.product.id)[0].quantity,
+                    productId: company.products.items.filter(_ => _.product.id === item.product.id)[0].id,
+                    productCost: company.products.items.filter(_ => _.product.id === item.product.id)[0].cost,
                 };
 
-          return (<CartItems remove numeric item={product} horizontal/>);
+          return (<CartItems itemLoading={itemLoading} updateQuatity={updateQuatity} remove numeric item={product} deleteItemLoading={deleteItemLoading} deleteItem={deleteItem} horizontal/>);
         }
 
-    )):(<CartItems></CartItems>)
+    )):(<Block></Block>)
   
     const body = (
       <Container>
@@ -134,8 +227,9 @@ const Cart = (props) => {
             </CardItem>
             <CardItem>
                 <Content>
-                  <Button rounded block warning>
-                    <Text>Enviar Solicitud</Text>
+                  <Button rounded block warning onPress={(e) => { e.preventDefault(); SendRequest() }}>
+                    { sendLoading && <Spinner color='white' style={{marginRight: 10}} /> }
+                    { !sendLoading && <Text>Enviar Solicitud</Text> }
                   </Button>
                 </Content>
             </CardItem>
@@ -146,14 +240,20 @@ const Cart = (props) => {
             </CardItem>
             <CardItem>
               <Left>
-                <Button warning rounded>
-                  <Text>Solicitar</Text>
-                </Button>
+                <Content>
+                  <Button rounded block warning onPress={(e) => { e.preventDefault(); SendRequest() }}>
+                      { sendLoading && <Spinner color='white' /> }
+                      { !sendLoading && <Text>Solicitar</Text> }
+                  </Button>
+                </Content>
               </Left>
               <Right>
-                <Button danger rounded>
-                  <Text>Cancelar</Text>
-                </Button>
+                <Content>
+                  <Button block danger rounded onPress={(e) => { e.preventDefault(); CancelRequest() }} >
+                    { cancelLoading && <Spinner color='white' /> }
+                    { !cancelLoading && <Text>Cancelar</Text> }
+                  </Button>
+                </Content>
               </Right>
             </CardItem>
           </Card>
