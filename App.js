@@ -201,8 +201,8 @@ const Home = props => {
           attr = usr.attributes;
         }
         
-        const hasOnlyGoogleRole = _r !== undefined && _r.length === 1 && _r[0].toUpperCase().includes("GOOGLE");
-        if (hasOnlyGoogleRole) {
+        //const hasOnlyGoogleRole = _r !== undefined && _r.length === 1 && _r[0].toUpperCase().includes("GOOGLE");
+        if (roles.indexOf('customer') === -1 && userdb === null) {
           var added = userdb === null ? await addUserToGroup(username) : true; 
           if (added) {
             
@@ -219,9 +219,6 @@ const Home = props => {
                 await Auth.signOut({ global: true });
             });
           }
-        }else if(roles.indexOf('customer') !== -1 && userdb === null) {
-
-          const cuser = await API.graphql(graphqlOperation(createCustomer, {input: {username: username, name: attr.name}}));
         }
 
       } catch (e) {
