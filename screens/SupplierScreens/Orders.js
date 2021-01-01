@@ -4,7 +4,7 @@ import { Block } from "galio-framework";
 import { Container, Header, Content, Card, CardItem, Thumbnail, Text, Button, Icon, Left, Body, Right, Badge, List, ListItem, Spinner } from 'native-base';
 import { API, graphqlOperation, Storage } from 'aws-amplify';
 import { createRequest, createRequestProduct, createRequestCustomer, updateRequestProduct } from "../../graphql/mutations";
-import { listRequestsForProducts, getCompanyForCart } from "../../graphql/customQueries";
+import { listRequestsForProducts, getRequestForOrderDetail, getCompanyForCart } from "../../graphql/customQueries";
 
 import _default from "../../images/default-image.png";
 
@@ -85,9 +85,44 @@ const Orders = (props) => {
               console.log(e);
             }
         }
-        fetchData();
 
-    }, [getImageFromStorage]);
+        async function fetcRequest() {
+            try {
+              setLoading(true)
+              var request = null;
+              var userRequests = {};
+              var _nextToken = null;
+
+              userRequests = await API.graphql(graphqlOperation(getRequestForOrderDetail, {id: props.route.params.id}));
+              request = userRequests.data.getRequest;
+
+              setHasReq(request !== null);
+
+              if(request !== null){
+                setRequest(request);
+                const company = await API.graphql(graphqlOperation(getCompanyForCart, {id: request.companyId}));
+
+                setSupplier(company.data.getCompany.offices.items[0]);
+
+                setCompany(company.data.getCompany);
+
+                const img = await getImageFromStorage(company.data.getCompany.offices.items[0].image);
+                setImage(img);
+              }
+
+              setLoading(false);
+            } catch (e) {
+              console.log(e);
+            }
+        }
+
+        if(props.route.params.id === undefined){
+          fetchData();
+        }else{
+          fetcRequest();
+        }
+
+    }, [getImageFromStorage, props]);
 
     const _products = (request !== null && request.product.items.length > 0)?([].concat(request.product.items)
 		  .map((item,i)=>

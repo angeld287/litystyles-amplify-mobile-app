@@ -22,6 +22,7 @@ import Requests from '../screens/EmployeeScreens/Requests'
 
 //suppliers screens
 import Suppliers from "../screens/SupplierScreens/Suppliers";
+import SupplierRequests from "../screens/SupplierScreens/Requests";
 import ProductDetail from "../screens/SupplierScreens/ProductDetail";
 import Orders from "../screens/SupplierScreens/Orders";
 
@@ -142,6 +143,67 @@ function EmployeeStack(props) {
               back
               white
               transparent
+              navigation={navigation}
+              scene={scene}
+            />
+          ),
+          headerTransparent: true
+        }}
+      />
+    </Stack.Navigator>
+  );
+}
+
+function SupplierAdminStack(props) {
+
+  const params = {
+    ...props.route.params
+  }
+
+  return (
+    <Stack.Navigator mode="card" headerMode="screen">
+      <Stack.Screen
+        name="Administracion"
+        component={SupplierRequests}
+        initialParams={params}
+        options={{
+          header: ({ navigation, scene }) => (
+            <Header
+              title="Administracion"
+              navigation={navigation}
+              scene={scene}
+            />
+          ),
+          cardStyle: { backgroundColor: "#F8F9FE" }
+        }}
+      />
+      <Stack.Screen
+        name="Profile"
+        component={Profile}
+        initialParams={props.route.params}
+        options={{
+          header: ({ navigation, scene }) => (
+            <Header
+              title=""
+              back
+              white
+              transparent
+              navigation={navigation}
+              scene={scene}
+            />
+          ),
+          headerTransparent: true
+        }}
+      />
+      <Stack.Screen
+        name="Order"
+        component={Orders}
+        initialParams={props.route.params}
+        options={{
+          header: ({ navigation, scene }) => (
+            <Header
+              title="Detalle de Pedido"
+              back
               navigation={navigation}
               scene={scene}
             />
@@ -444,6 +506,7 @@ const AppStack = (props) => {
       <Drawer.Screen name="Home" component={HomeStack} initialParams={props.route.params}/>
       <Drawer.Screen name="Employee" component={EmployeeStack} initialParams={props.route.params}/>
       <Drawer.Screen name="Suppliers" component={SupplierStack} initialParams={props.route.params}/>
+      <Drawer.Screen name="Administracion" component={SupplierAdminStack} initialParams={props.route.params}/>
       <Drawer.Screen name="Elements" component={ElementsStack} />
       <Drawer.Screen name="Articles" component={ArticlesStack} />
     </Drawer.Navigator>

@@ -25,7 +25,7 @@ class IconExtra extends React.Component {
       if (family === 'ArgonExtra') {
         return <IconArgonExtra name={name} family={family} color={color} size={size} {...rest} />;
       }
-      if (family === 'MaterialCommunityIcons') {
+      if (family === 'MaterialCommunityIcons' || family === 'MaterialIcons') {
         return <I style={{fontSize: size, color: color}} name={name} type={family} {...rest} />;
       }
       return <Icon name={name} family={family} color={color} size={size} {...rest} />;

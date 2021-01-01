@@ -493,6 +493,25 @@ export const listRequestsForProducts = /* GraphQL */ `
   }
 `;
 
+export const listRequestsForSupplierAdmin = /* GraphQL */ `
+  query ListRequests(
+    $filter: ModelRequestFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    listRequests(filter: $filter, limit: $limit, nextToken: $nextToken) {
+      items {
+        id
+        customerName
+        customerUsername
+        state
+        resposibleName
+      }
+      nextToken
+    }
+  }
+`;
+
 export const getCompanyForCart = /* GraphQL */ `
   query GetCompany($id: ID!) {
     getCompany(id: $id) {
@@ -520,6 +539,45 @@ export const getCompanyForCart = /* GraphQL */ `
           }
         }
       }
+    }
+  }
+`;
+export const getRequestForOrderDetail = /* GraphQL */ `
+  query GetRequest($id: ID!) {
+    getRequest(id: $id) {
+      id
+      companyId
+      resposible {
+        nextToken
+      }
+      service {
+        nextToken
+      }
+      product {
+        items {
+          id
+          cost
+          product {
+            name
+            image
+            id
+          }
+          quantity
+        }
+      }
+      resposibleName
+      customerName
+      customerUsername
+      customer {
+        nextToken
+      }
+      state
+      paymentType
+      date
+      deleted
+      deletedAt
+      createdAt
+      total
     }
   }
 `;

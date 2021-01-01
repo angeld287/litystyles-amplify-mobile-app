@@ -73,6 +73,15 @@ class DrawerItem extends React.Component {
             color={focused ? "white" : argonTheme.COLORS.BLACK}
           />
         );
+      case "Administracion":
+        return (
+          <Icon
+            name="shield-account"
+            family="MaterialCommunityIcons"
+            size={16}
+            color={focused ? "white" : argonTheme.COLORS.BLACK}
+          />
+        );
       case "Employee":
         return (
           <Icon
