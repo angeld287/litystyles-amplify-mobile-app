@@ -30,21 +30,13 @@ const SupplierRequests = ({ route, navigation }) => {
   const [ loading, setLoading ] = useState(true);
   const [ notifyLoading, setNotifyLoading ] = useState(false);
 
-  const [ finishLoading, setFinishLoading ] = useState(false);
+  const [ inDeliveredLoading, setDeliveredLoading ] = useState('');
   const [ finishError, setFinishError ] = useState(false);
   const [ finishErrorMessage, setFinishErrorMessage ] = useState(false);   
-  const [ tcPayLoading, setTcPayLoading ] = useState(false);
-  const [ tcPayError, setTcPayError ] = useState(false);
-  const [ tcPayErrorMessage, setTcPayErrorMessage ] = useState(false);     
-  const [ inProcessLoading, setInProcessLoading ] = useState(false);
-  const [ inProcessError, setInProcessError ] = useState(false);
-  const [ inProcessErrorMessage, setInProcessErrorMessage ] = useState(false);
+  const [ inApporvedLoading, setApporvedLoading ] = useState('');
+  const [ inApporvedError, setInApporvedError ] = useState(false);
+  const [ inApproveErrorMessage, setInApproveErrorMessage ] = useState(false);
 
-  const [ requestToCancel, setRequestToCancel ] = useState('');
-  const [ cancelOverlay, setCancelOverlay ] = useState(false);
-  const [ cancelLoading, setCancelLoading ] = useState(false);
-  const [ cancelerror, setCancelError ] = useState(false);
-  const [ cancelerrorMessage, setCancelErrorMessage ] = useState(false);
 
   useEffect(() => {
     let didCancel = false;
@@ -80,8 +72,6 @@ const SupplierRequests = ({ route, navigation }) => {
                   _nextToken = reqs.data.listRequests.nextToken;
                 }
 
-                console.log(requests);
-
                 setRequests(requests.sort((a, b) => new Date(a.date) - new Date(b.date)));
                 setLoading(false);
 
@@ -105,23 +95,36 @@ const SupplierRequests = ({ route, navigation }) => {
   }
 
   const getList = async () => {
+    const username = route.params?.authData.username;
     try {
       setRefreshing(true);
       var reqs = null;
+      var requests = [];
+      var _nextToken = null;
 
       const _filterR = {
-        and: [
-          {or: [
-            {state: {eq: 'IN_PROCESS'}},
-            {state: {eq: 'ON_HOLD'}}
-          ]},
-          {resposibleName: {eq: route.params?.authData.username}}
-        ]
+          and: [
+            {or: [
+              {state: {eq: 'AWAITING_APPROVAL'}},
+              {state: {eq: 'APPROVED'}}
+            ]},
+            {resposibleName: {eq: username}},
+          ]
       };
 
-      reqs =  await API.graphql(graphqlOperation(listRequestsEmployee, { limit: 1000, filter: _filterR } ) );
-      
-      setRequests(reqs.data.listRequests.items.sort((a, b) => new Date(a.date) - new Date(b.date)));
+      reqs = await API.graphql(graphqlOperation(listRequestsForSupplierAdmin, {limit: 100, filter: _filterR}));
+      requests = reqs.data.listRequests.items;
+      _nextToken = reqs.data.listRequests.nextToken;
+
+      while (_nextToken !== null) {
+        reqs = await API.graphql(graphqlOperation(listRequestsForSupplierAdmin, {limit: 100, nextToken: reqs.data.listRequests.nextToken, filter: _filterR}));
+        if(reqs.data.listRequests.items.length > 0){
+          reqs.data.listRequests.items.forEach(e => {requests.push(e)});
+        }
+        _nextToken = reqs.data.listRequests.nextToken;
+      }
+
+      setRequests(requests.sort((a, b) => new Date(a.date) - new Date(b.date)));
       setRefreshing(false);
     } catch (e) {
       setRefreshing(false);
@@ -158,83 +161,37 @@ const SupplierRequests = ({ route, navigation }) => {
     }
 
     const viewDetails = (item) => {
-      console.log(item);
       navigation.navigate('Order', {id: item.id});
     }
 
     const aproveRequest = (item) => {
-        setInProcessLoading(true);
+      setApporvedLoading(item.id);
         API.graphql(graphqlOperation(updateRequest, { input: { id: item.id, state: 'APPROVED' } }))
         .then(r => {
             const editObject = requests[requests.findIndex(e => e.id === r.data.updateRequest.id)];
             requests.splice(requests.findIndex(e => e.id === r.data.updateRequest.id), 1);
-            editObject.state = 'IN_PROCESS';
+            editObject.state = 'APPROVED';
             requests.unshift(editObject);
-            setRequestInProcess(true);
-            setInProcessLoading(false);
+            setApporvedLoading('');
         })
         .catch(e => {
-            setInProcessError(true);
-            setInProcessLoading(false)
-            setInProcessErrorMessage(e);
+            setInApporvedError(true);
+            setApporvedLoading('')
+            setInApproveErrorMessage(e);
         });
     }
 
-    const FinishRequest = () => {
-        setFinishLoading(true);
-        API.graphql(graphqlOperation(updateRequest, { input: { id: requests[0].id, state: 'FINISHED' } }))
+    const deliverRequest = (item) => {
+      setDeliveredLoading(item.id);
+        API.graphql(graphqlOperation(updateRequest, { input: { id: item.id, state: 'DELIVERED' } }))
         .then(r => {
-            requests.splice(requests.findIndex(e => e.id === requests[0].id), 1);
-            if(requests[2] !== undefined && requests[2].customer.items.length !== 0){
-                notify(requests[2], '3');
-            }
-            setRequestInProcess(false);
-            setFinishLoading(false);
+            requests.splice(requests.findIndex(e => e.id === r.data.updateRequest.id), 1);
+            setDeliveredLoading('');
         })
         .catch(e => {
+            setDeliveredLoading('');
             console.log(e);
-            setFinishError(true);
-            setFinishLoading(false)
-            setFinishErrorMessage(e);
         });
-    }
-
-    const setTCPayment = (item) => {
-        setTcPayLoading(true);
-        API.graphql(graphqlOperation(updateRequest, { input: { id: itemid, paymentType: 'CARD' } }))
-        .then(r => {
-            var req = requests[requests.findIndex(e => e.id === ritem.id)];
-            req.paymentType = "CARD";
-            setTcPayLoading(false);
-        })
-        .catch(e => {
-            console.log(e);
-            setTcPayError(true);
-            setTcPayLoading(false)
-            setTcPayErrorMessage(e);
-        });
-    }
-
-    const confirmCancelRequest = () => {
-        setCancelOverlay(false);
-        setCancelLoading(true);
-        API.graphql(graphqlOperation(updateRequest, { input: { id: requestToCancel, state: 'CANCELED' } }))
-        .then(r => {
-          requests.splice(requests.findIndex(e => e.id === requestToCancel), 1);
-          setCancelOverlay(false);
-          setCancelLoading(false);
-        })
-        .catch(e => {
-          setCancelError(true);
-          setCancelLoading(false);
-          console.log(e)
-          setCancelErrorMessage('Ha ocurrido un error al cancelar la solicitud');
-        });
-    }
-    
-    const openCancelModal = (item) => {
-        setRequestToCancel(item.id);
-        setCancelOverlay(true);
     }
 
 const _requestsList = (requests !== null)?([].concat(requests)
@@ -250,7 +207,8 @@ const _requestsList = (requests !== null)?([].concat(requests)
             <Text note>{item.state === "AWAITING_APPROVAL" ? "Esperando Aprobacion" : "Aprobado"}</Text>
         </Body>
         <Right>
-            {item.state === "AWAITING_APPROVAL" && <Button primary transparent onPress={(e) => { e.preventDefault(); aproveRequest(item) }}>{!cancelLoading && <I active type="MaterialCommunityIcons" name="format-list-checks" />}{cancelLoading && <Spinner size="small" color='red' />}</Button>}
+            {item.state === "AWAITING_APPROVAL" && <Button success transparent onPress={(e) => { e.preventDefault(); aproveRequest(item) }}>{!(inApporvedLoading === item.id) && <I active type="MaterialCommunityIcons" name="format-list-checks" />}{inApporvedLoading === item.id && <Spinner size="small" color='green' />}</Button>}
+            {item.state === "APPROVED" && <Button danger transparent onPress={(e) => { e.preventDefault(); deliverRequest(item) }}>{!(inDeliveredLoading === item.id) && <I active type="MaterialCommunityIcons" name="truck-delivery" />}{inDeliveredLoading === item.id && <Spinner size="small" color='red' />}</Button>}
         </Right>
       </ListItem>
     </TouchableWithoutFeedback>
@@ -276,54 +234,11 @@ const _requestsList = (requests !== null)?([].concat(requests)
                     <List>{_requestsList}</List>
                 </Block>
             </ScrollView>
-            <Modal
-              animationType="slide"
-              transparent={true}
-              visible={cancelOverlay}
-            >
-              <View style={styles.centeredView}>
-                <View style={styles.modalView}>
-                  <Text style={{marginBottom: 3, fontSize: 16}}>Seguro que desea rechazar?</Text>
-                  <Block style={{flexDirection: "row", justifyContent: "space-around", padding: 10}}>
-                    <Button style={{marginRight: 5}} success onPress={confirmCancelRequest}>{ !cancelLoading && <Text>Si</Text>}{cancelLoading && <Spinner size="small" color="#fff" />}</Button>
-                    <Button danger onPress={ (e) => { e.preventDefault(); setCancelOverlay(false);}}><Text>No</Text></Button>
-                  </Block>
-                </View>
-              </View>
-            </Modal>
         </Block>
       }
     </Block>
  );
 }
-
-const styles = StyleSheet.create({
-    centeredView: {
-      flex: 1,
-      justifyContent: "center",
-      alignItems: "center",
-      marginTop: 22
-    },
-    modalView: {
-      margin: 20,
-      backgroundColor: "white",
-      borderRadius: 20,
-      padding: 35,
-      alignItems: "center",
-      shadowColor: "#000",
-      shadowOffset: {
-        width: 0,
-        height: 2
-      },
-      shadowOpacity: 0.25,
-      shadowRadius: 3.84,
-      elevation: 5
-    },
-    modalText: {
-      marginBottom: 15,
-      textAlign: "center"
-    }
-  });
 
 
 export default SupplierRequests;

@@ -569,7 +569,15 @@ export const getRequestForOrderDetail = /* GraphQL */ `
       customerName
       customerUsername
       customer {
-        nextToken
+        items {
+          customer {
+            id
+            phoneid
+            name
+            username
+            image
+          }
+        }
       }
       state
       paymentType

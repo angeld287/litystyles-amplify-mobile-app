@@ -21,6 +21,8 @@ const ProductDetail = (props) => {
     const [_quantity, setQuantity ] = useState(1);
     const [_cost, setCost ] = useState(cost*_quantity);
     const [addCartLoading, setAddCartLoading ] = useState(false);
+    const [error, setError ] = useState(false);
+    const [errorm, setErrorm ] = useState('');
 
 
     const getImageFromStorage = useCallback(
@@ -56,7 +58,6 @@ const ProductDetail = (props) => {
     const addToTheCart = async () => {
        try {
         setAddCartLoading(true);
-
           const _date = moment(new Date()).format('YYYY-MM-DDTHH:mm:ss.SSS')+'Z';
           const _employee = props.route.params.office.employees.items[0].username;
               
@@ -126,8 +127,8 @@ const ProductDetail = (props) => {
         } catch (e) {
           console.log(e);
           setAddCartLoading(false);
-          setErrorsr(true)
-          setErrorsrm('Ha ocurrido un error. Favor intentar mas tarde');
+          setError(true)
+          setErrorm('Ha ocurrido un error. Favor intentar mas tarde');
         }
     }
   

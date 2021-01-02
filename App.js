@@ -200,17 +200,16 @@ const Home = props => {
           const usr = await Auth.currentAuthenticatedUser();
           attr = usr.attributes;
         }
-        
+
+        const cuser = userdb === null ? await API.graphql(graphqlOperation(createCustomer, {input: {username: username, name: attr.name, image: attr.picture}})) : null;
+
         //const hasOnlyGoogleRole = _r !== undefined && _r.length === 1 && _r[0].toUpperCase().includes("GOOGLE");
-        if (roles.indexOf('customer') === -1 && userdb === null) {
-          var added = userdb === null ? await addUserToGroup(username) : true; 
+        if (roles.indexOf('customer') === -1) {
+          var added = roles.indexOf('customer') === -1 ? await addUserToGroup(username) : true; 
           if (added) {
             
             _r.push('customer');
-            
             setRoles(_r);
-
-            const cuser = userdb === null ? await API.graphql(graphqlOperation(createCustomer, {input: {username: username, name: attr.name}})) : null;
 
             //cierre de sesion para que se refleje el nuevo rol agregado
             setModalVisible(true);
@@ -220,7 +219,19 @@ const Home = props => {
             });
           }
         }
-
+        
+        if(userdb !== null){
+          if(userdb.image !== attr.picture){
+            await API.graphql(graphqlOperation(updateCustomer, {input: {id: userdb.id, image: attr.picture}}));
+          }
+        }
+          
+        if (roles.indexOf('employee') !== -1 || roles.indexOf('supplier') !== -1) {
+          if(attr.picture !== undefined && employeedb.image !== attr.picture){
+            await API.graphql(graphqlOperation(updateEmployee, {input: {id: employeedb.id, image: attr.picture}}));
+          }
+        }
+        
       } catch (e) {
         console.log(e);
       }
@@ -320,16 +331,19 @@ function sleep (time) {
 
 const AuthScreens = (props) => {
   const [loaging , setLoading] = useState(true);
+  const [error , setError] = useState(false);
   props.authData.roles = props.authData.signInUserSession.accessToken.payload['cognito:groups'];
   API.graphql(graphqlOperation(listCustomers, {limit: 400, filter: { username: {eq: props.authData.username}}}))
   .then(r => {
     props.authData.userdb = r.data.listCustomers.items.length !== 0 ? r.data.listCustomers.items[0] : null;
+
     if(props.authData.attributes === undefined){
       Auth.currentAuthenticatedUser().then(r => {
         props.authData.attributes = r.attributes;
       })
       .catch(e => {
         setLoading(false);
+        setError(true);
         console.log(e);
       });
     }
@@ -338,8 +352,8 @@ const AuthScreens = (props) => {
       _getEmployee();
     }else{
       props.authData.employeedb = null;
+      setLoading(false);
     }
-    setLoading(false);
   })
   .catch(e => {
     setLoading(false);
@@ -349,6 +363,7 @@ const AuthScreens = (props) => {
   const _getEmployee = () => {
     API.graphql(graphqlOperation(listEmployees, {limit: 400, filter: { username: {eq: props.authData.username}}})).then(r => {
       props.authData.employeedb = r.data.listEmployees.items.length !== 0 ? r.data.listEmployees.items[0] : null;
+      setLoading(false);
     }).catch(e => {
       setLoading(false);
       console.log(e);

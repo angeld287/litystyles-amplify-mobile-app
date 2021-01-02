@@ -21,7 +21,7 @@ moment.locale('es')
 
 import NumericInput from 'react-native-numeric-input'
 
-const Cart = (props) => {
+const Cart = ({route, navigation}) => {
 
     const [image, setImage ] = useState('');
     const [supplier, setSupplier ] = useState(null);
@@ -137,18 +137,29 @@ const Cart = (props) => {
 
     useEffect(() => {
         async function fetchData() {
+          const username = route.params?.authData.username;
+
             try {
               setLoading(true)
               var request = null;
               var userRequests = {};
               var _nextToken = null;
 
-              userRequests = await API.graphql(graphqlOperation(listRequestsForProducts, {limit: 100, filter: {state: {eq: 'ON_CART'}}}));
+              const _filterR = {
+                  and: [
+                    {or: [
+                      {state: {eq: 'ON_CART'}},
+                    ]},
+                    {customerUsername: {eq: username}},
+                  ]
+              };
+
+              userRequests = await API.graphql(graphqlOperation(listRequestsForProducts, {limit: 100, filter: _filterR}));
               _nextToken = userRequests.data.listRequests.nextToken;
 
               if(userRequests.data.listRequests.items.length === 0){
                 while (_nextToken !== null) {
-                  userRequests = await API.graphql(graphqlOperation(listRequestsForProducts, {limit: 100, nextToken: userRequests.data.listRequests.nextToken, filter: {state: {eq: 'ON_CART'}}}));
+                  userRequests = await API.graphql(graphqlOperation(listRequestsForProducts, {limit: 100, nextToken: userRequests.data.listRequests.nextToken, filter: _filterR}));
                   if(userRequests.data.listRequests.items.length > 0){
                     request = userRequests.data.listRequests.items[0];
                     break;
