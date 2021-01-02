@@ -19,6 +19,7 @@ function CustomDrawerContent({ params, _, ...rest }) {
 
   if((params.authData.roles.indexOf('employee') !== -1)) { screens.push("Employee")}
   if((params.authData.roles.indexOf('employee') !== -1)) { screens.push("Suppliers")}
+  if((params.authData.roles.indexOf('supplier') !== -1)) { screens.push("Administracion")}
   screens.push("Profile");
 
   return (
@@ -32,7 +33,7 @@ function CustomDrawerContent({ params, _, ...rest }) {
       </Block>
       <Block flex style={{ paddingLeft: 8, paddingRight: 14 }}>
         <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
-          {screens.map((item, index) => {
+            {screens.map((item, index) => {
               return (
                 <DrawerCustomItem
                   title={item}

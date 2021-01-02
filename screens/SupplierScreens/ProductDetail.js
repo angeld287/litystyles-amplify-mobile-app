@@ -21,6 +21,8 @@ const ProductDetail = (props) => {
     const [_quantity, setQuantity ] = useState(1);
     const [_cost, setCost ] = useState(cost*_quantity);
     const [addCartLoading, setAddCartLoading ] = useState(false);
+    const [error, setError ] = useState(false);
+    const [errorm, setErrorm ] = useState('');
 
 
     const getImageFromStorage = useCallback(
@@ -56,12 +58,13 @@ const ProductDetail = (props) => {
     const addToTheCart = async () => {
        try {
         setAddCartLoading(true);
-
           const _date = moment(new Date()).format('YYYY-MM-DDTHH:mm:ss.SSS')+'Z';
+          const _employee = props.route.params.office.employees.items[0].username;
               
-          const ri = {state: 'ON_CART', paymentType: 'CASH', customerName: props.route.params.authData.attributes.name, customerUsername: props.route.params.authData.username, companyId: props.route.params.office.companyId, date: _date, createdAt: _date};
-          const rpi = {requestProductRequestId: "", requestProductProductId: product.id, quantity: _quantity, cost: _cost, createdAt: _date};
-          const rci = { requestCustomerRequestId: "", requestCustomerCustomerId: props.route.params.authData.userdb.id, createdAt: _date, cost: _cost};
+          //resposibleName
+          const ri = { resposibleName: _employee, state: 'ON_CART', paymentType: 'CASH', customerName: props.route.params.authData.attributes.name, customerUsername: props.route.params.authData.username, companyId: props.route.params.office.companyId, date: _date, createdAt: _date};
+          const rpi = { requestProductRequestId: "", requestProductProductId: product.id, quantity: _quantity, cost: _cost, createdAt: _date};
+          const rci = { resposibleName: _employee, requestCustomerRequestId: "", requestCustomerCustomerId: props.route.params.authData.userdb.id, createdAt: _date, cost: _cost};
           var request = null;
           var userRequests = {};
           var _nextToken = null;
@@ -124,8 +127,8 @@ const ProductDetail = (props) => {
         } catch (e) {
           console.log(e);
           setAddCartLoading(false);
-          setErrorsr(true)
-          setErrorsrm('Ha ocurrido un error. Favor intentar mas tarde');
+          setError(true)
+          setErrorm('Ha ocurrido un error. Favor intentar mas tarde');
         }
     }
   

@@ -47,7 +47,7 @@ const Suppliers = (props) => {
 
         officesApi = await API.graphql(graphqlOperation(listOfficesHome, {limit: 400, filter: {and: [ {categoryId: {eq: _categoryId}}, {deleted: {ne: true}}, {companyId: {ne: null}}, {image: {ne: null}}, {categoryId: {ne: null}} ] } } ) );
         
-        o = officesApi.data.listOffices.items;
+        o = officesApi.data.listOffices.items.filter(_ => _.employees.items.length !== 0);
 
         setOffices(o.filter(_ => (_.categoryId !== null) && (_.image !== null) && (_.companyId !== null)));
         setCategories(c);

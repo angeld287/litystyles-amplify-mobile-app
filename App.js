@@ -194,19 +194,22 @@ const Home = props => {
     async () => {
       try {
         var _r = roles;
+        var attr = attributes
 
-        const hasOnlyGoogleRole = _r !== undefined && _r.length === 1 && _r[0].toUpperCase().includes("GOOGLE");
-        if (hasOnlyGoogleRole) {
-          
-          var added = userdb === null ? await addUserToGroup(username) : true; 
+        if(attr === undefined){
+          const usr = await Auth.currentAuthenticatedUser();
+          attr = usr.attributes;
+        }
 
+        const cuser = userdb === null ? await API.graphql(graphqlOperation(createCustomer, {input: {username: username, name: attr.name, image: attr.picture}})) : null;
+
+        //const hasOnlyGoogleRole = _r !== undefined && _r.length === 1 && _r[0].toUpperCase().includes("GOOGLE");
+        if (roles.indexOf('customer') === -1) {
+          var added = roles.indexOf('customer') === -1 ? await addUserToGroup(username) : true; 
           if (added) {
             
             _r.push('customer');
-            
             setRoles(_r);
-
-            const cuser = userdb === null ? await API.graphql(graphqlOperation(createCustomer, {input: {username: username, name: attributes.name}})) : null;
 
             //cierre de sesion para que se refleje el nuevo rol agregado
             setModalVisible(true);
@@ -215,11 +218,20 @@ const Home = props => {
                 await Auth.signOut({ global: true });
             });
           }
-        }else if(roles.indexOf('customer') !== -1 && userdb === null) {
-
-          const cuser = await API.graphql(graphqlOperation(createCustomer, {input: {username: username, name: attributes.name}}));
         }
-
+        
+        if(userdb !== null){
+          if(userdb.image !== attr.picture){
+            await API.graphql(graphqlOperation(updateCustomer, {input: {id: userdb.id, image: attr.picture}}));
+          }
+        }
+          
+        if (roles.indexOf('employee') !== -1 || roles.indexOf('supplier') !== -1) {
+          if(attr.picture !== undefined && employeedb.image !== attr.picture){
+            await API.graphql(graphqlOperation(updateEmployee, {input: {id: employeedb.id, image: attr.picture}}));
+          }
+        }
+        
       } catch (e) {
         console.log(e);
       }
@@ -228,18 +240,21 @@ const Home = props => {
   );
 
   useEffect(() => { 
-    notificationManager.configure(onRegister, onNotification, onOpenNotification); 
     appStart();
+    notificationManager.configure(onRegister, onNotification, onOpenNotification); 
 
   }, [notificationManager, appStart]);
   
   const onRegister = (token) => {
     GLOBAL.PHONE_TOKEN = token.token;
-    if(userdb !== null && userdb.phoneid !== token.token){
+    
+    //console.log(userdb);
+    if(userdb !== null && userdb != undefined && userdb.phoneid !== token.token){
       API.graphql(graphqlOperation(updateCustomer, {input: {id: userdb.id, phoneid: token.token}})).catch(_ => console.log("ha ocurrido un error al actualizar el phoneid del usuario"));
     }
-
-    if((roles.indexOf('employee') !== -1 || roles.indexOf('supplier') !== -1) && employeedb !== null && employeedb.phoneid !== token.token){
+    
+    //console.log(employeedb);
+    if((roles.indexOf('employee') !== -1 || roles.indexOf('supplier') !== -1) && employeedb !== null && employeedb !== undefined && employeedb.phoneid !== token.token){
       API.graphql(graphqlOperation(updateEmployee, {input: {id: employeedb.id, phoneid: token.token}})).catch(_ => console.log("ha ocurrido un error al actualizar el phoneid del empleado ", _));
     }
   }
@@ -316,23 +331,20 @@ function sleep (time) {
 
 const AuthScreens = (props) => {
   const [loaging , setLoading] = useState(true);
-  
+  const [error , setError] = useState(false);
   props.authData.roles = props.authData.signInUserSession.accessToken.payload['cognito:groups'];
   API.graphql(graphqlOperation(listCustomers, {limit: 400, filter: { username: {eq: props.authData.username}}}))
   .then(r => {
     props.authData.userdb = r.data.listCustomers.items.length !== 0 ? r.data.listCustomers.items[0] : null;
+
     if(props.authData.attributes === undefined){
       Auth.currentAuthenticatedUser().then(r => {
         props.authData.attributes = r.attributes;
-        setLoading(false);
       })
       .catch(e => {
         setLoading(false);
+        setError(true);
         console.log(e);
-      });
-    }else{
-      sleep(1000).then(() => {
-          setLoading(false)
       });
     }
 
@@ -340,6 +352,7 @@ const AuthScreens = (props) => {
       _getEmployee();
     }else{
       props.authData.employeedb = null;
+      setLoading(false);
     }
   })
   .catch(e => {
@@ -350,13 +363,14 @@ const AuthScreens = (props) => {
   const _getEmployee = () => {
     API.graphql(graphqlOperation(listEmployees, {limit: 400, filter: { username: {eq: props.authData.username}}})).then(r => {
       props.authData.employeedb = r.data.listEmployees.items.length !== 0 ? r.data.listEmployees.items[0] : null;
+      setLoading(false);
     }).catch(e => {
       setLoading(false);
       console.log(e);
     });
   }
 
-  return loaging ? <View style={{marginTop: 40}}><ActivityIndicator size="large" color="#0000ff" /></View> :  <Home {...props}/>
+  return loaging ? <View style={{marginTop: 40}}><ActivityIndicator size="large" color="#0000ff" /></View> : <Home {...props}/>
 };
 
 export default withAuthenticator(AuthScreens, false, [
