@@ -27,7 +27,9 @@ enableScreens();
 
 import Screens from "./navigation/Screens";
 import { Images, articles, argonTheme } from "./constants";
-import MySignIn from './components/Auth/MySignIn';
+
+import MySignIn from './screens/Auth/MySignIn';
+import MySignUp from './screens/Auth/MySignUp';
 
 import InAppbrowser from 'react-native-inappbrowser-reborn'
 
@@ -201,8 +203,6 @@ const Home = props => {
           attr = usr.attributes;
         }
 
-        const cuser = userdb === null ? await API.graphql(graphqlOperation(createCustomer, {input: {username: username, name: attr.name, image: attr.picture}})) : null;
-
         //const hasOnlyGoogleRole = _r !== undefined && _r.length === 1 && _r[0].toUpperCase().includes("GOOGLE");
         if (roles.indexOf('customer') === -1) {
           var added = roles.indexOf('customer') === -1 ? await addUserToGroup(username) : true; 
@@ -219,6 +219,8 @@ const Home = props => {
             });
           }
         }
+
+        const cuser = userdb === null ? await API.graphql(graphqlOperation(createCustomer, {input: {username: username, name: attr.name, image: attr.picture}})) : null;
         
         if(userdb !== null){
           if(userdb.image !== attr.picture){
@@ -233,6 +235,7 @@ const Home = props => {
         }
         
       } catch (e) {
+        //await Auth.signOut();
         console.log(e);
       }
     },
@@ -377,7 +380,7 @@ export default withAuthenticator(AuthScreens, false, [
   <MySignIn/>,
   <ConfirmSignIn/>,
   <VerifyContact/>,
-  <SignUp/>,
+  <MySignUp/>,
   <ConfirmSignUp/>,
   <ForgotPassword/>,
   <RequireNewPassword />
