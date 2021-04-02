@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>514896478290-r63bkp0s69ck6s80mp6mbo4o596qjent.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.514896478290-r63bkp0s69ck6s80mp6mbo4o596qjent</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>514896478290-frp4e8jpnit422kq4f7bh93h4p4lunqi.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyCw2jLTpmUXDlDWv7-sv6G5M1xDwkyYVmQ</string>
+	<key>GCM_SENDER_ID</key>
+	<string>514896478290</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>org.littystyles.app</string>
+	<key>PROJECT_ID</key>
+	<string>littystyles</string>
+	<key>STORAGE_BUCKET</key>
+	<string>littystyles.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:514896478290:ios:496ca91d9ecb53a78d1f8b</string>
+	<key>DATABASE_URL</key>
+	<string>https://littystyles.firebaseio.com</string>
+</dict>
+</plist>
