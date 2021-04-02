@@ -3,23 +3,21 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>514896478290-r63bkp0s69ck6s80mp6mbo4o596qjent.apps.googleusercontent.com</string>
+	<string>109405951597-611f37u3b923i4kngr6dto473svo5vcr.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.514896478290-r63bkp0s69ck6s80mp6mbo4o596qjent</string>
-	<key>ANDROID_CLIENT_ID</key>
-	<string>514896478290-frp4e8jpnit422kq4f7bh93h4p4lunqi.apps.googleusercontent.com</string>
+	<string>com.googleusercontent.apps.109405951597-611f37u3b923i4kngr6dto473svo5vcr</string>
 	<key>API_KEY</key>
-	<string>AIzaSyCw2jLTpmUXDlDWv7-sv6G5M1xDwkyYVmQ</string>
+	<string>AIzaSyDXty3g4O5NMCxdjdywHOSykSisY0DIpI8</string>
 	<key>GCM_SENDER_ID</key>
-	<string>514896478290</string>
+	<string>109405951597</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>org.littystyles.app</string>
+	<string>org.litystylessrl.litystyles</string>
 	<key>PROJECT_ID</key>
-	<string>littystyles</string>
+	<string>litystyles</string>
 	<key>STORAGE_BUCKET</key>
-	<string>littystyles.appspot.com</string>
+	<string>litystyles.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -31,8 +29,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:514896478290:ios:496ca91d9ecb53a78d1f8b</string>
-	<key>DATABASE_URL</key>
-	<string>https://littystyles.firebaseio.com</string>
+	<string>1:109405951597:ios:827f23d0f811ae3df79164</string>
 </dict>
 </plist>
