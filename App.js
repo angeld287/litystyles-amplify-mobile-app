@@ -40,6 +40,7 @@ const messaging = firebase.messaging();
         if (enabled) {
           messaging.getToken()
             .then(token => {
+              console.log(token);
               GLOBAL.PHONE_TOKEN = token;
             })
             .catch( err => console.log(err))
@@ -250,7 +251,7 @@ const Home = props => {
   
   const onRegister = (token) => {
     GLOBAL.PHONE_TOKEN = token.token;
-    
+    console.log(token);
     //console.log(userdb);
     if(userdb !== null && userdb != undefined && userdb.phoneid !== token.token){
       API.graphql(graphqlOperation(updateCustomer, {input: {id: userdb.id, phoneid: token.token}})).catch(_ => console.log("ha ocurrido un error al actualizar el phoneid del usuario"));

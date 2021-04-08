@@ -34,6 +34,7 @@
 		CA7110420C79462A92A0DDBE /* FontAwesome5_Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 03DB9967B92D40A08A84BEC0 /* FontAwesome5_Regular.ttf */; };
 		E35CD14B6D48445D9CEC47C1 /* AntDesign.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 605236240674491584CAE4EC /* AntDesign.ttf */; };
 		F01297C52562EDD100270B3C /* libAppAuth.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F01297C42562EDD100270B3C /* libAppAuth.a */; };
+		F0659DE5261D15C20096B5A7 /* libRNCPushNotificationIOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F0659DE4261D15C20096B5A7 /* libRNCPushNotificationIOS.a */; };
 		F09BAF17260E63A6002ACDD4 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = F09BAF16260E63A6002ACDD4 /* GoogleService-Info.plist */; };
 /* End PBXBuildFile section */
 
@@ -73,6 +74,8 @@
 		ED2971642150620600B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS12.0.sdk/System/Library/Frameworks/JavaScriptCore.framework; sourceTree = DEVELOPER_DIR; };
 		F004259A2562E96C00330337 /* libAppAuth.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libAppAuth.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		F01297C42562EDD100270B3C /* libAppAuth.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libAppAuth.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		F0659DE4261D15C20096B5A7 /* libRNCPushNotificationIOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libRNCPushNotificationIOS.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		F0659DE6261D161C0096B5A7 /* app.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = app.entitlements; path = app/app.entitlements; sourceTree = "<group>"; };
 		F09BAF16260E63A6002ACDD4 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "app/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		F82B4F9F78B54171B92C4C0B /* MaterialIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = MaterialIcons.ttf; path = "../node_modules/native-base/Fonts/MaterialIcons.ttf"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -82,6 +85,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F0659DE5261D15C20096B5A7 /* libRNCPushNotificationIOS.a in Frameworks */,
 				F01297C52562EDD100270B3C /* libAppAuth.a in Frameworks */,
 				2C203AE2B1F55B0C588D396F /* libPods-app.a in Frameworks */,
 			);
@@ -93,6 +97,7 @@
 		13B07FAE1A68108700A75B9A /* app */ = {
 			isa = PBXGroup;
 			children = (
+				F0659DE6261D161C0096B5A7 /* app.entitlements */,
 				F09BAF16260E63A6002ACDD4 /* GoogleService-Info.plist */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.m */,
@@ -110,6 +115,7 @@
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				F0659DE4261D15C20096B5A7 /* libRNCPushNotificationIOS.a */,
 				F01297C42562EDD100270B3C /* libAppAuth.a */,
 				F004259A2562E96C00330337 /* libAppAuth.a */,
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
@@ -227,7 +233,9 @@
 				LastUpgradeCheck = 1220;
 				TargetAttributes = {
 					13B07F861A680F5B00A75B9A = {
+						DevelopmentTeam = 73QLGHL6KQ;
 						LastSwiftMigration = 1120;
+						ProvisioningStyle = Automatic;
 					};
 				};
 			};
@@ -442,7 +450,11 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = app/app.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 73QLGHL6KQ;
 				ENABLE_BITCODE = NO;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -594,6 +606,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = org.litystylessrl.litystyles;
 				PRODUCT_NAME = app;
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -606,7 +619,11 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = app/app.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Distribution: LITYSTYLES SRL (73QLGHL6KQ)";
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 73QLGHL6KQ;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				HEADER_SEARCH_PATHS = (
 					"\"${PODS_ROOT}/Headers/Public\"",
@@ -746,6 +763,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = org.litystylessrl.litystyles;
 				PRODUCT_NAME = app;
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
