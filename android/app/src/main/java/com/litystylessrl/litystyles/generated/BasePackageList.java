@@ -1,4 +1,4 @@
-package com.littystyles.generated;
+package com.litystylessrl.litystyles.generated;
 
 import java.util.Arrays;
 import java.util.List;

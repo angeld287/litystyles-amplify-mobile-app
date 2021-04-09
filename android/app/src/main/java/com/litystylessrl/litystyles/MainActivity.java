@@ -1,4 +1,4 @@
-package com.littystyles;
+package com.litystylessrl.litystyles;
 
 import android.os.Bundle;
 

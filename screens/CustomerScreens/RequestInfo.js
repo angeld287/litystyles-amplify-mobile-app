@@ -287,11 +287,11 @@ const RequestInfo = ({ route, navigation }) => {
                   </Right>
                 </CardItem>
               </Card>
-              <Button disabled={loading || cloading} round style={{ marginTop: 20, width: '97%'}} uppercase color="warning">Reagendar</Button>
+              {/* <Button disabled={loading || cloading} round style={{ marginTop: 20, width: '97%'}} uppercase color="warning">Reagendar</Button> */}
 
-              <Button disabled={loading || cloading} round style={{ width: '97%', marginTop: 5}} uppercase color="danger" onPress={() => { createTwoButtonAlert()}}>Cancelar Solicitud</Button>
+              <Button disabled={loading || cloading} round style={{ width: '97%', marginTop: 20}} uppercase color="danger" onPress={() => { createTwoButtonAlert()}}>Cancelar Solicitud</Button>
 
-              <Button round style={{ width: '97%', marginTop: 5}} uppercase color="danger" onPress={() => { SLN()}}>Notify</Button>
+              {/* <Button round style={{ width: '97%', marginTop: 5}} uppercase color="danger" onPress={() => { SLN()}}>Notify</Button> */}
 
               {cloading && <Content>
                 <Spinner color='red' />

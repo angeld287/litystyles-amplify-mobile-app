@@ -1,4 +1,4 @@
 <resources>
-    <string name="app_name">LittyStyles</string>
+    <string name="app_name">litystyles</string>
     <string name="default_notification_channel_id">littystyles_notification_channel_id</string>
 </resources>
