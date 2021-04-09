@@ -40,7 +40,6 @@ const messaging = firebase.messaging();
         if (enabled) {
           messaging.getToken()
             .then(token => {
-              console.log(token);
               GLOBAL.PHONE_TOKEN = token;
             })
             .catch( err => console.log(err))
@@ -250,16 +249,16 @@ const Home = props => {
   }, [notificationManager, appStart]);
   
   const onRegister = (token) => {
-    GLOBAL.PHONE_TOKEN = token.token;
-    console.log(token);
-    //console.log(userdb);
-    if(userdb !== null && userdb != undefined && userdb.phoneid !== token.token){
-      API.graphql(graphqlOperation(updateCustomer, {input: {id: userdb.id, phoneid: token.token}})).catch(_ => console.log("ha ocurrido un error al actualizar el phoneid del usuario"));
+    var tok = token.os !== "ios" ? token.token : GLOBAL.PHONE_TOKEN;
+    //console.log(token.os,": ", tok)
+    if(userdb !== null && userdb != undefined && userdb.phoneid !== tok){
+      GLOBAL.PHONE_TOKEN = tok;
+      API.graphql(graphqlOperation(updateCustomer, {input: {id: userdb.id, phoneid: tok}})).catch(_ => console.log("ha ocurrido un error al actualizar el phoneid del usuario"));
     }
     
     //console.log(employeedb);
-    if((roles.indexOf('employee') !== -1 || roles.indexOf('supplier') !== -1) && employeedb !== null && employeedb !== undefined && employeedb.phoneid !== token.token){
-      API.graphql(graphqlOperation(updateEmployee, {input: {id: employeedb.id, phoneid: token.token}})).catch(_ => console.log("ha ocurrido un error al actualizar el phoneid del empleado ", _));
+    if((roles.indexOf('employee') !== -1 || roles.indexOf('supplier') !== -1) && employeedb !== null && employeedb !== undefined && employeedb.phoneid !== tok){
+      API.graphql(graphqlOperation(updateEmployee, {input: {id: employeedb.id, phoneid: tok}})).catch(_ => console.log("ha ocurrido un error al actualizar el phoneid del empleado ", _));
     }
   }
 

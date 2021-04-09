@@ -3,7 +3,7 @@ const sendNotifications = async (object) => {
         method: 'POST',
         headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'key=AAAAd-I4wFI:APA91bGEnWMecuwzNUCeBUTde5HwEYP9eHEtXjhkHHgh7ivKX9yQnyQyxtaRcO5Ny_TLbyQFPoN5bYMEkUClfPr_ql8oDsK1OSw9yC0TCu7-Npjhn-871rJ-rfUW7JIti4EQwkkxu-3r'
+        'Authorization': 'key=AAAAGXkaVm0:APA91bE9f2Sjustn6ToI8DDgel6uR_J5QS-_abyZ84F1EnVlvH7vpfQ5t2eWHgiwb3WH8Aea8tHIel4BOWs2gpQ0eNuA0dATvSUjkFNLqCMGmJapAjd0hgAgJscq4O90W0PG-1-fO50o'
         },
         body: JSON.stringify({
                 to: object.to,
