@@ -10,6 +10,13 @@
 #import <EXSplashScreen/EXSplashScreenService.h>
 #import <UMCore/UMModuleRegistryProvider.h>
 
+#import <React/RCTLinkingManager.h>
+
+#import <UserNotifications/UserNotifications.h>
+#import <RNCPushNotificationIOS.h>
+
+@import Firebase;
+
 #ifdef FB_SONARKIT_ENABLED
 #import <FlipperKit/FlipperClient.h>
 #import <FlipperKitLayoutPlugin/FlipperKitLayoutPlugin.h>
@@ -18,12 +25,6 @@
 #import <SKIOSNetworkPlugin/SKIOSNetworkAdapter.h>
 #import <FlipperKitReactPlugin/FlipperKitReactPlugin.h>
 
-#import <React/RCTLinkingManager.h>
-
-#import <RNCPushNotificationIOS.h>
-#import <UserNotifications/UserNotifications.h>
-
-@import Firebase;
 
 static void InitializeFlipper(UIApplication *application) {
   FlipperClient *client = [FlipperClient sharedClient];

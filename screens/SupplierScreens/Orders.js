@@ -99,8 +99,6 @@ const Orders = (props) => {
 
               setHasReq(request !== null);
 
-              console.log(request);
-
               if(request !== null){
                 setRequest(request);
                 const company = await API.graphql(graphqlOperation(getCompanyForCart, {id: request.companyId}));
