@@ -466,7 +466,10 @@ const AppStack = (props) => {
 
   const roles = props.route.params?.authData.roles;
 
-  const initialRoute = roles.indexOf('employee') !== -1 ? "Employee" : roles.indexOf('customer') !== -1 ? "Home" : "Home";
+  var isEmployee = params.authData.roles.indexOf('employee') !== -1;
+  var isSupplier = params.authData.roles.indexOf('supplier') !== -1;
+
+  const initialRoute = isEmployee && !isSupplier ? "Employee" : isEmployee && isSupplier ? "Administracion" : roles.indexOf('customer') !== -1 ? "Home" : "Home";
   return (
     <Drawer.Navigator
       style={{ flex: 1 }}
