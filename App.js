@@ -335,6 +335,7 @@ function sleep (time) {
 const AuthScreens = (props) => {
   const [loaging , setLoading] = useState(true);
   const [error , setError] = useState(false);
+  console.log(props.authData)
   props.authData.roles = props.authData.signInUserSession.accessToken.payload['cognito:groups'];
   API.graphql(graphqlOperation(listCustomers, {limit: 400, filter: { username: {eq: props.authData.username}}}))
   .then(r => {

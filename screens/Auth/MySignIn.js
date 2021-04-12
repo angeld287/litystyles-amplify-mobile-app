@@ -9,17 +9,17 @@ import {
   KeyboardAvoidingView,
   ActivityIndicator,
   View,
-  ScrollView
+  ScrollView,
+  Platform
 } from "react-native";
+
 import { Auth } from "aws-amplify";
 import { Block, Text, theme } from "galio-framework";
-
-import { Button as Btn} from "native-base"
 
 import { Button, Icon, Input } from "../../components";
 import { argonTheme } from "../../constants";
 
-import { Container } from 'native-base';
+import { Container, Icon as NVIcon, Button as NVButton, Text as NVText} from 'native-base';
 
 const { width, height } = Dimensions.get("screen");
 
@@ -38,6 +38,7 @@ class MySignIn extends SignIn {
             errorM: null,
             loading: false,
             gloading: false,
+            aloading: false,
          };
     }
 
@@ -82,8 +83,14 @@ class MySignIn extends SignIn {
       this.setState({gloading: false});
     }
 
+    _appleSignIn = async () => {
+      this.setState({aloading: true});
+      await Auth.federatedSignIn({provider: 'SignInWithApple'});
+      this.setState({aloading: false});
+    }
+
     render() {
-        const { email, password, loading, errorM, error, gloading} = this.state;
+        const { email, password, loading, errorM, error, gloading, aloading} = this.state;
         const { googleSignIn } = this.props; 
 
         const login = (
@@ -94,7 +101,8 @@ class MySignIn extends SignIn {
               <Block flex={0.25} middle style={styles.socialConnect}>
                   <Block style={{marginBottom: 30}}>
                     <Text color="#8898AA" size={12}>
-                        Inicia sesion con Google
+                      {Platform.OS === "IOS" && "Inicia sesion con Google o Apple ID"}
+                      {Platform.OS !== "IOS" && "Inicia sesion con Google"}
                     </Text>
                   </Block>
                   <Block row style={{ marginBottom: 20, marginTop: theme.SIZES.BASE }}>
@@ -106,8 +114,23 @@ class MySignIn extends SignIn {
                         disabled={gloading}
                       />
                   </Block>
+                  {Platform.OS === "IOS" &&
+                    <Block row >
+                      <NVButton iconLeft dark onPress={this._appleSignIn}>
+                          <NVIcon  type="MaterialCommunityIcons" name="apple"/>
+                          <NVText uppercase={false}>
+                            Acceder con Apple ID
+                          </NVText>
+                      </NVButton>
+                  </Block>
+                  }
                   <Block>
                     {gloading && 
+                      <View style={[styles.container, styles.horizontal]}>
+                        <ActivityIndicator size="large" color="#0000ff" />
+                      </View>
+                    }
+                    {aloading && 
                       <View style={[styles.container, styles.horizontal]}>
                         <ActivityIndicator size="large" color="#0000ff" />
                       </View>
