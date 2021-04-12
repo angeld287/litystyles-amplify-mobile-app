@@ -78,7 +78,7 @@ class MySignIn extends SignIn {
     }
 
     _googleSignIn = async () => {
-      console.log(Platform.OS)
+      //console.log(Platform.OS)
       this.setState({gloading: true});
       await Auth.federatedSignIn({provider: 'Google'});
       this.setState({gloading: false});
