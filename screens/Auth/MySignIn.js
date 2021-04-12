@@ -78,6 +78,7 @@ class MySignIn extends SignIn {
     }
 
     _googleSignIn = async () => {
+      console.log(Platform.OS)
       this.setState({gloading: true});
       await Auth.federatedSignIn({provider: 'Google'});
       this.setState({gloading: false});
@@ -101,8 +102,8 @@ class MySignIn extends SignIn {
               <Block flex={0.25} middle style={styles.socialConnect}>
                   <Block style={{marginBottom: 30}}>
                     <Text color="#8898AA" size={12}>
-                      {Platform.OS === "IOS" && "Inicia sesion con Google o Apple ID"}
-                      {Platform.OS !== "IOS" && "Inicia sesion con Google"}
+                      {Platform.OS === "ios" && "Inicia sesion con Google o Apple ID"}
+                      {Platform.OS !== "ios" && "Inicia sesion con Google"}
                     </Text>
                   </Block>
                   <Block row style={{ marginBottom: 20, marginTop: theme.SIZES.BASE }}>
@@ -114,7 +115,7 @@ class MySignIn extends SignIn {
                         disabled={gloading}
                       />
                   </Block>
-                  {Platform.OS === "IOS" &&
+                  {Platform.OS === "ios" &&
                     <Block row >
                       <NVButton iconLeft dark onPress={this._appleSignIn}>
                           <NVIcon  type="MaterialCommunityIcons" name="apple"/>
