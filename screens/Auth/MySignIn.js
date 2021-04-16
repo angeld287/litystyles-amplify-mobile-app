@@ -120,7 +120,7 @@ class MySignIn extends SignIn {
                       <NVButton iconLeft dark onPress={this._appleSignIn}>
                           <NVIcon  type="MaterialCommunityIcons" name="apple"/>
                           <NVText uppercase={false}>
-                            Acceder con Apple ID
+                            Iniciar sesión con Apple
                           </NVText>
                       </NVButton>
                   </Block>
