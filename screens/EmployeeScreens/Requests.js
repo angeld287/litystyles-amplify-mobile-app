@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { StyleSheet, Dimensions, ScrollView, Image, View, RefreshControl, Modal, Platform } from 'react-native';
+import { Button as Btn, StyleSheet, Dimensions, ScrollView, Image, View, RefreshControl, Modal, Platform, Linking, Icon as RNI } from 'react-native';
 import { Container, Header, Content, List, ListItem, Thumbnail, Left, Body, Right, Button, Card, CardItem, Icon as I, Text, Subtitle, Spinner } from 'native-base';
 
 import { Block, theme, Accordion } from 'galio-framework';
@@ -166,6 +166,26 @@ const Requests = ({ route, navigation }) => {
         }
     }
 
+
+    const LinkCall = async (item) => {
+      try {
+        var phoneN = item.customer.items[0].customer.phone_number
+        var phoneNumber = "";
+        if (Platform.OS === 'android') {
+          phoneNumber = 'tel:${'+ phoneN +'}';
+        }
+        else {
+          phoneNumber = 'telprompt:${' + phoneN + '}';
+        }
+
+        Linking.openURL(phoneNumber);
+
+      } catch (e) {
+          console.log(e);
+      }
+    }
+  
+
     const nextRequest = () => {
         setInProcessLoading(true);
         API.graphql(graphqlOperation(updateRequest, { input: { id: requests[0].id, state: 'IN_PROCESS' } }))
@@ -253,8 +273,9 @@ const _requestsList = (requests !== null)?([].concat(requests)
             <Text note></Text>
         </Body>
         <Right>
+            {(i === 1 && item.customer.items.length !== 0 && item.notified && item.customer.items[0].customer.phone_number != undefined) && <Button success transparent onPress={(e) => { e.preventDefault(); LinkCall(item) }}><I active type="MaterialIcons" name="phone" /></Button>}
             {(i === 1 && item.customer.items.length !== 0 && !item.notified) && <Button warning transparent onPress={(e) => { e.preventDefault(); notify(item, "2") }}>{!notifyLoading && <I active type="MaterialIcons" name="notifications-active" />}{notifyLoading && < Spinner color='orange' />}</Button>}
-            {(i === 0 && item.state === "ON_HOLD") && <Button danger transparent={cancelLoading} onPress={(e) => { e.preventDefault(); openCancelModal(item) }}>{!cancelLoading && <I active type="MaterialIcons" name="cancel" />}{cancelLoading && <Spinner size="small" color='red' />}</Button>}
+            {(i === 0 && item.state === "ON_HOLD") && <Button danger transparent onPress={(e) => { e.preventDefault(); openCancelModal(item) }}>{!cancelLoading && <I active type="MaterialIcons" name="cancel" />}{cancelLoading && <Spinner size="small" color='red' />}</Button>}
         </Right>
     </ListItem>
   )):(<Block></Block>)
@@ -349,7 +370,7 @@ const styles = StyleSheet.create({
     modalText: {
       marginBottom: 15,
       textAlign: "center"
-    }
+    },
   });
 
 
