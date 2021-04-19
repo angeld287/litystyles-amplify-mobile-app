@@ -62,7 +62,7 @@ class MySignUp extends SignUp {
 
         const { email, password, phonenumber, fullname, modal } = this.state;
 
-        if(email === "" || password === "" || phonenumber === "" || fullname === ""){
+        if(email === "" || password === "" || /* phonenumber === "" || */ fullname === ""){
           this.setState({errorM: "Debe ingresar los datos requeridos.", error: true, loading: false});
           return;
         }
@@ -77,19 +77,24 @@ class MySignUp extends SignUp {
           return;
         }
 
-        if(phonenumber.match(/(^[+]*[0-9]{11}$)/i) === null){
+        var attr = {
+          email: email,  
+          name: fullname,
+        };
+
+        if(phonenumber != "" && phonenumber.match(/(^[+]*[0-9]{11}$)/i) === null){
           this.setState({errorM: "Numero de Telefono invalido. Ej: 18094332233.", error: true, loading: false});
           return;
+        }else if(phonenumber != ""){
+          attr.phone_number = "+"+phonenumber;
         }
+
+        
 
         const su = await Auth.signUp({
           username: email,
           password: password,
-          attributes: {
-              email: email,  
-              phone_number: "+"+phonenumber,
-              name: fullname,
-          },
+          attributes: attr,
         });
 
         this.setState({modal: !modal, loading: false, username: su.userSub});
