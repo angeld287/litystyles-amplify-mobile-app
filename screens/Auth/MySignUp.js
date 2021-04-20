@@ -10,7 +10,8 @@ import {
   ActivityIndicator,
   View,
   ScrollView,
-  Modal
+  Modal,
+  Platform
 } from "react-native";
 import { Auth } from "aws-amplify";
 import { Block, Text, theme } from "galio-framework";
@@ -19,7 +20,7 @@ import { API, graphqlOperation } from 'aws-amplify';
 import { Button, Icon, Input } from "../../components";
 import { argonTheme } from "../../constants";
 
-import { Container } from 'native-base';
+import { Container,Button as NVButton, Text as NVText, Icon as NVIcon } from 'native-base';
 
 import { createCustomer } from '../../graphql/mutations';
 
@@ -183,6 +184,12 @@ class MySignUp extends SignUp {
       this.setState({gloading: false});
     }
 
+    _appleSignIn = async () => {
+      this.setState({gloading: true});
+      await Auth.federatedSignIn({provider: 'SignInWithApple'});
+      this.setState({gloading: false});
+    }
+
     render() {
         const { email, password, loading, errorM, error, gloading, fullname, phonenumber, modal, code, loadingConfirmation, loadingResend, errorC, errorCM } = this.state;
         const { googleSignIn } = this.props; 
@@ -194,11 +201,12 @@ class MySignUp extends SignUp {
                     <Block style={styles.registerContainer}>
                       <Block flex={0.25} middle style={styles.socialConnect}>
                           <Block>
-                            <Text color="#8898AA" size={12}>
-                                Crear cuenta con Google
-                            </Text>
+                          <Text color="#8898AA" size={12}>
+                            {Platform.OS === "ios" && "Crear una cuenta con Google o Apple ID"}
+                            {Platform.OS !== "ios" && "Crear una cuenta con Google"}
+                          </Text>
                           </Block>
-                          <Block row style={{ marginTop: theme.SIZES.BASE }}>
+                          <Block row style={{ marginBottom: 20, marginTop: theme.SIZES.BASE }}>
                               <GoogleSigninButton
                                 style={{ width: 192, height: 48 }}
                                 size={GoogleSigninButton.Size.Wide}
@@ -207,6 +215,16 @@ class MySignUp extends SignUp {
                                 disabled={gloading}
                               />
                           </Block>
+                          {Platform.OS === "ios" &&
+                            <Block row >
+                              <NVButton iconLeft dark onPress={this._appleSignIn}>
+                                  <NVIcon  type="MaterialCommunityIcons" name="apple"/>
+                                  <NVText uppercase={false}>
+                                    Iniciar sesión con Apple
+                                  </NVText>
+                              </NVButton>
+                          </Block>
+                          }
                           <Block>
                             {gloading && 
                               <View style={[styles.container, styles.horizontal]}>

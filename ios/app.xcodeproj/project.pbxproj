@@ -599,7 +599,7 @@
 					"\"${PODS_CONFIGURATION_BUILD_DIR}/libevent\"",
 					"$(inherited)",
 				);
-				MARKETING_VERSION = 1.0.5;
+				MARKETING_VERSION = 1.0.6;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -757,7 +757,7 @@
 					"\"${PODS_CONFIGURATION_BUILD_DIR}/libevent\"",
 					"$(inherited)",
 				);
-				MARKETING_VERSION = 1.0.5;
+				MARKETING_VERSION = 1.0.6;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
