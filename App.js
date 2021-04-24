@@ -10,7 +10,7 @@ import { API, graphqlOperation } from 'aws-amplify';
 import { createCustomer, updateCustomer, updateEmployee } from './graphql/mutations';
 import { listCustomers, listEmployees } from './graphql/queries';
 
-import firebase from 'react-native-firebase';
+import firebase, { auth } from 'react-native-firebase';
 
 import GLOBAL from './global';
 
@@ -198,8 +198,8 @@ const Home = props => {
         var _r = roles;
         var attr = attributes
 
-        if(attr === undefined){
-          const usr = await Auth.currentAuthenticatedUser();
+        if(attr == undefined || attr.phone_number == undefined){
+          const usr = await Auth.currentUserInfo();
           attr = usr.attributes;
         }
 
@@ -220,12 +220,18 @@ const Home = props => {
           }
         }
 
-        const cuser = userdb === null ? await API.graphql(graphqlOperation(createCustomer, {input: {username: username, name: attr.name, image: attr.picture}})) : null;
+        const cuser = userdb === null ? await API.graphql(graphqlOperation(createCustomer, {input: {username: username, name: attr.name, image: attr.picture, phone_number: attr.phone_number}})) : null;
         
         if(userdb !== null){
-          if(userdb.image !== attr.picture){
-            await API.graphql(graphqlOperation(updateCustomer, {input: {id: userdb.id, image: attr.picture}}));
-          }
+          var picCOE = attr.picture !== undefined && userdb.image !== attr.picture;
+          var phoneNCOE = attr.phone_number !== undefined && userdb.phone_number !== attr.phone_number;
+
+          var _input = { id: userdb.id };
+
+          if(picCOE){  _input.image = attr.picture}
+          if(phoneNCOE){  _input.phone_number = attr.phone_number}
+
+          if(picCOE || phoneNCOE ) { await API.graphql(graphqlOperation(updateCustomer, {input: _input })); }
         }
           
         if (roles.indexOf('employee') !== -1 || roles.indexOf('supplier') !== -1) {
@@ -335,13 +341,14 @@ function sleep (time) {
 const AuthScreens = (props) => {
   const [loaging , setLoading] = useState(true);
   const [error , setError] = useState(false);
+
   props.authData.roles = props.authData.signInUserSession.accessToken.payload['cognito:groups'];
   API.graphql(graphqlOperation(listCustomers, {limit: 400, filter: { username: {eq: props.authData.username}}}))
   .then(r => {
     props.authData.userdb = r.data.listCustomers.items.length !== 0 ? r.data.listCustomers.items[0] : null;
 
     if(props.authData.attributes === undefined){
-      Auth.currentAuthenticatedUser().then(r => {
+      Auth.currentUserInfo().then(r => {
         props.authData.attributes = r.attributes;
       })
       .catch(e => {

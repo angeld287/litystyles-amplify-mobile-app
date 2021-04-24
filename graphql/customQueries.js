@@ -307,6 +307,7 @@ export const listRequestsEmployee = /* GraphQL */ `
             customer {
               name
               phoneid
+              phone_number
               id
             }
           }

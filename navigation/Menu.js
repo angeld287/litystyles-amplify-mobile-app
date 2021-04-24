@@ -20,9 +20,9 @@ function CustomDrawerContent({ params, _, ...rest }) {
   var isEmployee = params.authData.roles.indexOf('employee') !== -1;
   var isSupplier = params.authData.roles.indexOf('supplier') !== -1;
 
-  if(isEmployee && !isSupplier) { screens.push("Employee"); screens.push("Suppliers");}
+  if(isEmployee && !isSupplier) { screens.push("Employee"); /* screens.push("Suppliers"); */}
 
-  if(isSupplier) { screens.push("Administracion")}
+  //if(isSupplier) { screens.push("Administracion")}
   
   screens.push("Profile");
 

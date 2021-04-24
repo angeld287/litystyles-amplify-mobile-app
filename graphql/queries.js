@@ -540,6 +540,7 @@ export const listEmployees = /* GraphQL */ `
         username
         officeId
         phoneid
+        phone_number
         image
         services {
           nextToken
@@ -592,6 +593,7 @@ export const listCustomers = /* GraphQL */ `
         name
         username
         phoneid
+        phone_number
         image
         request {
           nextToken

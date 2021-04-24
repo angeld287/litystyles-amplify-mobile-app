@@ -127,6 +127,7 @@ export const updateRequestE = /* GraphQL */ `
             name
             phoneid
             id
+            phone_number
           }
         }
       }
