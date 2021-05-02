@@ -282,7 +282,7 @@ const RequestInfo = ({ route, navigation }) => {
                 <CardItem>
                   <Icon type="Fontisto" style={{color: '#f0ad4e'}} name="date" />
                     {/* dddd, MMMM Do, h:mm a */}
-                    <Text style={{marginLeft: 5}}>Fecha: {moment(requests[0]?.createdAt).format("dddd, MMMM Do")}</Text>
+                    <Text style={{marginLeft: 5}}>Fecha: {moment(requests[0]?.date).format("dddd, MMMM Do")}</Text>
                   <Right>
                   </Right>
                 </CardItem>

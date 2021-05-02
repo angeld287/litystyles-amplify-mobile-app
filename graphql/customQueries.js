@@ -200,6 +200,7 @@ export const getOffice = /* GraphQL */ `
                 id
                 cost
               }
+              duration
             }
           }
         }

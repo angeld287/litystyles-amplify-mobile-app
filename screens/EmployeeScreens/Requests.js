@@ -10,6 +10,8 @@ import { HeaderHeight } from "../../constants/utils";
 
 import image from "../../images/avatardefault.png";
 
+import moment from 'moment';
+
 import { sendNotifications } from '../../constants/functions'; 
 
 import { getOffice, listRequestsEmployee, getCompany } from '../../graphql/customQueries';
@@ -264,13 +266,13 @@ const Requests = ({ route, navigation }) => {
 const _requestsList = (requests !== null)?([].concat(requests)
     .sort((a, b) => new Date(a.date) - new Date(b.date))
     .map((item,i)=> 
-    <ListItem avatar>
+    <ListItem key={i} avatar>
         <Left>
             <Thumbnail source={image} />
         </Left>
         <Body>
             <Text style={{marginTop: 5}} >{item.customerName}</Text>
-            <Text note></Text>
+            <Text note>{moment(requests[0]?.date).format("dddd, MMMM Do, HH:mm")}</Text>
         </Body>
         <Right>
             {(i === 1 && item.customer.items.length !== 0 && item.notified && item.customer.items[0].customer.phone_number != undefined) && <Button success transparent onPress={(e) => { e.preventDefault(); LinkCall(item) }}><I active type="MaterialIcons" name="phone" /></Button>}

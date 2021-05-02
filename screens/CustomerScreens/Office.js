@@ -46,7 +46,7 @@ const Office = (props) => {
 
   const _products = (!loading && products !== null)?([].concat(products)
     .map((item,i)=> 
-      <ListItem avatar>
+      <ListItem key={i} avatar>
             <Left>
                 <ProductImage image={item.product.image} />
             </Left>
@@ -61,16 +61,16 @@ const Office = (props) => {
     ) ):(<ListItem></ListItem>)
 
   const _employeesList = (employees !== null)?([].concat(employees).map((e,i)=> 
-        <CardItem>
+        <CardItem key={i}>
           <Left>
               <Icon active name="person" />
           </Left>
           <Body>
             <Text>{e.name}</Text>
-            <Text note>{e.quantity} cliente(s) en turno</Text>
+            <Text note>{e.quantity} en turno</Text>
           </Body>          
           <Right>
-            <Button transparent onPress={() => { navigation.navigate('SelectService', {employee: e})}}><Text>Solicitar Servicio</Text></Button>
+            <Button transparent onPress={() => { navigation.navigate('SelectService', {employee: e})}}><Icon type="Entypo" active name="arrow-with-circle-right" style={{fontSize: 40}}/></Button>
           </Right>
         </CardItem>
   )):(<Block></Block>)
@@ -96,8 +96,10 @@ const Office = (props) => {
         
         image =  await getImageFromStorage(officeApi.data.getOffice.image);
 
+        console.log(image);
         setImage(image);
-        officeApi.data.getOffice.employees.items.filter(_ => _.services.items.length > 0).forEach(async e => {
+        for (const e of officeApi.data.getOffice.employees.items.filter(_ => _.services.items.length > 0)) {
+
           var reqs = null;
           var _companyServices = [];
           const _filter = {
@@ -112,7 +114,7 @@ const Office = (props) => {
           });
           
           _employees.push({ ...e, companyId: officeApi.data.getOffice.companyId, _companyServices, quantity: reqs.data.listRequests.items.length});
-        });
+        }
 
         setProducts(companyProducts);
         setEmployees(_employees);
