@@ -1,6 +1,8 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { StyleSheet, Dimensions, ScrollView, Image, View, ImageBackground } from 'react-native';
-import { Container, Header, Content, List, ListItem, Thumbnail, Left, Spinner, Right, Card, CardItem, Text, Icon, Badge } from 'native-base';
+import { StyleSheet, Dimensions, ScrollView, Image, View, Platform, Alert, Button as RNButton } from 'react-native';
+import { Container, Header, Content, List, ListItem, Thumbnail, Left, Spinner, Right, Card, CardItem, Text, Icon, Badge, DatePicker } from 'native-base';
+
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 import { Button, Block, NavBar, theme, Input } from 'galio-framework';
 import { API, graphqlOperation, Storage } from 'aws-amplify';
@@ -12,6 +14,9 @@ import GLOBAL from '../../global';
 import moment from 'moment';
 
 import { createRequest, createRequestEmployee, createRequestService, createRequestCustomer } from '../../graphql/mutations';
+import { listRequests } from '../../graphql/customQueries';
+
+import getListCompleted from "../../constants/getList";
 
 const { width, height } = Dimensions.get("screen");
 
@@ -22,17 +27,100 @@ const SendRequest = ({ route, navigation }) => {
   const [ errorsr, setErrorsr ] = useState(false);
   const [ errorsrm, setErrorsrm ] = useState('no error');
 
+  const [ chosenDate, setChosenDate ] = useState(new Date());
+  const [ showDateTimepicker, setShowDateTimepicker ] = useState(false);
+  const [ mode, setMode ] = useState('date');
+
+
   const { authData, employee, service } = route.params;
 
-  /* useEffect(() => {
+  /* 
+  useEffect(() => {
     console.log(employee);
-  }, []); */
+  }, []);
+  */
 
+  const sendScheduledRequest = async () => {
+      //sendRequest(moment(chosenDate).format('YYYY-MM-DDTHH:mm:ss.SSS')+'Z');
+      console.log(moment(chosenDate).format('YYYY-MM-DDTHH:mm:00.000')+'Z');
+      console.log(service.duration);
 
-  const sendRequest = async () => {
+      var _starDate = String(moment(chosenDate).format('YYYY-MM-DDTHH:mm:00.000')+'Z');
+      var _endDate = String(moment(chosenDate).format('YYYY-MM-DDTHH:mm:00.000')+'Z');
+
+      console.log(moment(chosenDate).subtract(service.duration, 'minutes').format('YYYY-MM-DDTHH:mm:00.000')+'Z');
+
+      const _filter = {
+        and: {or: {state: {eq: 'IN_PROCESS'}, state: {eq: 'ON_HOLD'}}, 
+        resposibleName: {eq: employee.username}},
+        and: [
+          {date: {gt: _starDate}},
+          {date: {lt: _endDate}},
+        ]
+      }
+
+      console.log(_filter);
+
+      /**
+       * filter: {
+					  and: [
+						{date: {gt: _date}}, 
+						{date: {lt: String(moment(date).format('YYYY-MM-DDT')+'23:59:59.000')}},
+						{companyId: {eq: props.state.company.id}},
+						{state: {eq: 'FINISHED'}},
+					  ]
+					}
+       */
+
+      //var reqs = await getListCompleted('listRequests', listRequests, _filter); 
+
+      //console.log(reqs);
+      /* Alert.alert(
+        "Fecha o Hora no seleccionada",
+        "Debe agregar una fecha y una hora para agendar",
+        [
+          {
+            text: "OK",
+            onPress: () => console.log("OK Pressed"),
+          },
+        ],
+        { cancelable: false }
+      ); */
+    
+  }
+
+  const setDate = () => {
+    //setChosenDate(moment(newDate).format('YYYY-MM-DDTHH:mm:ss.SSS')+'Z');
+    setMode('date');
+    setShowDateTimepicker(true);
+  }
+
+  const setTime = () => {
+    setMode('time');
+    setShowDateTimepicker(true);
+  }
+
+  const onSetDate = (event, selectedDate) => {
+    if(event.type === "dismissed"){
+      setShowDateTimepicker(false);
+
+    }else{
+      const currentDate = selectedDate || currentDate;
+      setShowDateTimepicker(Platform.OS === 'ios');
+      setChosenDate(currentDate);
+    }
+  }
+
+  const sendRequestForNow = () => {
+    const nowDate = moment(new Date()).format('YYYY-MM-DDTHH:mm:ss.SSS')+'Z';
+    sendRequest(nowDate);
+  }
+
+  const sendRequest = async (requestDate) => {
+
     const _date = moment(new Date()).format('YYYY-MM-DDTHH:mm:ss.SSS')+'Z';
 
-    const ri = {state: 'ON_HOLD', resposibleName: employee.username, paymentType: 'CASH', customerName: authData.attributes.name, customerUsername: authData.username, companyId: employee.companyId, date: _date, createdAt: _date};
+    const ri = {state: 'ON_HOLD', resposibleName: employee.username, paymentType: 'CASH', customerName: authData.attributes.name, customerUsername: authData.username, companyId: employee.companyId, date: requestDate, createdAt: _date};
     const rei = {requestEmployeeEmployeeId: employee.id, requestEmployeeRequestId: "", cost: service.cost, createdAt: _date,};
 		const rsi = {resposibleName: employee.username, requestServiceServiceId: service.service.id, requestServiceRequestId: "", cost: service.cost, createdAt: _date};
     const rci = {requestCustomerCustomerId: authData.userdb.id, requestCustomerRequestId: "", resposibleName: employee.username, cost: service.cost, createdAt: _date};
@@ -88,7 +176,7 @@ const SendRequest = ({ route, navigation }) => {
           <Block flex style={styles.profile}>
               <Card>
                 <CardItem>
-                  <Icon active style={{color: '#d9534f'}}  name="person" />
+                  <Icon active style={{color: '#d9534f'}} name="person" />
                   <Text style={{marginLeft: 5}}>Estilista: {employee.name}</Text>
                   <Right>
                   </Right>
@@ -110,7 +198,7 @@ const SendRequest = ({ route, navigation }) => {
                   </Right>
                 </CardItem>
               </Card>
-              <Button disabled={loading} round style={{ width: '97%', marginTop: 20}} uppercase color="success" onPress={() => {sendRequest()}}>Solicitar</Button>
+              <Button disabled={loading} round style={{ width: '97%', marginTop: 20}} uppercase color="success" onPress={() => {sendRequestForNow()}}>Solicitar</Button>
               
               {loading && <Content>
                 <Spinner color='green' />
@@ -120,11 +208,39 @@ const SendRequest = ({ route, navigation }) => {
                 <Badge><Text>{errorsrm}</Text></Badge>
               </Content>}
 
-              <Button disabled={loading} round style={{ width: '97%', marginTop: 5}} uppercase color="danger" onPress={() => { navigation.navigate('Homee')}}>Cancelar</Button>
-              <Block style={{marginTop:30}}>
-                <Text note>   Tambien puedes agendar una cita:</Text>
-                <Button disabled={loading} round style={{ width: '97%'}} uppercase color="warning">Agendar</Button>
-              </Block>
+              <Button disabled={loading} round style={{ width: '97%', marginTop: 5}} uppercase color="danger" onPress={(e) => { 
+                    e.preventDefault();
+                    setChosenDate(new Date());
+                    setShowDateTimepicker(false);
+                    navigation.navigate('Homee');
+                  }
+                }>Cancelar</Button>
+              {/* <Block style={{marginTop:30}}>
+                <Text note>Tambien puedes agendar una cita:</Text>     
+                <View>
+                  { showDateTimepicker &&
+                    <DateTimePicker
+                      testID="dateTimePicker"
+                      value={chosenDate}
+                      mode={mode}
+                      is24Hour={true}
+                      display="default"
+                      onChange={onSetDate}
+                      minimumDate={new Date()}
+                      is24Hour={false}
+                    />
+                  }
+                </View>
+                <View style={styles.container}>
+                  <View style={styles.buttonContainer}>
+                    <Button disabled={loading} round style={{ width: '97%'}} uppercase color="info" onPress={() => {setDate()}}>Fecha</Button>
+                  </View>
+                  <View style={styles.buttonContainer}>
+                    <Button disabled={loading} round style={{ width: '97%'}} uppercase color="info" onPress={() => {setTime()}}>Hora</Button>
+                  </View>
+                </View>
+                <Button disabled={loading} round style={{ width: '97%'}} uppercase color="warning" onPress={() => {sendScheduledRequest()}}>Agendar</Button>
+              </Block> */}
           </Block>
         </Content>
  );
@@ -183,6 +299,15 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     width: thumbMeasure,
     height: thumbMeasure
+  },
+  container: {
+      flex: 1,
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+  },
+  buttonContainer: {
+      flex: 1,
   }
 });
 

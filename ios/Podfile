@@ -22,6 +22,8 @@ target 'app' do
   pod 'FirebaseMessaging', '<6'
 
   use_flipper!({'Flipper' => '0.82.0'}) # should match the version of your Flipper client app
+  pod 'RNDateTimePicker', :path => '../node_modules/@react-native-community/datetimepicker'
+
   post_install do |installer|
     flipper_post_install(installer)
   end
