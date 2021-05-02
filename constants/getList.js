@@ -11,7 +11,7 @@ const getListCompleted = async (graphqlQueryName, listGraphqlQuery, _filter) => 
      
         apiResult = await API.graphql(graphqlOperation(
                 listGraphqlQuery, 
-                { limit: 100, filter: _filter }
+                { limit: 500, filter: _filter }
             ));
         
         queryResult = apiResult.data[graphqlQueryName];
