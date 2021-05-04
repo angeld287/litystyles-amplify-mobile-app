@@ -17,7 +17,8 @@ import GLOBAL from './global';
 import PushNotification from "react-native-push-notification";
 
 import Amplify, { Auth } from 'aws-amplify';
-import awsconfig from './aws-exports';
+//import awsconfig from './aws-exports';
+import awsconfig from './aws-exports-prod';
 import { ConfirmSignIn, ConfirmSignUp, ForgotPassword, RequireNewPassword, SignUp, VerifyContact, withAuthenticator } from 'aws-amplify-react-native';
 import { notificationManager } from './NotificationManager';
 

@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { StyleSheet, Dimensions, ScrollView, Image, View, Platform, Alert, Button as RNButton } from 'react-native';
 import { Container, Header, Content, List, ListItem, Thumbnail, Left, Spinner, Right, Card, CardItem, Text, Icon, Badge, DatePicker } from 'native-base';
 
-import DateTimePicker from '@react-native-community/datetimepicker';
+//import DateTimePicker from '@react-native-community/datetimepicker';
 
 import { Button, Block, NavBar, theme, Input } from 'galio-framework';
 import { API, graphqlOperation, Storage } from 'aws-amplify';
@@ -39,7 +39,8 @@ const SendRequest = ({ route, navigation }) => {
     console.log(employee);
   }, []);
   */
-
+/**
+       *
   const sendScheduledRequest = async () => {
       //sendRequest(moment(chosenDate).format('YYYY-MM-DDTHH:mm:ss.SSS')+'Z');
       console.log(moment(chosenDate).format('YYYY-MM-DDTHH:mm:00.000')+'Z');
@@ -61,8 +62,7 @@ const SendRequest = ({ route, navigation }) => {
 
       console.log(_filter);
 
-      /**
-       * filter: {
+       filter: {
 					  and: [
 						{date: {gt: _date}}, 
 						{date: {lt: String(moment(date).format('YYYY-MM-DDT')+'23:59:59.000')}},
@@ -85,9 +85,9 @@ const SendRequest = ({ route, navigation }) => {
           },
         ],
         { cancelable: false }
-      ); */
+      ); 
     
-  }
+  }*/
 
   const setDate = () => {
     //setChosenDate(moment(newDate).format('YYYY-MM-DDTHH:mm:ss.SSS')+'Z');
