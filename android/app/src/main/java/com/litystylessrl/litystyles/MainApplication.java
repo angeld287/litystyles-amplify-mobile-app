@@ -6,7 +6,6 @@ import android.net.Uri;
 
 import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
-import com.reactcommunity.rndatetimepicker.RNDateTimePickerPackage;
 import io.invertase.firebase.RNFirebasePackage;
 
 import io.invertase.firebase.RNFirebasePackage;
