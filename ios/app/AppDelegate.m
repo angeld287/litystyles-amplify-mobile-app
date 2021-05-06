@@ -10,23 +10,31 @@
 #import <EXSplashScreen/EXSplashScreenService.h>
 #import <UMCore/UMModuleRegistryProvider.h>
 
-#ifdef FB_SONARKIT_ENABLED
-#import <FlipperKit/FlipperClient.h>
-#import <FlipperKitLayoutPlugin/FlipperKitLayoutPlugin.h>
-#import <FlipperKitUserDefaultsPlugin/FKUserDefaultsPlugin.h>
-#import <FlipperKitNetworkPlugin/FlipperKitNetworkPlugin.h>
-#import <SKIOSNetworkPlugin/SKIOSNetworkAdapter.h>
-#import <FlipperKitReactPlugin/FlipperKitReactPlugin.h>
+#import <React/RCTLinkingManager.h>
 
-static void InitializeFlipper(UIApplication *application) {
-  FlipperClient *client = [FlipperClient sharedClient];
-  SKDescriptorMapper *layoutDescriptorMapper = [[SKDescriptorMapper alloc] initWithDefaults];
-  [client addPlugin:[[FlipperKitLayoutPlugin alloc] initWithRootNode:application withDescriptorMapper:layoutDescriptorMapper]];
-  [client addPlugin:[[FKUserDefaultsPlugin alloc] initWithSuiteName:nil]];
-  [client addPlugin:[FlipperKitReactPlugin new]];
-  [client addPlugin:[[FlipperKitNetworkPlugin alloc] initWithNetworkAdapter:[SKIOSNetworkAdapter new]]];
-  [client start];
-}
+#import <UserNotifications/UserNotifications.h>
+#import <RNCPushNotificationIOS.h>
+
+@import Firebase;
+
+#ifdef FB_SONARKIT_ENABLED
+//#import <FlipperKit/FlipperClient.h>
+//#import <FlipperKitLayoutPlugin/FlipperKitLayoutPlugin.h>
+//#import <FlipperKitUserDefaultsPlugin/FKUserDefaultsPlugin.h>
+//#import <FlipperKitNetworkPlugin/FlipperKitNetworkPlugin.h>
+//#import <SKIOSNetworkPlugin/SKIOSNetworkAdapter.h>
+//#import <FlipperKitReactPlugin/FlipperKitReactPlugin.h>
+
+
+//static void InitializeFlipper(UIApplication *application) {
+//  FlipperClient *client = [FlipperClient sharedClient];
+//  SKDescriptorMapper *layoutDescriptorMapper = [[SKDescriptorMapper alloc] initWithDefaults];
+//  [client addPlugin:[[FlipperKitLayoutPlugin alloc] initWithRootNode:application //withDescriptorMapper:layoutDescriptorMapper]];
+//  [client addPlugin:[[FKUserDefaultsPlugin alloc] initWithSuiteName:nil]];
+//  [client addPlugin:[FlipperKitReactPlugin new]];
+//  [client addPlugin:[[FlipperKitNetworkPlugin alloc] initWithNetworkAdapter:[SKIOSNetworkAdapter new]]];
+//  [client start];
+//}
 #endif
 
 @interface AppDelegate () <RCTBridgeDelegate>
@@ -38,12 +46,21 @@ static void InitializeFlipper(UIApplication *application) {
 
 @implementation AppDelegate
 
+- (BOOL)application:(UIApplication *)application
+   openURL:(NSURL *)url
+   options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options
+{
+  return [RCTLinkingManager application:application openURL:url options:options];
+}
+
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-#ifdef FB_SONARKIT_ENABLED
-  InitializeFlipper(application);
-#endif
-  
+//#ifdef FB_SONARKIT_ENABLED
+//  InitializeFlipper(application);
+//#endif
+  // Use Firebase library to configure APIs
+  [FIRApp configure];
+
   self.moduleRegistryAdapter = [[UMModuleRegistryAdapter alloc] initWithModuleRegistryProvider:[[UMModuleRegistryProvider alloc] init]];
   self.launchOptions = launchOptions;
   self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
@@ -70,6 +87,10 @@ static void InitializeFlipper(UIApplication *application) {
   rootViewController.view = rootView;
   self.window.rootViewController = rootViewController;
   [self.window makeKeyAndVisible];
+  
+  // Define UNUserNotificationCenter
+  UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
+  center.delegate = self;
 
   return bridge;
  }
@@ -93,6 +114,42 @@ static void InitializeFlipper(UIApplication *application) {
   appController.bridge = [self initializeReactNativeApp];
   EXSplashScreenService *splashScreenService = (EXSplashScreenService *)[UMModuleRegistryProvider getSingletonModuleForClass:[EXSplashScreenService class]];
   [splashScreenService showSplashScreenFor:self.window.rootViewController];
+}
+
+// Required for the register event.
+- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
+{
+ [RNCPushNotificationIOS didRegisterForRemoteNotificationsWithDeviceToken:deviceToken];
+}
+// Required for the notification event. You must call the completion handler after handling the remote notification.
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
+fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
+{
+  [RNCPushNotificationIOS didReceiveRemoteNotification:userInfo fetchCompletionHandler:completionHandler];
+}
+// Required for the registrationError event.
+- (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
+{
+ [RNCPushNotificationIOS didFailToRegisterForRemoteNotificationsWithError:error];
+}
+// Required for localNotification event
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center
+didReceiveNotificationResponse:(UNNotificationResponse *)response
+         withCompletionHandler:(void (^)(void))completionHandler
+{
+  NSMutableDictionary *userData = [NSMutableDictionary
+                                   dictionaryWithDictionary:response.notification.request.content.userInfo];
+  
+  [RNCPushNotificationIOS didReceiveNotificationResponse:response];
+  [userData setObject:@1 forKey:@"openedInForeground"];
+  [RNCPushNotificationIOS didReceiveRemoteNotification:userData];
+  completionHandler();
+}
+
+//Called when a notification is delivered to a foreground app.
+-(void)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions options))completionHandler
+{
+  completionHandler(UNNotificationPresentationOptionSound | UNNotificationPresentationOptionAlert | UNNotificationPresentationOptionBadge);
 }
 
 @end

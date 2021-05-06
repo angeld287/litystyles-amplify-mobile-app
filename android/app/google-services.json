@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "109405951597",
+    "project_id": "litystyles",
+    "storage_bucket": "litystyles.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:109405951597:android:db1b8ecc3e60ea55f79164",
+        "android_client_info": {
+          "package_name": "com.litystylessrl.litystyles"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "109405951597-dp4re4aqqvho5cectegfkk4c4qgb4v0u.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDDlWNVuD7ICxCPK6s2gr9-OIXKrJ6X3lg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "109405951597-dp4re4aqqvho5cectegfkk4c4qgb4v0u.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,9 +1,9 @@
 {
-  "name": "app",
-  "displayName": "app",
+  "name": "litystyles",
+  "displayName": "litystyles",
   "expo": {
-    "name": "app",
-    "slug": "app",
+    "name": "litystyles",
+    "slug": "litystyles",
     "version": "1.0.0",
     "assetBundlePatterns": [
       "**/*"
